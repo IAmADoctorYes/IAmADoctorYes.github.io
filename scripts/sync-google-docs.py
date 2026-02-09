@@ -20,6 +20,7 @@ from io import BytesIO
 FOLDER_ID = os.getenv('DRIVE_FOLDER_ID', '')
 CREDS_FILE = os.getenv('CREDS_FILE', '/tmp/creds.json')
 POSTS_DIR = '_posts'
+STATE_PATH = os.path.join('scripts', 'sync-state.json')
 
 if not os.path.exists(POSTS_DIR):
     os.makedirs(POSTS_DIR)
@@ -37,6 +38,15 @@ SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
 drive_service = build('drive', 'v3', credentials=creds)
 
+# Load sync state
+state = {}
+if os.path.exists(STATE_PATH):
+    try:
+        with open(STATE_PATH, 'r', encoding='utf-8') as f:
+            state = json.load(f)
+    except Exception:
+        state = {}
+
 # Find all Google Docs in the folder
 query = f"'{FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false"
 results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name, modifiedTime)', pageSize=100).execute()
@@ -44,10 +54,17 @@ files = results.get('files', [])
 
 print(f"Found {len(files)} Google Docs to sync")
 
+seen_ids = set()
+
 for file in files:
     file_id = file['id']
     file_name = file['name']
     modified_time = file['modifiedTime']
+    seen_ids.add(file_id)
+
+    if state.get(file_id) == modified_time:
+        print(f"Skipping unchanged: {file_name}")
+        continue
     
     # Parse date from modifiedTime or use today
     try:
@@ -77,6 +94,7 @@ for file in files:
     except HttpError as e:
         if 'exportSizeLimitExceeded' in str(e):
             print("  ✗ Skipped (export too large): " + file_name)
+            state[file_id] = modified_time
             continue
         print("  ✗ Export failed: " + file_name + " (" + str(e) + ")")
         continue
@@ -105,6 +123,7 @@ categories: blog
                 f.write(frontmatter + content)
             
             print(f"  ✓ Converted: {post_path}")
+            state[file_id] = modified_time
         else:
             print(f"  ✗ Pandoc error: {result.stderr}")
     except Exception as e:
@@ -112,5 +131,16 @@ categories: blog
     finally:
         if os.path.exists(docx_path):
             os.remove(docx_path)
+
+# Remove state for docs that no longer exist
+for file_id in list(state.keys()):
+    if file_id not in seen_ids:
+        state.pop(file_id, None)
+
+try:
+    with open(STATE_PATH, 'w', encoding='utf-8') as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+except Exception:
+    pass
 
 print("Sync complete!")
