@@ -1,51 +1,46 @@
-name: Sync Google Docs to Jekyll Posts
+name: Sync Google Docs to Blog
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  pull-requests: write
+    - cron: '0 0 * * *'  # Daily at 00:00 UTC
+  workflow_dispatch:      # Manual trigger
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-
+          python-version: '3.10'
+      
       - name: Install dependencies
         run: |
-          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client python-docx pandocfilters pypandoc
-
-      - name: Install pandoc
-        run: |
+          python -m pip install --upgrade pip
+          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client
           sudo apt-get update
           sudo apt-get install -y pandoc
-
+      
       - name: Create credentials file
-        env:
-          GOOGLE_DRIVE_CREDS: ${{ secrets.GOOGLE_DRIVE_CREDS }}
         run: |
-          echo "$GOOGLE_DRIVE_CREDS" | base64 -d > /tmp/creds.json
-
-      - name: Sync documents
+          echo "${{ secrets.GOOGLE_DRIVE_CREDS }}" | base64 -d > /tmp/creds.json
+      
+      - name: Sync Google Docs
         env:
           DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
           CREDS_FILE: /tmp/creds.json
         run: python scripts/sync-google-docs.py
-
-      - name: Commit and push
+      
+      - name: Commit changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add _posts/
-          git diff-index --quiet HEAD || git commit -m "Auto: sync Google Docs to Jekyll posts" && git push
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          git add pages/blog/ pages/blog.html scripts/sync-state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto: sync Google Docs to blog posts"
+            git push
+          fi
