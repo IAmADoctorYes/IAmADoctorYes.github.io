@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """
-Sync Google Docs from a Drive folder to Jekyll _posts/ as Markdown
-Requires: DRIVE_FOLDER_ID and CREDS_FILE environment variables
+Sync Google Docs from a Drive folder to HTML posts under pages/blog.
+Requires: DRIVE_FOLDER_ID and CREDS_FILE environment variables.
 """
 
 import os
 import json
 import subprocess
 from datetime import datetime
-from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
-from google.auth.exceptions import DefaultCredentialsError
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
@@ -19,7 +17,8 @@ from io import BytesIO
 # Setup
 FOLDER_ID = os.getenv('DRIVE_FOLDER_ID', '')
 CREDS_FILE = os.getenv('CREDS_FILE', '/tmp/creds.json')
-POSTS_DIR = '_posts'
+POSTS_DIR = os.path.join('pages', 'blog')
+BLOG_INDEX_PATH = os.path.join('pages', 'blog.html')
 STATE_PATH = os.path.join('scripts', 'sync-state.json')
 
 if not os.path.exists(POSTS_DIR):
@@ -54,6 +53,8 @@ files = results.get('files', [])
 
 print(f"Found {len(files)} Google Docs to sync")
 
+posts_for_index = []
+
 seen_ids = set()
 
 for file in files:
@@ -64,6 +65,12 @@ for file in files:
 
     if state.get(file_id) == modified_time:
         print(f"Skipping unchanged: {file_name}")
+        if os.path.exists(post_path):
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename
+            })
         continue
     
     # Parse date from modifiedTime or use today
@@ -72,10 +79,10 @@ for file in files:
     except:
         mod_date = datetime.now().strftime('%Y-%m-%d')
     
-    # Sanitize filename for Jekyll post
+    # Sanitize filename
     slug = file_name.lower().replace(' ', '-').replace("'", '').replace('"', '')
     slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
-    post_filename = f"{mod_date}-{slug}.md"
+    post_filename = f"{mod_date}-{slug}.html"
     post_path = os.path.join(POSTS_DIR, post_filename)
     
     print(f"Processing: {file_name} -> {post_filename}")
@@ -102,28 +109,114 @@ for file in files:
     with open(docx_path, 'wb') as f:
         f.write(docx_data.getvalue())
     
-    # Convert DOCX to Markdown using pandoc
+    # Convert DOCX to HTML using pandoc
     try:
-        result = subprocess.run(['pandoc', docx_path, '-t', 'markdown', '-o', post_path], capture_output=True, text=True)
+        result = subprocess.run(['pandoc', docx_path, '-t', 'html'], capture_output=True, text=True)
         if result.returncode == 0:
-            # Read the markdown content
-            with open(post_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Add Jekyll frontmatter
-            frontmatter = f"""---
-layout: post
-title: "{file_name}"
-date: {mod_date}
-categories: blog
----
+            body_html = result.stdout
+            page_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{file_name}">
+    <title>{file_name} | Sullivan Steele</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../js/theme.js"></script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
 
+    <nav>
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../music.html">Music</a></li>
+                <li><a href="../shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="site-layout">
+        <main id="main" class="page-content">
+
+            <div class="breadcrumb">
+                <a href="../../index.html">Home</a>
+                <span class="sep">/</span>
+                <a href="../blog.html">Blog</a>
+                <span class="sep">/</span>
+                {file_name}
+            </div>
+
+            <div class="article-content">
+                <div class="article-header">
+                    <h1>{file_name}</h1>
+                    <div class="article-meta">
+                        <span><i class="bi bi-calendar3"></i> {mod_date}</span>
+                        <span><i class="bi bi-person"></i> Sullivan Steele</span>
+                    </div>
+                </div>
+
+{body_html}
+
+            </div>
+
+        </main>
+
+        <aside class="sidebar" aria-label="Page navigation">
+            <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="../projects.html">Projects</a></li>
+                    <li><a href="../blog.html">Blog</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="../music.html">Music</a></li>
+                    <li><a href="../shop.html">Shop</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/backgrounds.js"></script>
+</body>
+</html>
 """
+
             with open(post_path, 'w', encoding='utf-8') as f:
-                f.write(frontmatter + content)
-            
+                f.write(page_html)
+
             print(f"  ✓ Converted: {post_path}")
             state[file_id] = modified_time
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename
+            })
         else:
             print(f"  ✗ Pandoc error: {result.stderr}")
     except Exception as e:
@@ -137,10 +230,67 @@ for file_id in list(state.keys()):
     if file_id not in seen_ids:
         state.pop(file_id, None)
 
+def update_blog_index(posts):
+    if not os.path.exists(BLOG_INDEX_PATH):
+        return
+    try:
+        with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
+            html = f.read()
+    except Exception:
+        return
+
+    start_tag = '<!-- AUTO:START -->'
+    end_tag = '<!-- AUTO:END -->'
+    start_idx = html.find(start_tag)
+    end_idx = html.find(end_tag)
+    if start_idx == -1 or end_idx == -1:
+        return
+
+    posts_sorted = sorted(posts, key=lambda p: p['date'], reverse=True)
+    cards = []
+    for post in posts_sorted:
+        cards.append(
+            '                <article class="article-preview">\n'
+            '                    <div class="preview-meta">\n'
+            '                        <span>' + post['date'] + '</span>\n'
+            '                        <span class="tag tag-green">Doc</span>\n'
+            '                    </div>\n'
+            '                    <h3><a href="blog/' + post['filename'] + '">' + post['title'] + '</a></h3>\n'
+            '                    <p>Synced from Google Docs.</p>\n'
+            '                </article>'
+        )
+
+    if cards:
+        section_body = '\n\n'.join(cards)
+    else:
+        section_body = (
+            '                <div class="placeholder-section">\n'
+            '                    <p>Synced posts will appear here after the workflow runs.</p>\n'
+            '                </div>'
+        )
+
+    section = (
+        start_tag + '\n'
+        '            <section class="section-rule" id="docs">\n'
+        '                <h2>Synced Docs</h2>\n'
+        + section_body + '\n'
+        '            </section>\n'
+        '            ' + end_tag
+    )
+
+    new_html = html[:start_idx] + section + html[end_idx + len(end_tag):]
+    try:
+        with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f:
+            f.write(new_html)
+    except Exception:
+        return
+
 try:
     with open(STATE_PATH, 'w', encoding='utf-8') as f:
         json.dump(state, f, indent=2, sort_keys=True)
 except Exception:
     pass
+
+update_blog_index(posts_for_index)
 
 print("Sync complete!")
