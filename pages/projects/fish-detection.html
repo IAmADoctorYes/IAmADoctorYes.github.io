@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Synthetic data generation for computer vision using physics simulation">
+    <title>Virtual Simulation Aided AI Model Training | Sullivan Steele</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../js/theme.js"></script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../music.html">Music</a></li>
+                <li><a href="../shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="site-layout">
+        <main id="main" class="page-content">
+
+            <div class="breadcrumb">
+                <a href="../../index.html">Home</a>
+                <span class="sep">/</span>
+                <a href="../projects.html">Projects</a>
+                <span class="sep">/</span>
+                Fish Detection
+            </div>
+
+            <div class="article-content">
+
+                <div class="article-header">
+                    <h1>Virtual Simulation Aided AI Model Training</h1>
+                    <div class="article-meta">
+                        <span><i class="bi bi-calendar3"></i> 2024</span>
+                        <span><i class="bi bi-person"></i> Sullivan Steele</span>
+                        <span><i class="bi bi-journal-text"></i> Published Research</span>
+                    </div>
+                    <div class="article-tags">
+                        <span class="tag tag-green">Machine Learning</span>
+                        <span class="tag tag-orange">Computer Vision</span>
+                        <span class="tag tag-blue">Simulation</span>
+                        <span class="tag">Python</span>
+                    </div>
+                </div>
+
+                <h2 id="problem">The Problem</h2>
+                <p>
+                    Computer vision models need large amounts of labeled training data to achieve
+                    useful accuracy. For most real-world applications, this means someone has to
+                    manually draw bounding boxes around thousands of images&mdash;a process that's
+                    expensive, tedious, and often the biggest bottleneck in building a CV system.
+                </p>
+                <p>
+                    This is especially problematic for ecological monitoring, where the subjects
+                    (in our case, fish in stream environments) are difficult to photograph consistently
+                    and the available datasets are small. The "cold start" problem: you can't train
+                    a model without data, and you can't easily collect data without a working model
+                    to guide what to collect.
+                </p>
+
+                <h2 id="approach">The Approach</h2>
+                <p>
+                    Instead of collecting and labeling thousands of real images, we simulated the
+                    target environment using physics-based models. The simulation generates synthetic
+                    images with perfect labels already attached&mdash;because we placed the objects
+                    ourselves, we know exactly where they are.
+                </p>
+                <p>
+                    Specifically, we modeled fish schooling behavior using established physics
+                    principles:
+                </p>
+                <ul>
+                    <li><strong>Separation:</strong> fish maintain minimum distance from neighbors</li>
+                    <li><strong>Alignment:</strong> fish match heading and speed with nearby individuals</li>
+                    <li><strong>Cohesion:</strong> fish steer toward the average position of their group</li>
+                </ul>
+                <p>
+                    These three simple rules produce realistic-looking group movement patterns.
+                    By rendering the simulation at various angles, lighting conditions, and water
+                    clarity levels, we generated a diverse training set of thousands of images.
+                </p>
+
+                <h2 id="results">Key Results</h2>
+                <ul>
+                    <li><strong>91.8% detection accuracy</strong> on real fish images, competitive
+                        with models trained entirely on real data</li>
+                    <li><strong>90% reduction</strong> in the amount of real labeled data needed</li>
+                    <li><strong>$10,000+</strong> in estimated labeling cost saved</li>
+                    <li>The approach generalizes: the same pipeline can be adapted for other
+                        species and environments</li>
+                </ul>
+
+                <h2 id="simulation">How the Simulation Works</h2>
+                <p>
+                    The core simulation uses a Boids-style flocking algorithm. Each fish agent has
+                    a position, velocity, and acceleration vector. At each timestep, the three
+                    steering forces (separation, alignment, cohesion) are computed based on the
+                    agent's local neighborhood, weighted, and applied as acceleration.
+                </p>
+                <p>
+                    The rendering pipeline then captures frames from the simulation and applies
+                    randomized environmental variation:
+                </p>
+                <ul>
+                    <li>Water turbidity and color temperature</li>
+                    <li>Lighting angle and intensity</li>
+                    <li>Camera position and focal length</li>
+                    <li>Background substrate (gravel, sand, rock)</li>
+                </ul>
+                <p>
+                    Because the simulation controls all these parameters, we can systematically
+                    vary them to create a training set that covers the range of conditions the
+                    model will encounter in the field.
+                </p>
+
+                <h2 id="pipeline">Training Pipeline</h2>
+                <p>
+                    The training process uses a two-stage approach:
+                </p>
+                <ol>
+                    <li><strong>Pre-training on synthetic data:</strong> The model learns basic
+                        fish shape, scale, and spatial patterns from thousands of synthetic images.</li>
+                    <li><strong>Fine-tuning on real data:</strong> A small set of real images
+                        (only 10% of what would normally be needed) is used to adapt the model
+                        to real-world appearance and artifacts.</li>
+                </ol>
+                <p>
+                    This two-stage approach works because the synthetic pre-training gives the model
+                    a strong geometric prior&mdash;it already knows what fish shapes look like and
+                    how they cluster&mdash;so the fine-tuning step can focus on texture and lighting
+                    differences between simulation and reality.
+                </p>
+
+                <h2 id="implications">Implications</h2>
+                <p>
+                    The broader point is that physics simulation can serve as a data generation
+                    engine for machine learning. When the simulation accurately captures the
+                    relevant physics of the target domain, synthetic data can dramatically reduce
+                    the cost and time of building CV systems.
+                </p>
+                <p>
+                    This is particularly valuable for ecological monitoring, where data collection
+                    is constrained by access, weather, and the behavior of the subjects. It's also
+                    applicable to manufacturing inspection, agricultural monitoring, and any domain
+                    where real training data is expensive to collect.
+                </p>
+
+                <h2 id="publication">Publication</h2>
+                <div class="callout info">
+                    <p>
+                        <strong>"Virtual Simulation Aided AI Model: A Novel Approach to Cold Start
+                        Problem in Computer Vision"</strong><br>
+                        Sensors, 2024, Volume 24, Issue 17, Article 5816<br>
+                        <a href="https://www.mdpi.com/1424-8220/24/17/5816" target="_blank" rel="noopener">
+                            Read the full paper on MDPI <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </p>
+                </div>
+
+                <h2>Technologies Used</h2>
+                <p class="mono small muted">
+                    Python &middot; TensorFlow &middot; OpenCV &middot; NumPy &middot;
+                    YOLO &middot; Physics simulation &middot; Synthetic data generation
+                </p>
+
+            </div>
+
+        </main>
+
+        <aside class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="../projects.html">Projects</a></li>
+                    <li><a href="../blog.html">Blog</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="../music.html">Music</a></li>
+                    <li><a href="../shop.html">Shop</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>On This Page</h4>
+                <ul class="toc">
+                    <li><a href="#problem">The Problem</a></li>
+                    <li><a href="#approach">The Approach</a></li>
+                    <li><a href="#results">Key Results</a></li>
+                    <li><a href="#simulation">How the Simulation Works</a></li>
+                    <li><a href="#pipeline">Training Pipeline</a></li>
+                    <li><a href="#implications">Implications</a></li>
+                    <li><a href="#publication">Publication</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/backgrounds.js"></script>
+</body>
+</html>

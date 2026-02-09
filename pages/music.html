@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Music — guitar, bass, and instrumental recordings by Sullivan Steele">
+    <title>Music | Sullivan Steele</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/theme.js"></script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="music.html">Music</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="site-layout">
+        <main id="main" class="page-content">
+
+            <section class="hero">
+                <h1>Music</h1>
+                <p class="hero-sub">
+                    Guitar, upright bass, bass guitar, and whatever else I can get my hands on.
+                </p>
+            </section>
+
+            <section class="section-rule" id="background">
+                <h2>Background</h2>
+                <p>
+                    I've been playing since I was a kid. I toured Europe with the
+                    West Virginia Youth Symphony Orchestra on upright bass, played in
+                    a few bands, done pit orchestra for musicals, and I'm still at it.
+                    Right now I'm studying guitar and musical composition on my own time.
+                </p>
+            </section>
+
+            <section class="section-rule" id="recordings">
+                <h2>Recordings</h2>
+                <p>
+                    Instrumental stuff I'm working on. Drop an MP3 file into
+                    <code>audio/</code> and uncomment the player below to add tracks.
+                </p>
+
+                <!--
+                <div class="track-list">
+                    <div class="track">
+                        <span class="track-title">Track Name</span>
+                        <span class="track-meta muted small">2025 · Guitar</span>
+                        <audio controls preload="none">
+                            <source src="../audio/track-name.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+
+                    <div class="track">
+                        <span class="track-title">Another Track</span>
+                        <span class="track-meta muted small">2025 · Bass</span>
+                        <audio controls preload="none">
+                            <source src="../audio/another-track.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                -->
+
+                <div class="placeholder-section">
+                    <h2>Coming Soon</h2>
+                    <p>I'm recording some instrumental pieces. Check back.</p>
+                </div>
+            </section>
+
+            <section class="section-rule" id="instruments">
+                <h2>Instruments</h2>
+                <ul>
+                    <li><strong>Guitar</strong> — main instrument right now, studying composition</li>
+                    <li><strong>Upright bass</strong> — toured Europe with WV Youth Symphony Orchestra</li>
+                    <li><strong>Bass guitar</strong> — bands, pit orchestras, sessions</li>
+                </ul>
+            </section>
+
+        </main>
+
+        <aside class="sidebar" aria-label="Page navigation">
+            <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="music.html">Music</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>On This Page</h4>
+                <ul class="toc">
+                    <li><a href="#background">Background</a></li>
+                    <li><a href="#recordings">Recordings</a></li>
+                    <li><a href="#instruments">Instruments</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../js/nav.js"></script>
+    <script src="../js/backgrounds.js"></script>
+</body>
+</html>
