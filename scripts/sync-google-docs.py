@@ -12,7 +12,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 from google.auth.exceptions import DefaultCredentialsError
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
 from io import BytesIO
 
 # Setup
@@ -64,11 +65,21 @@ for file in files:
     
     # Export as DOCX
     docx_data = BytesIO()
-    request = drive_service.files().export_media(fileId=file_id, mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    request = drive_service.files().export_media(
+        fileId=file_id,
+        mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
     downloader = MediaIoBaseDownload(docx_data, request)
     done = False
-    while not done:
-        status, done = downloader.next_chunk()
+    try:
+        while not done:
+            _, done = downloader.next_chunk()
+    except HttpError as e:
+        if 'exportSizeLimitExceeded' in str(e):
+            print("  ✗ Skipped (export too large): " + file_name)
+            continue
+        print("  ✗ Export failed: " + file_name + " (" + str(e) + ")")
+        continue
     docx_path = f"/tmp/{file_id}.docx"
     with open(docx_path, 'wb') as f:
         f.write(docx_data.getvalue())
