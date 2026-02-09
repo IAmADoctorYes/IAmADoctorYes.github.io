@@ -44,5 +44,5 @@ jobs:
           git add pages/blog/ pages/blog.html scripts/sync-state.json
           if ! git diff --cached --quiet; then
             git commit -m "Auto: sync Google Docs to blog posts"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}"
+            git push
           fi
