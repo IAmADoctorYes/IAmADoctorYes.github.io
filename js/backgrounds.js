@@ -94,7 +94,7 @@
 
     function fetchBing(callback) {
         var directUrl = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US';
-        var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(directUrl);
+        var alloriginsProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
 
         function parseBing(data) {
             if (data && data.images && data.images[0]) {
@@ -106,21 +106,25 @@
             }
         }
 
-        // Try direct first, fall back to CORS proxy
-        fetch(directUrl)
+        fetch(alloriginsProxy)
             .then(function(res) {
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.json();
+                return res.text();
             })
-            .then(parseBing)
-            .catch(function() {
-                fetch(proxyUrl)
-                    .then(function(res) {
-                        if (!res.ok) throw new Error('HTTP ' + res.status);
-                        return res.json();
-                    })
-                    .then(parseBing)
-                    .catch(function() {});
+            .then(function(text) {
+                try {
+                    var data = JSON.parse(text);
+                    parseBing(data);
+                } catch (e) {
+                    console.warn('Bing parse error:', e);
+                }
+            })
+            .catch(function(err) {
+                console.warn('Bing fetch error:', err);
+                // Fallback to a light neutral image
+                var fallbackUrl = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop';
+                saveToCache(CACHE_KEY_LIGHT, fallbackUrl, 'Mountain Landscape', 'Unsplash', 'https://unsplash.com');
+                if (callback) callback(fallbackUrl, 'Mountain Landscape', 'Unsplash', 'https://unsplash.com');
             });
     }
 
@@ -162,18 +166,25 @@
         }
     }
 
-    window.onThemeChange = function() {
-        applyForTheme(getCurrentTheme());
+    window.onThemeChange = function(newTheme) {
+        applyForTheme(newTheme || getCurrentTheme());
     };
 
     var theme = getCurrentTheme();
     applyForTheme(theme);
 
+    // Fetch both images on load for instant switching
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            prefetchOtherTheme(getCurrentTheme());
+            var darkCached = loadFromCache(CACHE_KEY_DARK);
+            var lightCached = loadFromCache(CACHE_KEY_LIGHT);
+            if (!darkCached) fetchAPOD(function() {});
+            if (!lightCached) fetchBing(function() {});
         });
     } else {
-        prefetchOtherTheme(getCurrentTheme());
+        var darkCached = loadFromCache(CACHE_KEY_DARK);
+        var lightCached = loadFromCache(CACHE_KEY_LIGHT);
+        if (!darkCached) fetchAPOD(function() {});
+        if (!lightCached) fetchBing(function() {});
     }
 })();
