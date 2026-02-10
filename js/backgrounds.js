@@ -1,9 +1,9 @@
 (function() {
-    // Load background images from local assets
-    var BG_DARK_PATH = 'assets/backgrounds/bg-dark.jpg';
-    var BG_LIGHT_PATH = 'assets/backgrounds/bg-light.jpg';
-    var META_DARK_PATH = 'assets/backgrounds/bg-dark.json';
-    var META_LIGHT_PATH = 'assets/backgrounds/bg-light.json';
+    // Load background images from local assets (absolute paths from root)
+    var BG_DARK_PATH = '/assets/backgrounds/bg-dark.jpg';
+    var BG_LIGHT_PATH = '/assets/backgrounds/bg-light.jpg';
+    var META_DARK_PATH = '/assets/backgrounds/bg-dark.json';
+    var META_LIGHT_PATH = '/assets/backgrounds/bg-light.json';
 
     function getCurrentTheme() {
         var attr = document.documentElement.getAttribute('data-theme');
