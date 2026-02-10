@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""
+Fetch daily background images from NASA APOD and Unsplash.
+Saves images and metadata to assets/backgrounds/ directory.
+"""
+
+import os
+import json
+import requests
+from datetime import datetime
+
+# API keys
+NASA_API_KEY = '8dQ1DXwJiWxzb2OAwnAK3iNp8b7N9UMffh63LdpB'
+UNSPLASH_CLIENT_ID = 'hVxUw3AI3TR3e25vQ5f9N-vF5cKh8dZJFxXy0kMIFVo'
+
+# Output directory
+BACKGROUNDS_DIR = os.path.join('assets', 'backgrounds')
+os.makedirs(BACKGROUNDS_DIR, exist_ok=True)
+
+def fetch_nasa_apod():
+    """Fetch NASA Astronomy Picture of the Day"""
+    url = f'https://api.nasa.gov/planetary/apod?api_key={NASA_API_KEY}&thumbs=true'
+    
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        
+        # Get image URL
+        img_url = None
+        if data.get('media_type') == 'image':
+            img_url = data.get('hdurl') or data.get('url')
+        elif data.get('thumbnail_url'):
+            img_url = data['thumbnail_url']
+        
+        if not img_url:
+            print("  ✗ NASA: No image available today")
+            return False
+        
+        # Download image
+        img_response = requests.get(img_url, timeout=60)
+        img_response.raise_for_status()
+        
+        # Save image
+        img_path = os.path.join(BACKGROUNDS_DIR, 'bg-dark.jpg')
+        with open(img_path, 'wb') as f:
+            f.write(img_response.content)
+        
+        # Save metadata
+        metadata = {
+            'title': data.get('title', 'Astronomy Picture of the Day'),
+            'source': 'NASA APOD',
+            'href': 'https://apod.nasa.gov',
+            'date': datetime.now().isoformat()
+        }
+        
+        meta_path = os.path.join(BACKGROUNDS_DIR, 'bg-dark.json')
+        with open(meta_path, 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, indent=2)
+        
+        print(f"  ✓ NASA: {metadata['title']}")
+        return True
+        
+    except Exception as e:
+        print(f"  ✗ NASA fetch error: {e}")
+        return False
+
+def fetch_unsplash():
+    """Fetch random Unsplash nature/landscape photo"""
+    url = f'https://api.unsplash.com/photos/random?topics=nature,landscapes&orientation=landscape&client_id={UNSPLASH_CLIENT_ID}'
+    
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        
+        # Get image URL
+        img_url = data.get('urls', {}).get('regular')
+        if not img_url:
+            print("  ✗ Unsplash: No image available")
+            return False
+        
+        # Download image
+        img_response = requests.get(img_url, timeout=60)
+        img_response.raise_for_status()
+        
+        # Save image
+        img_path = os.path.join(BACKGROUNDS_DIR, 'bg-light.jpg')
+        with open(img_path, 'wb') as f:
+            f.write(img_response.content)
+        
+        # Save metadata
+        title = data.get('description') or data.get('alt_description') or 'Nature Photo'
+        photographer = data.get('user', {}).get('name', 'Unknown')
+        photo_link = data.get('links', {}).get('html', 'https://unsplash.com')
+        
+        metadata = {
+            'title': title,
+            'source': f'{photographer} on Unsplash',
+            'href': photo_link,
+            'date': datetime.now().isoformat()
+        }
+        
+        meta_path = os.path.join(BACKGROUNDS_DIR, 'bg-light.json')
+        with open(meta_path, 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, indent=2)
+        
+        print(f"  ✓ Unsplash: {title} by {photographer}")
+        return True
+        
+    except Exception as e:
+        print(f"  ✗ Unsplash fetch error: {e}")
+        return False
+
+if __name__ == '__main__':
+    print("Fetching background images...")
+    
+    nasa_ok = fetch_nasa_apod()
+    unsplash_ok = fetch_unsplash()
+    
+    if nasa_ok and unsplash_ok:
+        print("\nBackground fetch complete!")
+    elif nasa_ok or unsplash_ok:
+        print("\nBackground fetch partially complete (some errors)")
+    else:
+        print("\nBackground fetch failed")
+        exit(1)
