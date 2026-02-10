@@ -1,5 +1,5 @@
 (function() {
-    // NASA APOD for dark mode, Bing daily for light mode
+    // NASA APOD for dark mode, Unsplash for light mode
     var CACHE_KEY_DARK = 'sullivan-bg-dark';
     var CACHE_KEY_LIGHT = 'sullivan-bg-light';
     var CACHE_DURATION = 1000 * 60 * 60 * 12; // 12 hours
@@ -92,36 +92,30 @@
             .catch(function() {});
     }
 
-    function fetchBing(callback) {
-        var directUrl = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US';
-        var alloriginsProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+    function fetchUnsplash(callback) {
+        // Unsplash random photo API - topics: nature, landscapes
+        var apiUrl = 'https://api.unsplash.com/photos/random?topics=nature,landscapes&orientation=landscape&client_id=hVxUw3AI3TR3e25vQ5f9N-vF5cKh8dZJFxXy0kMIFVo';
 
-        function parseBing(data) {
-            if (data && data.images && data.images[0]) {
-                var img = data.images[0];
-                var imgUrl = 'https://www.bing.com' + img.url;
-                var title = img.title || img.copyright || 'Bing Image of the Day';
-                saveToCache(CACHE_KEY_LIGHT, imgUrl, title, 'Bing', 'https://www.bing.com');
-                if (callback) callback(imgUrl, title, 'Bing', 'https://www.bing.com');
-            }
-        }
-
-        fetch(alloriginsProxy)
+        fetch(apiUrl)
             .then(function(res) {
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.text();
+                return res.json();
             })
-            .then(function(text) {
-                try {
-                    var data = JSON.parse(text);
-                    parseBing(data);
-                } catch (e) {
-                    console.warn('Bing parse error:', e);
+            .then(function(data) {
+                if (data && data.urls && data.urls.regular) {
+                    var imgUrl = data.urls.regular;
+                    var title = data.description || data.alt_description || 'Nature Photo';
+                    var photographer = data.user ? data.user.name : 'Unknown';
+                    var credit = photographer + ' on Unsplash';
+                    var href = data.links && data.links.html ? data.links.html : 'https://unsplash.com';
+                    
+                    saveToCache(CACHE_KEY_LIGHT, imgUrl, title, credit, href);
+                    if (callback) callback(imgUrl, title, credit, href);
                 }
             })
             .catch(function(err) {
-                console.warn('Bing fetch error:', err);
-                // Fallback to a light neutral image
+                console.warn('Unsplash fetch error:', err);
+                // Fallback to a static beautiful landscape
                 var fallbackUrl = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop';
                 saveToCache(CACHE_KEY_LIGHT, fallbackUrl, 'Mountain Landscape', 'Unsplash', 'https://unsplash.com');
                 if (callback) callback(fallbackUrl, 'Mountain Landscape', 'Unsplash', 'https://unsplash.com');
@@ -134,10 +128,10 @@
 
         if (cached) {
             setBackground(cached.imageUrl);
-            setCreditLink(cached.title, cached.source || (theme === 'light' ? 'Bing' : 'NASA APOD'), cached.href || '#');
+            setCreditLink(cached.title, cached.source || (theme === 'light' ? 'Unsplash' : 'NASA APOD'), cached.href || '#');
         } else {
             if (theme === 'light') {
-                fetchBing(function(url, title, source, href) {
+                fetchUnsplash(function(url, title, source, href) {
                     if (getCurrentTheme() === 'light') {
                         setBackground(url);
                         setCreditLink(title, source, href);
@@ -159,7 +153,7 @@
         var otherKey = otherTheme === 'light' ? CACHE_KEY_LIGHT : CACHE_KEY_DARK;
         if (!loadFromCache(otherKey)) {
             if (otherTheme === 'light') {
-                fetchBing(function() {});
+                fetchUnsplash(function() {});
             } else {
                 fetchAPOD(function() {});
             }
@@ -179,12 +173,12 @@
             var darkCached = loadFromCache(CACHE_KEY_DARK);
             var lightCached = loadFromCache(CACHE_KEY_LIGHT);
             if (!darkCached) fetchAPOD(function() {});
-            if (!lightCached) fetchBing(function() {});
+            if (!lightCached) fetchUnsplash(function() {});
         });
     } else {
         var darkCached = loadFromCache(CACHE_KEY_DARK);
         var lightCached = loadFromCache(CACHE_KEY_LIGHT);
         if (!darkCached) fetchAPOD(function() {});
-        if (!lightCached) fetchBing(function() {});
+        if (!lightCached) fetchUnsplash(function() {});
     }
 })();
