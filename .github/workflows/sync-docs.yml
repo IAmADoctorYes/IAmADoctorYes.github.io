@@ -40,8 +40,11 @@ jobs:
           CREDS_FILE: /tmp/creds.json
         run: python scripts/sync-google-docs.py
       
+      - name: Fetch background images
+        run: python scripts/fetch-backgrounds.py
+      
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Auto: sync Google Docs to blog posts"
-          file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json"
+          file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json assets/backgrounds/"
