@@ -63,16 +63,6 @@ for file in files:
     modified_time = file['modifiedTime']
     seen_ids.add(file_id)
 
-    if state.get(file_id) == modified_time:
-        print(f"Skipping unchanged: {file_name}")
-        if os.path.exists(post_path):
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename
-            })
-        continue
-    
     # Parse date from modifiedTime or use today
     try:
         mod_date = datetime.fromisoformat(modified_time.replace('Z', '+00:00')).strftime('%Y-%m-%d')
@@ -84,6 +74,16 @@ for file in files:
     slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
     post_filename = f"{mod_date}-{slug}.html"
     post_path = os.path.join(POSTS_DIR, post_filename)
+
+    if state.get(file_id) == modified_time:
+        print(f"Skipping unchanged: {file_name}")
+        if os.path.exists(post_path):
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename
+            })
+        continue
     
     print(f"Processing: {file_name} -> {post_filename}")
     
