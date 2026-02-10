@@ -40,14 +40,8 @@ jobs:
           CREDS_FILE: /tmp/creds.json
         run: python scripts/sync-google-docs.py
       
-      - name: Commit changes
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add pages/blog/ pages/blog.html scripts/sync-state.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Auto: sync Google Docs to blog posts"
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main
-          fi
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto: sync Google Docs to blog posts"
+          file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json"
