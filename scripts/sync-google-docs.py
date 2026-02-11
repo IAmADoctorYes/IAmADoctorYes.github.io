@@ -3,7 +3,7 @@
 Sync Google Docs from a Drive folder to HTML posts under pages/blog.
 Requires: DRIVE_FOLDER_ID and CREDS_FILE environment variables.
 """
-
+import shutil
 import os
 import json
 import subprocess
@@ -301,3 +301,4 @@ except Exception:
 update_blog_index(posts_for_index)
 
 print("Sync complete!")
+
