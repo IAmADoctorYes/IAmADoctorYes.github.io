@@ -49,34 +49,6 @@ if os.path.exists(STATE_PATH):
 # Find all Google Docs in the folder
 query = f"'{FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false"
 results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name, modifiedTime)', pageSize=100).execute()
-    # Read and update HTML to point to local images, and clean up Google Docs styles
-    with open(html_file, 'r', encoding='utf-8') as f:
-        body_html = f.read()
-
-    soup = BeautifulSoup(body_html, 'html.parser')
-    for img in soup.find_all('img'):
-        src = img.get('src', '')
-        if src and os.path.exists(os.path.join(temp_extract_dir, src)):
-            img['src'] = f"{mod_date}-{mod_time}-{slug}_images/{os.path.basename(src)}"
-
-    # Remove Google Docs-injected inline styles and classes that affect color/background
-    for tag in soup.find_all(True):
-        if 'style' in tag.attrs:
-            del tag.attrs['style']
-        if 'class' in tag.attrs:
-            tag.attrs['class'] = [c for c in tag.attrs['class'] if not c.startswith('kix-') and not c.startswith('docs-')]
-        # Remove any color or background attributes
-        if 'color' in tag.attrs:
-            del tag.attrs['color']
-        if 'bgcolor' in tag.attrs:
-            del tag.attrs['bgcolor']
-
-    # Extract only the inner content of <body>
-    doc_body = soup.body
-    doc_content = doc_body.decode_contents() if doc_body else str(soup)
-
-    # Compose a full HTML page with site layout and standard article-content wrapper
-    page_html = f"""<!DOCTYPE html>
 # Now do the sync loop
 for file in files:
     file_id = file['id']
