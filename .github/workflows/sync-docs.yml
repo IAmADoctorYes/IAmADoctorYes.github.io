@@ -2,7 +2,7 @@ name: Sync Google Docs to Blog
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 06:00 UTC 01:00 ESC
+    - cron: '0 0 * * *'  # Daily at 00:00 UTC
   workflow_dispatch:      # Manual trigger
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client requests
+          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client requests beautifulsoup4
           sudo apt-get update
           sudo apt-get install -y pandoc
       
@@ -48,4 +48,3 @@ jobs:
         with:
           commit_message: "Auto: sync Google Docs to blog posts"
           file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json assets/backgrounds/"
-
