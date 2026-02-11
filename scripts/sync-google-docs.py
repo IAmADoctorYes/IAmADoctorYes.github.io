@@ -121,15 +121,32 @@ for file in files:
 
     # Export as zipped HTML
     html_zip_data = BytesIO()
-    request = drive_service.files().export_media(
-        fileId=file_id,
-        mimeType='application/zip'
-    )
-    downloader = MediaIoBaseDownload(html_zip_data, request)
-    done = False
     try:
+        request = drive_service.files().export_media(
+            fileId=file_id,
+            mimeType='application/zip'
+        )
+        downloader = MediaIoBaseDownload(html_zip_data, request)
+        done = False
         while not done:
             _, done = downloader.next_chunk()
+    except HttpError as e:
+        # Fallback for large docs: download as DOCX, compress as ZIP, create placeholder HTML
+        try:
+            # Download DOCX
+            docx_data = BytesIO()
+            request = drive_service.files().export_media(
+                fileId=file_id,
+                mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            )
+            downloader = MediaIoBaseDownload(docx_data, request)
+            done = False
+            while not done:
+                _, done = downloader.next_chunk()
+            # Save DOCX to temp file
+            temp_docx_path = f"/tmp/{file_id}.docx"
+            with open(temp_docx_path, 'wb') as f:
+                f.write(docx_data.getvalue())
             # Compress DOCX and place in blog directory
             zip_filename = f"{mod_date}-{mod_time}-{slug}.zip"
             zip_path = os.path.join(POSTS_DIR, zip_filename)
@@ -203,98 +220,6 @@ for file in files:
             img['src'] = f"{mod_date}-{slug}_images/{os.path.basename(src)}"
 
     body_html = str(soup)
-
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <meta name=\"description\" content=\"{file_name}\">
-    <title>{file_name} | Sullivan Steele</title>
-    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
-    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
-    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">
-    <link rel=\"stylesheet\" href=\"../../css/main.css\">
-    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">
-    <script src=\"../../js/theme.js\"></script>
-</head>
-<body>
-    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>
-
-    <nav>
-        <div class=\"nav-container\">
-            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>
-            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">
-                <span></span><span></span><span></span>
-            </button>
-            <ul class=\"nav-links\" id=\"nav-links\">
-                <li><a href=\"../../index.html\">Home</a></li>
-                <li><a href=\"../projects.html\">Projects</a></li>
-                <li><a href=\"../blog.html\">Blog</a></li>
-                <li><a href=\"../about.html\">About</a></li>
-                <li><a href=\"../music.html\">Music</a></li>
-                <li><a href=\"../shop.html\">Shop</a></li>
-                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class=\"site-layout\">
-        <main id=\"main\" class=\"page-content\">
-
-            <div class=\"breadcrumb\">
-                <a href=\"../../index.html\">Home</a>
-                <span class=\"sep\">/</span>
-                <a href=\"../blog.html\">Blog</a>
-                <span class=\"sep\">/</span>
-                {file_name}
-            </div>
-
-            <div class=\"article-content\">
-                <div class=\"article-header\">
-                    <h1>{file_name}</h1>
-                    <div class=\"article-meta\">
-                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>
-                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>
-                    </div>
-                </div>
-
-{body_html}
-
-            </div>
-
-        </main>
-
-        <aside class=\"sidebar\" aria-label=\"Page navigation\">
-            <div class=\"sidebar-section\">
-                <h4>Pages</h4>
-                <ul>
-                    <li><a href=\"../../index.html\">Home</a></li>
-                    <li><a href=\"../projects.html\">Projects</a></li>
-                    <li><a href=\"../blog.html\">Blog</a></li>
-                    <li><a href=\"../about.html\">About</a></li>
-                    <li><a href=\"../music.html\">Music</a></li>
-                    <li><a href=\"../shop.html\">Shop</a></li>
-                </ul>
-            </div>
-        </aside>
-    </div>
-
-    <footer>
-        <div class=\"footer-inner\">
-            <p>&copy; 2025 Sullivan Steele</p>
-            <ul class=\"footer-links\">
-                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>
-                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>
-                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>
-            </ul>
-        </div>
-    </footer>
-
-    <script src=\"../../js/nav.js\"></script>
-    <script src=\"../../js/backgrounds.js\"></script>
-</body>
-</html>
-"""
     # Write the Google Docs HTML as the main content, preserving its structure
     # Remove the outer wrappers and inject the Google Docs HTML directly after the <body> tag
     # Find the <body>...</body> in body_html and extract only the inner content
