@@ -63,6 +63,29 @@ import zipfile
 import shutil
 from bs4 import BeautifulSoup
 
+
+# Remove any blog articles and images not in the targeted Google Drive folder (do this BEFORE the sync loop)
+existing_files = set(os.listdir(POSTS_DIR))
+expected_htmls = set()
+expected_images = set()
+for file in files:
+    try:
+        mod_dt = datetime.fromisoformat(file['modifiedTime'].replace('Z', '+00:00'))
+    except:
+        mod_dt = datetime.now()
+    mod_date = mod_dt.strftime('%Y-%m-%d')
+    mod_time = mod_dt.strftime('%H-%M-%S')
+    slug = file['name'].lower().replace(' ', '-').replace("'", '').replace('"', '')
+    slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
+    expected_htmls.add(f"{mod_date}-{mod_time}-{slug}.html")
+    expected_images.add(f"{mod_date}-{mod_time}-{slug}_images")
+for fname in existing_files:
+    if fname.endswith('.html') and fname not in expected_htmls:
+        os.remove(os.path.join(POSTS_DIR, fname))
+    if fname.endswith('_images') and fname not in expected_images:
+        shutil.rmtree(os.path.join(POSTS_DIR, fname), ignore_errors=True)
+
+# Now do the sync loop
 for file in files:
     file_id = file['id']
     file_name = file['name']
@@ -83,26 +106,6 @@ for file in files:
     post_filename = f"{mod_date}-{mod_time}-{slug}.html"
     post_path = os.path.join(POSTS_DIR, post_filename)
     images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images")
-    # Remove any blog articles and images not in the targeted Google Drive folder
-existing_files = set(os.listdir(POSTS_DIR))
-expected_htmls = set()
-expected_images = set()
-for file in files:
-    try:
-        mod_dt = datetime.fromisoformat(file['modifiedTime'].replace('Z', '+00:00'))
-    except:
-        mod_dt = datetime.now()
-    mod_date = mod_dt.strftime('%Y-%m-%d')
-    mod_time = mod_dt.strftime('%H-%M-%S')
-    slug = file['name'].lower().replace(' ', '-').replace("'", '').replace('"', '')
-    slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
-    expected_htmls.add(f"{mod_date}-{mod_time}-{slug}.html")
-    expected_images.add(f"{mod_date}-{mod_time}-{slug}_images")
-for fname in existing_files:
-    if fname.endswith('.html') and fname not in expected_htmls:
-        os.remove(os.path.join(POSTS_DIR, fname))
-    if fname.endswith('_images') and fname not in expected_images:
-        shutil.rmtree(os.path.join(POSTS_DIR, fname), ignore_errors=True)
 
     if state.get(file_id) == modified_time:
         print(f"Skipping unchanged: {file_name}")
