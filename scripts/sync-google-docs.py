@@ -88,7 +88,8 @@ for file in files:
             posts_for_index.append({
                 'title': file_name,
                 'date': mod_date,
-                'filename': post_filename
+                'filename': post_filename,
+                'summary': state.get(f"summary_{file_id}", '')
             })
         continue
 
@@ -257,10 +258,16 @@ for file in files:
 
     print(f"  ✓ Converted: {post_path} (with images)")
     state[file_id] = modified_time
+    # Prompt for summary if not present
+    summary = state.get(f"summary_{file_id}", '')
+    if not summary:
+        summary = ''  # Optionally, implement summary extraction or prompt logic here
+        state[f"summary_{file_id}"] = summary
     posts_for_index.append({
         'title': file_name,
         'date': mod_date,
-        'filename': post_filename
+        'filename': post_filename,
+        'summary': summary
     })
 
     # Cleanup temp files
@@ -292,6 +299,8 @@ def update_blog_index(posts):
     posts_sorted = sorted(posts, key=lambda p: p['date'], reverse=True)
     cards = []
     for post in posts_sorted:
+        summary = post.get('summary', '')
+        summary_html = f'<p class="article-summary">{summary}</p>' if summary else ''
         cards.append(
             '                <article class="article-preview">\n'
             '                    <div class="preview-meta">\n'
@@ -299,7 +308,7 @@ def update_blog_index(posts):
             '                        <span class="tag tag-green">Doc</span>\n'
             '                    </div>\n'
             '                    <h3><a href="blog/' + post['filename'] + '">' + post['title'] + '</a></h3>\n'
-            '                    <p>Synced from Google Docs.</p>\n'
+            f'                    {summary_html}\n'
             '                </article>'
         )
 
