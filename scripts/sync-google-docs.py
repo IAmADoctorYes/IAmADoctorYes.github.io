@@ -172,8 +172,54 @@ for file in files:
             })
             continue
         except Exception as e:
-            print(f"  ✗ Fallback conversion failed for {file_name}: {e}")
+            # Try to fetch images from the document using the Drive API (children or embedded resources)
+            # Google Docs API does not provide direct image listing, but images are stored as separate files if uploaded
+            # We'll attempt to list images in the same folder as the doc (if any)
+            image_query = f"'{FOLDER_ID}' in parents and (mimeType contains 'image/') and trashed=false"
+            image_results = drive_service.files().list(q=image_query, spaces='drive', fields='files(id, name, mimeType)', pageSize=100).execute()
+            image_files = image_results.get('files', [])
+            # Download and compress all images into a ZIP
+            image_zip_path = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images.zip")
+            import zipfile as zf
+            with zf.ZipFile(image_zip_path, 'w', zf.ZIP_DEFLATED) as zipf:
+                image_links = []
+                for img in image_files:
+                    try:
+                        img_request = drive_service.files().get_media(fileId=img['id'])
+                        img_data = BytesIO()
+                        img_downloader = MediaIoBaseDownload(img_data, img_request)
+                        done = False
+                        while not done:
+                            _, done = img_downloader.next_chunk()
+                        img_filename = img['name']
+                        zipf.writestr(img_filename, img_data.getvalue())
+                        # Save each image as a separate file in the blog images dir
+                        if not os.path.exists(images_dir):
+                            os.makedirs(images_dir, exist_ok=True)
+                        with open(os.path.join(images_dir, img_filename), 'wb') as imgf:
+                            imgf.write(img_data.getvalue())
+                        # Add image link for HTML
+                        image_links.append(f'<div class="img-gallery-item"><img src="{mod_date}-{mod_time}-{slug}_images/{img_filename}" alt="{img_filename}" style="max-width:100%"><br><a href="{mod_date}-{mod_time}-{slug}_images/{img_filename}" download>Download</a></div>')
+                    except Exception as img_e:
+                        continue
+            # Compose HTML gallery
+            gallery_html = '<div class="img-gallery">' + ''.join(image_links) + '</div>' if image_links else '<p>No images could be extracted from this document.</p>'
+            # Compose the fallback HTML page
+            page_html = f"""<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta name=\"description\" content=\"{file_name}\">\n    <title>{file_name} | Sullivan Steele</title>\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link rel=\"stylesheet\" href=\"../../css/main.css\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n    <script src=\"../../js/theme.js\"></script>\n</head>\n<body>\n    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n    <nav>\n        <div class=\"nav-container\">\n            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>\n            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">\n                <span></span><span></span><span></span>\n            </button>\n            <ul class=\"nav-links\" id=\"nav-links\">\n                <li><a href=\"../../index.html\">Home</a></li>\n                <li><a href=\"../projects.html\">Projects</a></li>\n                <li><a href=\"../blog.html\">Blog</a></li>\n                <li><a href=\"../about.html\">About</a></li>\n                <li><a href=\"../music.html\">Music</a></li>\n                <li><a href=\"../shop.html\">Shop</a></li>\n                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>\n            </ul>\n        </div>\n    </nav>\n    <div class=\"site-layout\">\n        <main id=\"main\" class=\"page-content\">\n            <div class=\"breadcrumb\">\n                <a href=\"../../index.html\">Home</a>\n                <span class=\"sep\">/</span>\n                <a href=\"../blog.html\">Blog</a>\n                <span class=\"sep\">/</span>\n                {file_name}\n            </div>\n            <div class=\"article-content\">\n                <div class=\"article-header\">\n                    <h1>{file_name}</h1>\n                    <div class=\"article-meta\">\n                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>\n                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>\n                    </div>\n                </div>\n                <div class=\"large-doc-download\">\n                    <p>This document was too large to export as a single file, but the images have been extracted and are shown below. <a href=\"{mod_date}-{mod_time}-{slug}_images.zip\" download>Download all images as ZIP</a>.</p>\n                </div>\n                {gallery_html}\n            </div>\n        </main>\n        <aside class=\"sidebar\" aria-label=\"Page navigation\">\n            <div class=\"sidebar-section\">\n                <h4>Pages</h4>\n                <ul>\n                    <li><a href=\"../../index.html\">Home</a></li>\n                    <li><a href=\"../projects.html\">Projects</a></li>\n                    <li><a href=\"../blog.html\">Blog</a></li>\n                    <li><a href=\"../about.html\">About</a></li>\n                    <li><a href=\"../music.html\">Music</a></li>\n                    <li><a href=\"../shop.html\">Shop</a></li>\n                </ul>\n            </div>\n        </aside>\n    </div>\n    <footer>\n        <div class=\"footer-inner\">\n            <p>&copy; 2025 Sullivan Steele</p>\n            <ul class=\"footer-links\">\n                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>\n                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>\n                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>\n            </ul>\n        </div>\n    </footer>\n    <script src=\"../../js/nav.js\"></script>\n    <script src=\"../../js/backgrounds.js\"></script>\n</body>\n</html>\n"""
+            with open(post_path, 'w', encoding='utf-8') as f:
+                f.write(page_html)
+            print(f"  ✓ Large doc images extracted and gallery created: {post_path}")
             state[file_id] = modified_time
+            summary = state.get(f"summary_{file_id}", '')
+            if not summary:
+                summary = ''
+                state[f"summary_{file_id}"] = summary
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename,
+                'summary': summary
+            })
             continue
 
     # Unzip HTML and images
