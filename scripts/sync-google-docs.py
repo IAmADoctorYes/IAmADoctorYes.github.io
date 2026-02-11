@@ -57,6 +57,12 @@ posts_for_index = []
 
 seen_ids = set()
 
+
+# --- BEGIN PATCH: Export as HTML and extract images ---
+import zipfile
+import shutil
+from bs4 import BeautifulSoup
+
 for file in files:
     file_id = file['id']
     file_name = file['name']
@@ -68,12 +74,13 @@ for file in files:
         mod_date = datetime.fromisoformat(modified_time.replace('Z', '+00:00')).strftime('%Y-%m-%d')
     except:
         mod_date = datetime.now().strftime('%Y-%m-%d')
-    
+
     # Sanitize filename
     slug = file_name.lower().replace(' ', '-').replace("'", '').replace('"', '')
     slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
     post_filename = f"{mod_date}-{slug}.html"
     post_path = os.path.join(POSTS_DIR, post_filename)
+    images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{slug}_images")
 
     if state.get(file_id) == modified_time:
         print(f"Skipping unchanged: {file_name}")
@@ -84,16 +91,16 @@ for file in files:
                 'filename': post_filename
             })
         continue
-    
+
     print(f"Processing: {file_name} -> {post_filename}")
-    
-    # Export as DOCX
-    docx_data = BytesIO()
+
+    # Export as zipped HTML
+    html_zip_data = BytesIO()
     request = drive_service.files().export_media(
         fileId=file_id,
-        mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        mimeType='application/zip'
     )
-    downloader = MediaIoBaseDownload(docx_data, request)
+    downloader = MediaIoBaseDownload(html_zip_data, request)
     done = False
     try:
         while not done:
@@ -105,67 +112,105 @@ for file in files:
             continue
         print("  ✗ Export failed: " + file_name + " (" + str(e) + ")")
         continue
-    docx_path = f"/tmp/{file_id}.docx"
-    with open(docx_path, 'wb') as f:
-        f.write(docx_data.getvalue())
-    
-    # Convert DOCX to HTML using pandoc
-    try:
-        result = subprocess.run(['pandoc', docx_path, '-t', 'html'], capture_output=True, text=True)
-        if result.returncode == 0:
-            body_html = result.stdout
-            page_html = f"""<!DOCTYPE html>
-<html lang="en">
+
+    # Unzip HTML and images
+    temp_zip_path = f"/tmp/{file_id}.zip"
+    with open(temp_zip_path, 'wb') as f:
+        f.write(html_zip_data.getvalue())
+
+    temp_extract_dir = f"/tmp/{file_id}_extract"
+    if os.path.exists(temp_extract_dir):
+        shutil.rmtree(temp_extract_dir)
+    os.makedirs(temp_extract_dir, exist_ok=True)
+
+    with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+        zip_ref.extractall(temp_extract_dir)
+
+    # Find HTML file and images
+    html_file = None
+    for fname in os.listdir(temp_extract_dir):
+        if fname.endswith('.html'):
+            html_file = os.path.join(temp_extract_dir, fname)
+            break
+    if not html_file:
+        print(f"  ✗ No HTML file found in export for {file_name}")
+        shutil.rmtree(temp_extract_dir)
+        os.remove(temp_zip_path)
+        continue
+
+    # Copy images to images_dir
+    if os.path.exists(images_dir):
+        shutil.rmtree(images_dir)
+    os.makedirs(images_dir, exist_ok=True)
+    for fname in os.listdir(temp_extract_dir):
+        if fname.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp')):
+            shutil.copy(os.path.join(temp_extract_dir, fname), os.path.join(images_dir, fname))
+
+    # Read and update HTML to point to local images
+    with open(html_file, 'r', encoding='utf-8') as f:
+        body_html = f.read()
+
+    soup = BeautifulSoup(body_html, 'html.parser')
+    for img in soup.find_all('img'):
+        src = img.get('src', '')
+        if src and os.path.exists(os.path.join(temp_extract_dir, src)):
+            img['src'] = f"{mod_date}-{slug}_images/{os.path.basename(src)}"
+
+    body_html = str(soup)
+
+    # Compose full page HTML
+    page_html = f"""<!DOCTYPE html>
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{file_name}">
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta name=\"description\" content=\"{file_name}\">
     <title>{file_name} | Sullivan Steele</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../../css/main.css">
-    <script src="../../js/theme.js"></script>
+    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
+    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
+    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">
+    <link rel=\"stylesheet\" href=\"../../css/main.css\">
+    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">
+    <script src=\"../../js/theme.js\"></script>
 </head>
 <body>
-    <a href="#main" class="skip-link">Skip to main content</a>
+    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>
 
     <nav>
-        <div class="nav-container">
-            <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+        <div class=\"nav-container\">
+            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>
+            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">
                 <span></span><span></span><span></span>
             </button>
-            <ul class="nav-links" id="nav-links">
-                <li><a href="../../index.html">Home</a></li>
-                <li><a href="../projects.html">Projects</a></li>
-                <li><a href="../blog.html">Blog</a></li>
-                <li><a href="../about.html">About</a></li>
-                <li><a href="../music.html">Music</a></li>
-                <li><a href="../shop.html">Shop</a></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            <ul class=\"nav-links\" id=\"nav-links\">
+                <li><a href=\"../../index.html\">Home</a></li>
+                <li><a href=\"../projects.html\">Projects</a></li>
+                <li><a href=\"../blog.html\">Blog</a></li>
+                <li><a href=\"../about.html\">About</a></li>
+                <li><a href=\"../music.html\">Music</a></li>
+                <li><a href=\"../shop.html\">Shop</a></li>
+                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>
             </ul>
         </div>
     </nav>
 
-    <div class="site-layout">
-        <main id="main" class="page-content">
+    <div class=\"site-layout\">
+        <main id=\"main\" class=\"page-content\">
 
-            <div class="breadcrumb">
-                <a href="../../index.html">Home</a>
-                <span class="sep">/</span>
-                <a href="../blog.html">Blog</a>
-                <span class="sep">/</span>
+            <div class=\"breadcrumb\">
+                <a href=\"../../index.html\">Home</a>
+                <span class=\"sep\">/</span>
+                <a href=\"../blog.html\">Blog</a>
+                <span class=\"sep\">/</span>
                 {file_name}
             </div>
 
-            <div class="article-content">
-                <div class="article-header">
+            <div class=\"article-content\">
+                <div class=\"article-header\">
                     <h1>{file_name}</h1>
-                    <div class="article-meta">
-                        <span><i class="bi bi-calendar3"></i> {mod_date}</span>
-                        <span><i class="bi bi-person"></i> Sullivan Steele</span>
+                    <div class=\"article-meta\">
+                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>
+                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>
                     </div>
                 </div>
 
@@ -175,55 +220,53 @@ for file in files:
 
         </main>
 
-        <aside class="sidebar" aria-label="Page navigation">
-            <div class="sidebar-section">
+        <aside class=\"sidebar\" aria-label=\"Page navigation\">
+            <div class=\"sidebar-section\">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="../../index.html">Home</a></li>
-                    <li><a href="../projects.html">Projects</a></li>
-                    <li><a href="../blog.html">Blog</a></li>
-                    <li><a href="../about.html">About</a></li>
-                    <li><a href="../music.html">Music</a></li>
-                    <li><a href="../shop.html">Shop</a></li>
+                    <li><a href=\"../../index.html\">Home</a></li>
+                    <li><a href=\"../projects.html\">Projects</a></li>
+                    <li><a href=\"../blog.html\">Blog</a></li>
+                    <li><a href=\"../about.html\">About</a></li>
+                    <li><a href=\"../music.html\">Music</a></li>
+                    <li><a href=\"../shop.html\">Shop</a></li>
                 </ul>
             </div>
         </aside>
     </div>
 
     <footer>
-        <div class="footer-inner">
+        <div class=\"footer-inner\">
             <p>&copy; 2025 Sullivan Steele</p>
-            <ul class="footer-links">
-                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
-                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
-                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            <ul class=\"footer-links\">
+                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>
+                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>
+                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>
             </ul>
         </div>
     </footer>
 
-    <script src="../../js/nav.js"></script>
-    <script src="../../js/backgrounds.js"></script>
+    <script src=\"../../js/nav.js\"></script>
+    <script src=\"../../js/backgrounds.js\"></script>
 </body>
 </html>
 """
 
-            with open(post_path, 'w', encoding='utf-8') as f:
-                f.write(page_html)
+    with open(post_path, 'w', encoding='utf-8') as f:
+        f.write(page_html)
 
-            print(f"  ✓ Converted: {post_path}")
-            state[file_id] = modified_time
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename
-            })
-        else:
-            print(f"  ✗ Pandoc error: {result.stderr}")
-    except Exception as e:
-        print(f"  ✗ Error: {e}")
-    finally:
-        if os.path.exists(docx_path):
-            os.remove(docx_path)
+    print(f"  ✓ Converted: {post_path} (with images)")
+    state[file_id] = modified_time
+    posts_for_index.append({
+        'title': file_name,
+        'date': mod_date,
+        'filename': post_filename
+    })
+
+    # Cleanup temp files
+    shutil.rmtree(temp_extract_dir)
+    os.remove(temp_zip_path)
+# --- END PATCH ---
 
 # Remove state for docs that no longer exist
 for file_id in list(state.keys()):
