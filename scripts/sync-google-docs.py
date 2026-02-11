@@ -14,6 +14,7 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from io import BytesIO
 import zipfile
+from bs4 import BeautifulSoup
 
 # Setup
 FOLDER_ID = os.getenv('DRIVE_FOLDER_ID', '')
@@ -206,8 +207,7 @@ for file in results.get('files', []):
     # Write the Google Docs HTML as the main content, preserving its structure
     # Remove the outer wrappers and inject the Google Docs HTML directly after the <body> tag
     # Find the <body>...</body> in body_html and extract only the inner content
-    from bs4 import BeautifulSoup as BS
-    soup_doc = BS(body_html, 'html.parser')
+    soup_doc = BeautifulSoup(body_html, 'html.parser')
     doc_body = soup_doc.body
     doc_content = doc_body.decode_contents() if doc_body else body_html
     # Compose a full HTML page with site layout and styled Google Docs content
