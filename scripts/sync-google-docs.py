@@ -49,42 +49,34 @@ if os.path.exists(STATE_PATH):
 # Find all Google Docs in the folder
 query = f"'{FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false"
 results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name, modifiedTime)', pageSize=100).execute()
-files = results.get('files', [])
+    # Read and update HTML to point to local images, and clean up Google Docs styles
+    with open(html_file, 'r', encoding='utf-8') as f:
+        body_html = f.read()
 
-print(f"Found {len(files)} Google Docs to sync")
+    soup = BeautifulSoup(body_html, 'html.parser')
+    for img in soup.find_all('img'):
+        src = img.get('src', '')
+        if src and os.path.exists(os.path.join(temp_extract_dir, src)):
+            img['src'] = f"{mod_date}-{mod_time}-{slug}_images/{os.path.basename(src)}"
 
-posts_for_index = []
+    # Remove Google Docs-injected inline styles and classes that affect color/background
+    for tag in soup.find_all(True):
+        if 'style' in tag.attrs:
+            del tag.attrs['style']
+        if 'class' in tag.attrs:
+            tag.attrs['class'] = [c for c in tag.attrs['class'] if not c.startswith('kix-') and not c.startswith('docs-')]
+        # Remove any color or background attributes
+        if 'color' in tag.attrs:
+            del tag.attrs['color']
+        if 'bgcolor' in tag.attrs:
+            del tag.attrs['bgcolor']
 
-seen_ids = set()
+    # Extract only the inner content of <body>
+    doc_body = soup.body
+    doc_content = doc_body.decode_contents() if doc_body else str(soup)
 
-
-# --- BEGIN PATCH: Export as HTML and extract images ---
-import zipfile
-import shutil
-from bs4 import BeautifulSoup
-
-
-# Remove any blog articles and images not in the targeted Google Drive folder (do this BEFORE the sync loop)
-existing_files = set(os.listdir(POSTS_DIR))
-expected_htmls = set()
-expected_images = set()
-for file in files:
-    try:
-        mod_dt = datetime.fromisoformat(file['modifiedTime'].replace('Z', '+00:00'))
-    except:
-        mod_dt = datetime.now()
-    mod_date = mod_dt.strftime('%Y-%m-%d')
-    mod_time = mod_dt.strftime('%H-%M-%S')
-    slug = file['name'].lower().replace(' ', '-').replace("'", '').replace('"', '')
-    slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
-    expected_htmls.add(f"{mod_date}-{mod_time}-{slug}.html")
-    expected_images.add(f"{mod_date}-{mod_time}-{slug}_images")
-for fname in existing_files:
-    if fname.endswith('.html') and fname not in expected_htmls:
-        os.remove(os.path.join(POSTS_DIR, fname))
-    if fname.endswith('_images') and fname not in expected_images:
-        shutil.rmtree(os.path.join(POSTS_DIR, fname), ignore_errors=True)
-
+    # Compose a full HTML page with site layout and standard article-content wrapper
+    page_html = f"""<!DOCTYPE html>
 # Now do the sync loop
 for file in files:
     file_id = file['id']
@@ -166,6 +158,22 @@ for file in files:
                 state[f"summary_{file_id}"] = summary
             posts_for_index.append({
                 'title': file_name,
+    with open(post_path, 'w', encoding='utf-8') as f:
+        f.write(page_html)
+    print(f"  ✓ Converted: {post_path} (with images)")
+    state[file_id] = modified_time
+    summary = state.get(f"summary_{file_id}", '')
+    if not summary:
+        summary = ''
+        state[f"summary_{file_id}"] = summary
+    posts_for_index.append({
+        'title': file_name,
+        'date': mod_date,
+        'filename': post_filename,
+        'summary': summary
+    })
+    shutil.rmtree(temp_extract_dir)
+    os.remove(temp_zip_path)
                 'date': mod_date,
                 'filename': post_filename,
                 'summary': summary
