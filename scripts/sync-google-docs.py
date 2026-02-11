@@ -186,74 +186,6 @@ for file in files:
             except Exception:
                 doc_text = '<p>Unable to extract text from this document.</p>'
 
-            # Try to fetch images from the Drive folder
-            image_query = f"'{FOLDER_ID}' in parents and (mimeType contains 'image/') and trashed=false"
-            image_results = drive_service.files().list(q=image_query, spaces='drive', fields='files(id, name, mimeType)', pageSize=100).execute()
-            image_files = image_results.get('files', [])
-            # Download and compress all images into a ZIP
-            image_zip_path = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images.zip")
-            import zipfile as zf
-            carousel_items = []
-            with zf.ZipFile(image_zip_path, 'w', zf.ZIP_DEFLATED) as zipf:
-                for idx, img in enumerate(image_files):
-                    try:
-                        img_request = drive_service.files().get_media(fileId=img['id'])
-                        img_data = BytesIO()
-                        img_downloader = MediaIoBaseDownload(img_data, img_request)
-                        done = False
-                        while not done:
-                            _, done = img_downloader.next_chunk()
-                        img_filename = img['name']
-                        zipf.writestr(img_filename, img_data.getvalue())
-                        # Save each image as a separate file in the blog images dir
-                        if not os.path.exists(images_dir):
-                            os.makedirs(images_dir, exist_ok=True)
-                        with open(os.path.join(images_dir, img_filename), 'wb') as imgf:
-                            imgf.write(img_data.getvalue())
-                        # Add carousel item for HTML
-                        carousel_items.append(f'<figure class="carousel-slide"><img src="{mod_date}-{mod_time}-{slug}_images/{img_filename}" alt="{img_filename}" style="max-width:100%"><figcaption>Image {idx+1}: {img_filename}</figcaption></figure>')
-                    except Exception as img_e:
-                        continue
-            # Compose HTML carousel
-            if carousel_items:
-                carousel_html = f"""
-<div class="carousel-container">
-    <div class="carousel-track">
-        {''.join(carousel_items)}
-    </div>
-    <button class="carousel-prev">&#8592;</button>
-    <button class="carousel-next">&#8594;</button>
-</div>
-<style>
-.carousel-container {{ position: relative; width: 100%; max-width: 600px; margin: 2em auto; }}
-.carousel-track {{ display: flex; overflow: hidden; transition: transform 0.5s; }}
-.carousel-slide {{ min-width: 100%; box-sizing: border-box; text-align: center; }}
-.carousel-slide img {{ max-width: 100%; height: auto; }}
-.carousel-prev, .carousel-next {{ position: absolute; top: 50%; transform: translateY(-50%); background: #eee; border: none; font-size: 2em; padding: 0.2em 0.5em; cursor: pointer; }}
-.carousel-prev {{ left: 0; }}
-.carousel-next {{ right: 0; }}
-</style>
-<script>
-let currentSlide = 0;
-const slides = document.querySelectorAll('.carousel-slide');
-const track = document.querySelector('.carousel-track');
-document.querySelector('.carousel-prev').onclick = () => {{
-    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-}};
-document.querySelector('.carousel-next').onclick = () => {{
-    currentSlide = (currentSlide + 1) % slides.length;
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-}};
-</script>
-"""
-            else:
-                carousel_html = '<p>No images could be extracted from this document.</p>'
-
-            # Compose the fallback HTML page
-            page_html = f"""<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta name=\"description\" content=\"{file_name}\">\n    <title>{file_name} | Sullivan Steele</title>\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link rel=\"stylesheet\" href=\"../../css/main.css\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n    <script src=\"../../js/theme.js\"></script>\n</head>\n<body>\n    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n    <nav>\n        <div class=\"nav-container\">\n            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>\n            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">\n                <span></span><span></span><span></span>\n            </button>\n            <ul class=\"nav-links\" id=\"nav-links\">\n                <li><a href=\"../../index.html\">Home</a></li>\n                <li><a href=\"../projects.html\">Projects</a></li>\n                <li><a href=\"../blog.html\">Blog</a></li>\n                <li><a href=\"../about.html\">About</a></li>\n                <li><a href=\"../music.html\">Music</a></li>\n                <li><a href=\"../shop.html\">Shop</a></li>\n                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>\n            </ul>\n        </div>\n    </nav>\n    <div class=\"site-layout\">\n        <main id=\"main\" class=\"page-content\">\n            <div class=\"breadcrumb\">\n                <a href=\"../../index.html\">Home</a>\n                <span class=\"sep\">/</span>\n                <a href=\"../blog.html\">Blog</a>\n                <span class=\"sep\">/</span>\n                {file_name}\n            </div>\n            <div class=\"article-content\">\n                <div class=\"article-header\">\n                    <h1>{file_name}</h1>\n                    <div class=\"article-meta\">\n                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>\n                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>\n                    </div>\n                </div>\n                <div class=\"doc-text-content\">\n                    <div class=\"doc-text-inner\">{doc_text}</div>\n                </div>\n                <div class=\"large-doc-carousel">\n                    <p>Images extracted from the document:</p>\n                    {carousel_html}\n                    <p><a href=\"{mod_date}-{mod_time}-{slug}_images.zip\" download>Download all images as ZIP</a></p>\n                </div>\n            </div>\n        </main>\n        <aside class=\"sidebar\" aria-label=\"Page navigation\">\n            <div class=\"sidebar-section\">\n                <h4>Pages</h4>\n                <ul>\n                    <li><a href=\"../../index.html\">Home</a></li>\n                    <li><a href=\"../projects.html\">Projects</a></li>\n                    <li><a href=\"../blog.html\">Blog</a></li>\n                    <li><a href=\"../about.html\">About</a></li>\n                    <li><a href=\"../music.html\">Music</a></li>\n                    <li><a href=\"../shop.html\">Shop</a></li>\n                </ul>\n            </div>\n        </aside>\n    </div>\n    <footer>\n        <div class=\"footer-inner\">\n            <p>&copy; 2025 Sullivan Steele</p>\n            <ul class=\"footer-links\">\n                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>\n                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>\n                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>\n            </ul>\n        </div>\n    </footer>\n    <script src=\"../../js/nav.js\"></script>\n    <script src=\"../../js/backgrounds.js\"></script>\n</body>\n</html>\n"""
-            with open(post_path, 'w', encoding='utf-8') as f:
-                f.write(page_html)
             print(f"  ✓ Large doc text and carousel created: {post_path}")
             state[file_id] = modified_time
             summary = state.get(f"summary_{file_id}", '')
@@ -284,11 +216,21 @@ document.querySelector('.carousel-next').onclick = () => {{
     # Find HTML file and images
     html_file = None
     for fname in os.listdir(temp_extract_dir):
-        if fname.endswith('.html'):
-            html_file = os.path.join(temp_extract_dir, fname)
-            break
-    if not html_file:
-        print(f"  ✗ No HTML file found in export for {file_name}")
+            with open(post_path, 'w', encoding='utf-8') as f:
+                f.write(page_html)
+            print(f"  ✓ Large doc text and carousel created: {post_path}")
+            state[file_id] = modified_time
+            summary = state.get(f"summary_{file_id}", '')
+            if not summary:
+                summary = ''
+                state[f"summary_{file_id}"] = summary
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename,
+                'summary': summary
+            })
+            continue
         shutil.rmtree(temp_extract_dir)
         os.remove(temp_zip_path)
         continue
