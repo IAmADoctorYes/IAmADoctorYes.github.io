@@ -216,21 +216,11 @@ for file in files:
     # Find HTML file and images
     html_file = None
     for fname in os.listdir(temp_extract_dir):
-            with open(post_path, 'w', encoding='utf-8') as f:
-                f.write(page_html)
-            print(f"  ✓ Large doc text and carousel created: {post_path}")
-            state[file_id] = modified_time
-            summary = state.get(f"summary_{file_id}", '')
-            if not summary:
-                summary = ''
-                state[f"summary_{file_id}"] = summary
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename,
-                'summary': summary
-            })
-            continue
+        if fname.lower().endswith('.html'):
+            html_file = os.path.join(temp_extract_dir, fname)
+            break
+    if not html_file:
+        # If no HTML file found, cleanup and continue
         shutil.rmtree(temp_extract_dir)
         os.remove(temp_zip_path)
         continue
