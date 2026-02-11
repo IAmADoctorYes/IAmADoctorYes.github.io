@@ -69,18 +69,40 @@ for file in files:
     modified_time = file['modifiedTime']
     seen_ids.add(file_id)
 
-    # Parse date from modifiedTime or use today
+    # Parse date and time from modifiedTime or use now
     try:
-        mod_date = datetime.fromisoformat(modified_time.replace('Z', '+00:00')).strftime('%Y-%m-%d')
+        mod_dt = datetime.fromisoformat(modified_time.replace('Z', '+00:00'))
     except:
-        mod_date = datetime.now().strftime('%Y-%m-%d')
+        mod_dt = datetime.now()
+    mod_date = mod_dt.strftime('%Y-%m-%d')
+    mod_time = mod_dt.strftime('%H-%M-%S')
 
     # Sanitize filename
     slug = file_name.lower().replace(' ', '-').replace("'", '').replace('"', '')
     slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
-    post_filename = f"{mod_date}-{slug}.html"
+    post_filename = f"{mod_date}-{mod_time}-{slug}.html"
     post_path = os.path.join(POSTS_DIR, post_filename)
-    images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{slug}_images")
+    images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images")
+    # Remove any blog articles and images not in the targeted Google Drive folder
+existing_files = set(os.listdir(POSTS_DIR))
+expected_htmls = set()
+expected_images = set()
+for file in files:
+    try:
+        mod_dt = datetime.fromisoformat(file['modifiedTime'].replace('Z', '+00:00'))
+    except:
+        mod_dt = datetime.now()
+    mod_date = mod_dt.strftime('%Y-%m-%d')
+    mod_time = mod_dt.strftime('%H-%M-%S')
+    slug = file['name'].lower().replace(' ', '-').replace("'", '').replace('"', '')
+    slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
+    expected_htmls.add(f"{mod_date}-{mod_time}-{slug}.html")
+    expected_images.add(f"{mod_date}-{mod_time}-{slug}_images")
+for fname in existing_files:
+    if fname.endswith('.html') and fname not in expected_htmls:
+        os.remove(os.path.join(POSTS_DIR, fname))
+    if fname.endswith('_images') and fname not in expected_images:
+        shutil.rmtree(os.path.join(POSTS_DIR, fname), ignore_errors=True)
 
     if state.get(file_id) == modified_time:
         print(f"Skipping unchanged: {file_name}")
@@ -111,8 +133,48 @@ for file in files:
             print("  ✗ Skipped (export too large): " + file_name)
             state[file_id] = modified_time
             continue
+        # Try fallback: export as DOCX and convert to HTML
         print("  ✗ Export failed: " + file_name + " (" + str(e) + ")")
-        continue
+        try:
+            docx_data = BytesIO()
+            request_docx = drive_service.files().export_media(
+                fileId=file_id,
+                mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            )
+            downloader_docx = MediaIoBaseDownload(docx_data, request_docx)
+            done_docx = False
+            while not done_docx:
+                _, done_docx = downloader_docx.next_chunk()
+            temp_docx_path = f"/tmp/{file_id}.docx"
+            with open(temp_docx_path, 'wb') as f:
+                f.write(docx_data.getvalue())
+            temp_html_path = f"/tmp/{file_id}_fallback.html"
+            subprocess.run([
+                'pandoc', temp_docx_path, '-o', temp_html_path
+            ], check=True)
+            with open(temp_html_path, 'r', encoding='utf-8') as f:
+                body_html = f.read()
+            # Compose fallback page HTML
+            page_html = f"""<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta name=\"description\" content=\"{file_name}\">\n    <title>{file_name} | Sullivan Steele</title>\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link rel=\"stylesheet\" href=\"../../css/main.css\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n    <script src=\"../../js/theme.js\"></script>\n</head>\n<body>\n    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n    <nav>\n        <div class=\"nav-container\">\n            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>\n            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">\n                <span></span><span></span><span></span>\n            </button>\n            <ul class=\"nav-links\" id=\"nav-links\">\n                <li><a href=\"../../index.html\">Home</a></li>\n                <li><a href=\"../projects.html\">Projects</a></li>\n                <li><a href=\"../blog.html\">Blog</a></li>\n                <li><a href=\"../about.html\">About</a></li>\n                <li><a href=\"../music.html\">Music</a></li>\n                <li><a href=\"../shop.html\">Shop</a></li>\n                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>\n            </ul>\n        </div>\n    </nav>\n    <div class=\"site-layout\">\n        <main id=\"main\" class=\"page-content\">\n            <div class=\"breadcrumb\">\n                <a href=\"../../index.html\">Home</a>\n                <span class=\"sep\">/</span>\n                <a href=\"../blog.html\">Blog</a>\n                <span class=\"sep\">/</span>\n                {file_name}\n            </div>\n            <div class=\"article-content\">\n                <div class=\"article-header\">\n                    <h1>{file_name}</h1>\n                    <div class=\"article-meta\">\n                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>\n                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>\n                    </div>\n                </div>\n{body_html}\n            </div>\n        </main>\n        <aside class=\"sidebar\" aria-label=\"Page navigation\">\n            <div class=\"sidebar-section\">\n                <h4>Pages</h4>\n                <ul>\n                    <li><a href=\"../../index.html\">Home</a></li>\n                    <li><a href=\"../projects.html\">Projects</a></li>\n                    <li><a href=\"../blog.html\">Blog</a></li>\n                    <li><a href=\"../about.html\">About</a></li>\n                    <li><a href=\"../music.html\">Music</a></li>\n                    <li><a href=\"../shop.html\">Shop</a></li>\n                </ul>\n            </div>\n        </aside>\n    </div>\n    <footer>\n        <div class=\"footer-inner\">\n            <p>&copy; 2025 Sullivan Steele</p>\n            <ul class=\"footer-links\">\n                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>\n                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>\n                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>\n            </ul>\n        </div>\n    </footer>\n    <script src=\"../../js/nav.js\"></script>\n    <script src=\"../../js/backgrounds.js\"></script>\n</body>\n</html>\n"""
+            with open(post_path, 'w', encoding='utf-8') as f:
+                f.write(page_html)
+            print(f"  ✓ Converted (fallback): {post_path}")
+            state[file_id] = modified_time
+            summary = state.get(f"summary_{file_id}", '')
+            if not summary:
+                summary = ''
+                state[f"summary_{file_id}"] = summary
+            posts_for_index.append({
+                'title': file_name,
+                'date': mod_date,
+                'filename': post_filename,
+                'summary': summary
+            })
+            continue
+        except Exception as e:
+            print(f"  ✗ Fallback conversion failed for {file_name}: {e}")
+            state[file_id] = modified_time
+            continue
 
     # Unzip HTML and images
     temp_zip_path = f"/tmp/{file_id}.zip"
