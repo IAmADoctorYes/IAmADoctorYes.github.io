@@ -107,15 +107,14 @@ for file in files:
     post_path = os.path.join(POSTS_DIR, post_filename)
     images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images")
 
-    if state.get(file_id) == modified_time:
+    if state.get(file_id) == modified_time and os.path.exists(post_path):
         print(f"Skipping unchanged: {file_name}")
-        if os.path.exists(post_path):
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename,
-                'summary': state.get(f"summary_{file_id}", '')
-            })
+        posts_for_index.append({
+            'title': file_name,
+            'date': mod_date,
+            'filename': post_filename,
+            'summary': state.get(f"summary_{file_id}", '')
+        })
         continue
 
     print(f"Processing: {file_name} -> {post_filename}")
