@@ -274,4 +274,5 @@ else:
         post_path.write_text(final_html, encoding="utf-8")
     except Exception as e:
         logger.error("Failed to write post file %s: %s", post_path, e)
-        continue
+        return None
+
