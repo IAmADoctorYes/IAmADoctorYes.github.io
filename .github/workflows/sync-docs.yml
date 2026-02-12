@@ -2,49 +2,56 @@ name: Sync Google Docs to Blog
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at 00:00 UTC
-  workflow_dispatch:      # Manual trigger
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: sync-google-docs
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      
+          python-version: '3.11'
+          cache: pip
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client requests beautifulsoup4
-          sudo apt-get update
-          sudo apt-get install -y pandoc
-      
+        run: pip install google-api-python-client beautifulsoup4
+
+      - name: Restore state cache
+        uses: actions/cache@v4
+        with:
+          path: scripts/sync-state.json
+          key: sync-state-${{ runner.os }}
+
       - name: Create credentials file
-        run: |
-          echo "${{ secrets.GOOGLE_DRIVE_CREDS }}" | base64 -d > /tmp/creds.json
-      
+        run: echo "${{ secrets.GOOGLE_DRIVE_CREDS }}" | base64 -d > creds.json
+
       - name: Sync Google Docs
         env:
           DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          CREDS_FILE: /tmp/creds.json
+          CREDS_FILE: creds.json
         run: python scripts/sync-google-docs.py
-      
+
       - name: Fetch background images
         run: python scripts/fetch-backgrounds.py
-      
-      - name: Commit and push changes
+
+      - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto: sync Google Docs to blog posts"
+          commit_message: "Auto: Sync Google Docs"
           file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json assets/backgrounds/"
