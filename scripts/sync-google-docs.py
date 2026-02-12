@@ -1,304 +1,504 @@
 #!/usr/bin/env python3
 """
 Sync Google Docs from a Drive folder to HTML posts under pages/blog.
-Requires: DRIVE_FOLDER_ID and CREDS_FILE environment variables.
+
+Usage:
+    - Provide DRIVE_FOLDER_ID and CREDS_FILE via environment or CLI args.
+    - Example env:
+        export DRIVE_FOLDER_ID="..."
+        export CREDS_FILE="/tmp/creds.json"
+    - Run: python scripts/sync_docs.py
 """
-import shutil
-import os
+from __future__ import annotations
+
+import argparse
 import json
-import subprocess
+import logging
+import os
+import re
+import shutil
+import sys
+import tempfile
+from dataclasses import dataclass
 from datetime import datetime
+from io import BytesIO
+from pathlib import Path
+from typing import Dict, List, Optional
+
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
-from io import BytesIO
-import zipfile
 from bs4 import BeautifulSoup
+import zipfile
 
-# Setup
-FOLDER_ID = os.getenv('DRIVE_FOLDER_ID', '')
-CREDS_FILE = os.getenv('CREDS_FILE', '/tmp/creds.json')
-POSTS_DIR = os.path.join('pages', 'blog')
-BLOG_INDEX_PATH = os.path.join('pages', 'blog.html')
-STATE_PATH = os.path.join('scripts', 'sync-state.json')
+# ----- Configuration -----
+DEFAULT_STATE_PATH = Path("scripts") / "sync-state.json"
+DEFAULT_POSTS_DIR = Path("pages") / "blog"
+DEFAULT_BLOG_INDEX = Path("pages") / "blog.html"
+SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
-if not os.path.exists(POSTS_DIR):
-    os.makedirs(POSTS_DIR)
+# ----- Logging -----
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("docs-sync")
 
-if not FOLDER_ID:
-    print("ERROR: GOOGLE_DRIVE_FOLDER_ID not set. Skipping sync.")
-    exit(0)
+# ----- Types -----
+StateType = Dict[str, str]
 
-if not os.path.exists(CREDS_FILE):
-    print(f"ERROR: Credentials file not found at {CREDS_FILE}. Skipping sync.")
-    exit(0)
 
-# Authenticate
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
-drive_service = build('drive', 'v3', credentials=creds)
+# ----- Utilities -----
+def slugify(name: str) -> str:
+    """Create a safe slug from a filename/title."""
+    name = name.strip().lower()
+    name = re.sub(r"[’'\"`]", "", name)  # remove quotes
+    name = re.sub(r"[^\w\s-]", "", name)  # remove punctuation except -/_
+    name = re.sub(r"\s+", "-", name)
+    name = re.sub(r"-{2,}", "-", name)
+    return name.strip("-_")
 
-# Load sync state
-state = {}
-if os.path.exists(STATE_PATH):
-    try:
-        with open(STATE_PATH, 'r', encoding='utf-8') as f:
-            state = json.load(f)
-    except Exception:
-        state = {}
 
-# Find all Google Docs in the folder
-query = f"'{FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false"
-results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name, modifiedTime)', pageSize=100).execute()
-# Now do the sync loop
-posts_for_index = []
-seen_ids = set()
-for file in results.get('files', []):
-    file_id = file['id']
-    file_name = file['name']
-    modified_time = file['modifiedTime']
-    seen_ids.add(file_id)
+def atomic_write_json(path: Path, data, *, indent=2) -> None:
+    """Write JSON to a file atomically."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(data, f, indent=indent, sort_keys=True)
+    tmp.replace(path)
 
-    # Parse date and time from modifiedTime or use now
-    try:
-        mod_dt = datetime.fromisoformat(modified_time.replace('Z', '+00:00'))
-    except:
-        mod_dt = datetime.now()
-    mod_date = mod_dt.strftime('%Y-%m-%d')
-    mod_time = mod_dt.strftime('%H-%M-%S')
 
-    # Sanitize filename
-    slug = file_name.lower().replace(' ', '-').replace("'", '').replace('"', '')
-    slug = ''.join(c for c in slug if c.isalnum() or c in '-_')
-    post_filename = f"{mod_date}-{mod_time}-{slug}.html"
-    post_path = os.path.join(POSTS_DIR, post_filename)
-    images_dir = os.path.join(POSTS_DIR, f"{mod_date}-{mod_time}-{slug}_images")
+def ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
-    if state.get(file_id) == modified_time and os.path.exists(post_path):
-        print(f"Skipping unchanged: {file_name}")
-        posts_for_index.append({
-            'title': file_name,
-            'date': mod_date,
-            'filename': post_filename,
-            'summary': state.get(f"summary_{file_id}", '')
-        })
-        continue
 
-    print(f"Processing: {file_name} -> {post_filename}")
+# ----- Google Drive helpers -----
+def get_drive_service(creds_file: str) -> object:
+    creds = Credentials.from_service_account_file(creds_file, scopes=SCOPES)
+    return build("drive", "v3", credentials=creds)
 
-    # Export as zipped HTML
-    html_zip_data = BytesIO()
-    try:
-        request = drive_service.files().export_media(
-            fileId=file_id,
-            mimeType='application/zip'
-        )
-        downloader = MediaIoBaseDownload(html_zip_data, request)
-        done = False
-        while not done:
-            _, done = downloader.next_chunk()
-    except HttpError as e:
-        # Fallback for large docs: download as DOCX, compress as ZIP, create placeholder HTML
-        try:
-            # Download DOCX
-            docx_data = BytesIO()
-            request = drive_service.files().export_media(
-                fileId=file_id,
-                mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            )
-            downloader = MediaIoBaseDownload(docx_data, request)
-            done = False
-            while not done:
-                _, done = downloader.next_chunk()
-            # Save DOCX to temp file
-            temp_docx_path = f"/tmp/{file_id}.docx"
-            with open(temp_docx_path, 'wb') as f:
-                f.write(docx_data.getvalue())
-            # Compress DOCX and place in blog directory
-            zip_filename = f"{mod_date}-{mod_time}-{slug}.zip"
-            zip_path = os.path.join(POSTS_DIR, zip_filename)
-            import zipfile as zf
-            with zf.ZipFile(zip_path, 'w', zf.ZIP_DEFLATED) as zipf:
-                zipf.write(temp_docx_path, arcname=os.path.basename(temp_docx_path))
-            print(f"  ✓ Compressed DOCX for large doc: {zip_path}")
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename,
-                'summary': summary
-            })
-            shutil.rmtree(temp_extract_dir)
-            os.remove(temp_zip_path)
-            continue
-        except Exception as e:
-            # Try to fetch text from the document using the Google Docs API
-            try:
-                docs_service = build('docs', 'v1', credentials=creds)
-                doc = docs_service.documents().get(documentId=file_id).execute()
-                text_chunks = []
-                for elem in doc.get('body', {}).get('content', []):
-                    if 'paragraph' in elem:
-                        for para_elem in elem['paragraph'].get('elements', []):
-                            if 'textRun' in para_elem:
-                                text_chunks.append(para_elem['textRun'].get('content', ''))
-                doc_text = ''.join(text_chunks)
-            except Exception:
-                doc_text = '<p>Unable to extract text from this document.</p>'
 
-            print(f"  ✓ Large doc text and carousel created: {post_path}")
-            state[file_id] = modified_time
-            summary = state.get(f"summary_{file_id}", '')
-            if not summary:
-                summary = ''
-                state[f"summary_{file_id}"] = summary
-            posts_for_index.append({
-                'title': file_name,
-                'date': mod_date,
-                'filename': post_filename,
-                'summary': summary
-            })
-            continue
+def get_docs_service(creds_file: str) -> object:
+    creds = Credentials.from_service_account_file(creds_file, scopes=SCOPES)
+    return build("docs", "v1", credentials=creds)
 
-    # Unzip HTML and images
-    temp_zip_path = f"/tmp/{file_id}.zip"
-    with open(temp_zip_path, 'wb') as f:
-        f.write(html_zip_data.getvalue())
 
-    temp_extract_dir = f"/tmp/{file_id}_extract"
-    if os.path.exists(temp_extract_dir):
-        shutil.rmtree(temp_extract_dir)
-    os.makedirs(temp_extract_dir, exist_ok=True)
+# ----- Data classes -----
+@dataclass
+class DriveDoc:
+    id: str
+    name: str
+    modified_time: str  # iso8601
 
-    with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
-        zip_ref.extractall(temp_extract_dir)
 
-    # Find HTML file and images
-    html_file = None
-    for fname in os.listdir(temp_extract_dir):
-        if fname.lower().endswith('.html'):
-            html_file = os.path.join(temp_extract_dir, fname)
+# ----- Core functionality -----
+def list_docs_in_folder(drive_service, folder_id: str) -> List[DriveDoc]:
+    """List Google Docs (mimeType=google docs) in a folder (non-trashed)."""
+    query = (
+        f"'{folder_id}' in parents and mimeType='application/vnd.google-apps.document' "
+        "and trashed=false"
+    )
+    docs: List[DriveDoc] = []
+    page_token = None
+    while True:
+        resp = drive_service.files().list(
+            q=query,
+            spaces="drive",
+            fields="nextPageToken, files(id, name, modifiedTime)",
+            pageSize=100,
+            pageToken=page_token,
+        ).execute()
+        for f in resp.get("files", []):
+            docs.append(DriveDoc(id=f["id"], name=f["name"], modified_time=f["modifiedTime"]))
+        page_token = resp.get("nextPageToken")
+        if not page_token:
             break
-    if not html_file:
-        # If no HTML file found, cleanup and continue
-        shutil.rmtree(temp_extract_dir)
-        os.remove(temp_zip_path)
-        continue
+    return docs
 
-    # Copy images to images_dir
-    if os.path.exists(images_dir):
-        shutil.rmtree(images_dir)
-    os.makedirs(images_dir, exist_ok=True)
-    for fname in os.listdir(temp_extract_dir):
-        if fname.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp')):
-            shutil.copy(os.path.join(temp_extract_dir, fname), os.path.join(images_dir, fname))
 
-    # Read and update HTML to point to local images
-    with open(html_file, 'r', encoding='utf-8') as f:
-        body_html = f.read()
+def download_export(drive_service, file_id: str, mime_type: str) -> BytesIO:
+    """Download an exported representation of the file into memory and return BytesIO."""
+    out = BytesIO()
+    request = drive_service.files().export_media(fileId=file_id, mimeType=mime_type)
+    downloader = MediaIoBaseDownload(out, request)
+    done = False
+    while not done:
+        _, done = downloader.next_chunk()
+    out.seek(0)
+    return out
 
-    soup = BeautifulSoup(body_html, 'html.parser')
-    for img in soup.find_all('img'):
-        src = img.get('src', '')
-        if src and os.path.exists(os.path.join(temp_extract_dir, src)):
-            img['src'] = f"{mod_date}-{slug}_images/{os.path.basename(src)}"
 
-    body_html = str(soup)
-    # Write the Google Docs HTML as the main content, preserving its structure
-    # Remove the outer wrappers and inject the Google Docs HTML directly after the <body> tag
-    # Find the <body>...</body> in body_html and extract only the inner content
-    soup_doc = BeautifulSoup(body_html, 'html.parser')
-    doc_body = soup_doc.body
-    doc_content = doc_body.decode_contents() if doc_body else body_html
-    # Compose a full HTML page with site layout and styled Google Docs content
-    page_html = f"""<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta name=\"description\" content=\"{file_name}\">\n    <title>{file_name} | Sullivan Steele</title>\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link rel=\"stylesheet\" href=\"../../css/main.css\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n    <style>\n    .docs-content-container {{ max-width: 800px; margin: 2em auto; padding: 2em; background: var(--docs-bg, #fff); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }}\n    .docs-content-container h1, .docs-content-container h2, .docs-content-container h3, .docs-content-container h4, .docs-content-container h5, .docs-content-container h6 {{ margin-top: 1.2em; }}\n    .docs-content-container p {{ margin: 1em 0; }}\n    .docs-content-container mark {{ background: #ffe066; color: #222; padding: 0.2em 0.4em; border-radius: 4px; }}\n    .docs-content-container pre, .docs-content-container code {{ background: #222; color: #fff; padding: 0.2em 0.4em; border-radius: 4px; font-family: monospace; }}\n    @media (prefers-color-scheme: dark) {{\n        .docs-content-container {{ background: #222; color: #fff; }}\n        .docs-content-container mark {{ background: #ffd700; color: #222; }}\n        .docs-content-container pre, .docs-content-container code {{ background: #fff; color: #222; }}\n    }}\n    @media (prefers-color-scheme: light) {{\n        .docs-content-container {{ background: #fff; color: #222; }}\n        .docs-content-container mark {{ background: #ffe066; color: #222; }}\n        .docs-content-container pre, .docs-content-container code {{ background: #222; color: #fff; }}\n    }}\n    </style>\n    <script src=\"../../js/theme.js\"></script>\n</head>\n<body>\n    <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n    <nav>\n        <div class=\"nav-container\">\n            <a href=\"../../index.html\" class=\"nav-logo\">SULLIVAN STEELE</a>\n            <button class=\"menu-toggle\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"nav-links\">\n                <span></span><span></span><span></span>\n            </button>\n            <ul class=\"nav-links\" id=\"nav-links\">\n                <li><a href=\"../../index.html\">Home</a></li>\n                <li><a href=\"../projects.html\">Projects</a></li>\n                <li><a href=\"../blog.html\">Blog</a></li>\n                <li><a href=\"../about.html\">About</a></li>\n                <li><a href=\"../music.html\">Music</a></li>\n                <li><a href=\"../shop.html\">Shop</a></li>\n                <li><button class=\"theme-toggle\" aria-label=\"Toggle theme\"><i class=\"bi bi-sun\"></i></button></li>\n            </ul>\n        </div>\n    </nav>\n    <div class=\"site-layout\">\n        <main id=\"main\" class=\"page-content\">\n            <div class=\"breadcrumb\">\n                <a href=\"../../index.html\">Home</a>\n                <span class=\"sep\">/</span>\n                <a href=\"../blog.html\">Blog</a>\n                <span class=\"sep\">/</span>\n                {file_name}\n            </div>\n            <div class=\"article-content\">\n                <div class=\"article-header\">\n                    <h1>{file_name}</h1>\n                    <div class=\"article-meta\">\n                        <span><i class=\"bi bi-calendar3\"></i> {mod_date}</span>\n                        <span><i class=\"bi bi-person\"></i> Sullivan Steele</span>\n                    </div>\n                </div>\n                <div class=\"docs-content-container">{doc_content}</div>\n            </div>\n        </main>\n        <aside class=\"sidebar\" aria-label=\"Page navigation\">\n            <div class=\"sidebar-section\">\n                <h4>Pages</h4>\n                <ul>\n                    <li><a href=\"../../index.html\">Home</a></li>\n                    <li><a href=\"../projects.html\">Projects</a></li>\n                    <li><a href=\"../blog.html\">Blog</a></li>\n                    <li><a href=\"../about.html\">About</a></li>\n                    <li><a href=\"../music.html\">Music</a></li>\n                    <li><a href=\"../shop.html\">Shop</a></li>\n                </ul>\n            </div>\n        </aside>\n    </div>\n    <footer>\n        <div class=\"footer-inner\">\n            <p>&copy; 2025 Sullivan Steele</p>\n            <ul class=\"footer-links\">\n                <li><a href=\"mailto:sullivanrsteele@gmail.com\">Email</a></li>\n                <li><a href=\"https://github.com/IAmADoctorYes\" target=\"_blank\" rel=\"noopener\">GitHub</a></li>\n                <li><a href=\"https://www.linkedin.com/in/sullivan-steele-166102140\" target=\"_blank\" rel=\"noopener\">LinkedIn</a></li>\n            </ul>\n        </div>\n    </footer>\n    <script src=\"../../js/nav.js\"></script>\n    <script src=\"../../js/backgrounds.js\"></script>\n</body>\n</html>\n"""
-    with open(post_path, 'w', encoding='utf-8') as f:
-        f.write(page_html)
-    print(f"  ✓ Converted: {post_path} (with images)")
-    state[file_id] = modified_time
-    summary = state.get(f"summary_{file_id}", '')
-    if not summary:
-        summary = ''
-        state[f"summary_{file_id}"] = summary
-    posts_for_index.append({
-        'title': file_name,
-        'date': mod_date,
-        'filename': post_filename,
-        'summary': summary
-    })
-    shutil.rmtree(temp_extract_dir)
-    os.remove(temp_zip_path)
-# --- END PATCH ---
+def extract_html_zip(zip_bytes: BytesIO, extract_to: Path) -> Optional[Path]:
+    """Extract a Google Docs HTML zip to a folder; return path to found .html file or None."""
+    ensure_dir(extract_to)
+    with zipfile.ZipFile(zip_bytes) as z:
+        z.extractall(extract_to)
+    # Search recursively for first .html file
+    for p in extract_to.rglob("*.html"):
+        return p
+    return None
 
-# Remove state for docs that no longer exist
-for file_id in list(state.keys()):
-    if file_id not in seen_ids:
-        state.pop(file_id, None)
 
-def update_blog_index(posts):
-    if not os.path.exists(BLOG_INDEX_PATH):
+def doc_to_text_via_docs_api(docs_service, document_id: str) -> str:
+    """Best-effort plain text extraction from Google Docs via the Docs API."""
+    try:
+        doc = docs_service.documents().get(documentId=document_id).execute()
+        chunks: List[str] = []
+        for elem in doc.get("body", {}).get("content", []):
+            if "paragraph" in elem:
+                for pe in elem["paragraph"].get("elements", []):
+                    tr = pe.get("textRun")
+                    if tr:
+                        chunks.append(tr.get("content", ""))
+        return "".join(chunks).strip()
+    except Exception as e:
+        logger.debug("Docs API text extraction failed: %s", e)
+        return ""
+
+
+def build_post_html(title: str, author: str, date_str: str, doc_content_html: str) -> str:
+    """Wrap the extracted doc HTML in your site layout (kept close to original)."""
+    # NOTE: kept most of the original style block & head content but simplified for readability
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="{title}">
+  <title>{title} | {author}</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    .docs-content-container {{
+      max-width: 800px; margin: 2em auto; padding: 2em; background: var(--docs-bg,#fff);
+      border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }}
+    .docs-content-container h1, .docs-content-container h2 {{ margin-top: 1.2em; }}
+    .docs-content-container p {{ margin: 1em 0; }}
+    pre, code {{ background:#222;color:#fff;padding:0.2em 0.4em;border-radius:4px;font-family:monospace; }}
+    @media (prefers-color-scheme:dark) {{
+      .docs-content-container {{ background:#222;color:#fff; }}
+      pre, code {{ background:#fff;color:#222; }}
+    }}
+  </style>
+</head>
+<body>
+  <nav> ... </nav>
+  <main id="main" class="page-content">
+    <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../blog.html">Blog</a> / {title}</div>
+    <article class="article-content">
+      <header>
+        <h1>{title}</h1>
+        <div class="article-meta"><span><i class="bi bi-calendar3"></i> {date_str}</span><span><i class="bi bi-person"></i> {author}</span></div>
+      </header>
+      <div class="docs-content-container">{doc_content_html}</div>
+    </article>
+  </main>
+  <footer> ... </footer>
+  <script src="../../js/nav.js"></script>
+</body>
+</html>
+"""
+
+
+# ----- Main sync flow -----
+def sync_folder(
+    drive_service,
+    docs_service,
+    folder_id: str,
+    posts_dir: Path,
+    state_path: Path,
+    blog_index_path: Path,
+    author_name: str = "Sullivan Steele",
+) -> None:
+    ensure_dir(posts_dir)
+    state: StateType = {}
+    if state_path.exists():
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            logger.warning("Couldn't read state file (%s): %s", state_path, e)
+            state = {}
+
+    docs = list_docs_in_folder(drive_service, folder_id)
+    logger.info("Found %d docs in folder", len(docs))
+    posts_for_index: List[Dict] = []
+    seen_ids = set()
+
+    for docmeta in docs:
+        seen_ids.add(docmeta.id)
+        # parse modified time and form date/time pieces
+        try:
+            mod_dt = datetime.fromisoformat(docmeta.modified_time.replace("Z", "+00:00"))
+        except Exception:
+            mod_dt = datetime.utcnow()
+        mod_date = mod_dt.strftime("%Y-%m-%d")
+        mod_time = mod_dt.strftime("%H-%M-%S")
+
+        slug = slugify(docmeta.name)
+        post_basename = f"{mod_date}-{mod_time}-{slug}.html"
+        image_rel_dir = f"{mod_date}-{mod_time}-{slug}_images"
+        images_dir = posts_dir / image_rel_dir
+        post_path = posts_dir / post_basename
+
+        prev_mod = state.get(docmeta.id)
+        if prev_mod == docmeta.modified_time and post_path.exists():
+            logger.info("Skipping (unchanged): %s", docmeta.name)
+            posts_for_index.append(
+                {
+                    "title": docmeta.name,
+                    "date": mod_date,
+                    "filename": post_basename,
+                    "summary": state.get(f"summary_{docmeta.id}", ""),
+                }
+            )
+            continue
+
+        logger.info("Processing: %s -> %s", docmeta.name, post_basename)
+
+        # Try to export zipped HTML
+        html_zip = None
+        try:
+            html_zip = download_export(drive_service, docmeta.id, "application/zip")
+        except HttpError as e:
+            logger.debug("Export zip failed for %s: %s", docmeta.name, e)
+
+        # Temporary workspace for extraction and intermediate files
+        with tempfile.TemporaryDirectory(prefix=f"gdocs_{docmeta.id}_") as tmpdir:
+            tmpdir_path = Path(tmpdir)
+
+            if html_zip:
+                try:
+                    html_file = extract_html_zip(html_zip, tmpdir_path)
+                except Exception as e:
+                    logger.warning("Failed to extract HTML zip for %s: %s", docmeta.name, e)
+                    html_file = None
+            else:
+                html_file = None
+
+            doc_content_html = ""
+            # If HTML exists, copy images and adjust src
+            if html_file and html_file.exists():
+                # copy images (top-level files in zip may be images)
+                ensure_dir(images_dir)
+                # Copy all image files from tmpdir (common extensions)
+                for ext in ("*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.webp"):
+                    for img in tmpdir_path.rglob(ext):
+                        try:
+                            shutil.copy(img, images_dir / img.name)
+                        except Exception:
+                            logger.debug("Failed to copy image %s", img)
+
+                # Read HTML and rewrite image srcs to local image_rel_dir
+                raw = html_file.read_text(encoding="utf-8")
+                soup = BeautifulSoup(raw, "html.parser")
+                # Standardize <img> srcs to the blog images dir
+                for img in soup.find_all("img"):
+                    src = img.get("src", "")
+                    if not src:
+                        continue
+                    # The zip structure may put images next to the HTML file or in subfolders.
+                    # Use basename and reference the copied image if it exists.
+                    basename = Path(src).name
+                    if (images_dir / basename).exists():
+                        img["src"] = f"{image_rel_dir}/{basename}"
+                    else:
+                        # leave external URLs intact
+                        logger.debug("Image %s not found among extracted images; leaving src as-is", basename)
+                # Extract inner body content if possible
+                body = soup.body
+                doc_content_html = body.decode_contents() if body else str(soup)
+                logger.info("Converted HTML for %s (with images)", docmeta.name)
+            else:
+                # Fallback: try download as DOCX and compress it, or extract text using Docs API
+                logger.info("Falling back to DOCX/Docs API for %s", docmeta.name)
+                # First try DOCX export
+                docx_bytes = None
+                try:
+                    docx_bytes = download_export(drive_service, docmeta.id, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                except Exception as e:
+                    logger.debug("DOCX export failed: %s", e)
+                    docx_bytes = None
+
+                text_from_docs_api = doc_to_text_via_docs_api(docs_service, docmeta.id)
+                if docx_bytes:
+                    # Save docx and create a zip next to posts dir for archival
+                    zip_name = f"{mod_date}-{mod_time}-{slug}.zip"
+                    zip_path = posts_dir / zip_name
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tdocx:
+                        tdocx.write(docx_bytes.getvalue())
+                        tdocx.flush()
+                        # create zip that contains the docx
+                        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                            zf.write(tdocx.name, arcname=Path(tdocx.name).name)
+                    logger.info("Saved DOCX archive for large/complex doc: %s", zip_path)
+                    # Provide a simple HTML stub linking to the zip file plus any extracted text
+                    doc_content_html = "<p>This document is large or had complex content. The DOCX has been archived with this post.</p>"
+                    if text_from_docs_api:
+                        doc_content_html += "<div class='extracted-text'><pre>{}</pre></div>".format(
+                            BeautifulSoup(text_from_docs_api, "html.parser").get_text()
+                        )
+                    # clean up named temp file
+                    try:
+                        os.remove(tdocx.name)
+                    except Exception:
+                        pass
+                else:
+                    # No docx available: rely on docs API text
+                    if text_from_docs_api:
+                        # convert paragraphs into <p>
+                        paragraphs = [f"<p>{BeautifulSoup(p, 'html.parser').get_text()}</p>" for p in text_from_docs_api.splitlines() if p.strip()]
+                        doc_content_html = "\n".join(paragraphs)
+                        logger.info("Used Docs API text extraction for %s", docmeta.name)
+                    else:
+                        doc_content_html = "<p>Unable to extract content from this document.</p>"
+                        logger.warning("No content could be extracted for %s", docmeta.name)
+
+            # Build final page HTML and write to posts dir
+            final_html = build_post_html(title=docmeta.name, author=author_name, date_str=mod_date, doc_content_html=doc_content_html)
+            try:
+                post_path.write_text(final_html, encoding="utf-8")
+            except Exception as e:
+                logger.error("Failed to write post file %s: %s", post_path, e)
+                continue
+
+            logger.info("Wrote post: %s", post_path)
+            # Update state and posts_for_index
+            state[docmeta.id] = docmeta.modified_time
+            summary_key = f"summary_{docmeta.id}"
+            if summary_key not in state:
+                state[summary_key] = ""
+            posts_for_index.append(
+                {
+                    "title": docmeta.name,
+                    "date": mod_date,
+                    "filename": post_basename,
+                    "summary": state.get(summary_key, ""),
+                }
+            )
+
+    # Remove state entries for docs that no longer exist
+    def prune_state(s: StateType, seen: set) -> StateType:
+        new = {}
+        for k, v in s.items():
+            if k.startswith("summary_"):
+                # keep summaries for now only if their doc id still exists
+                docid = k.split("summary_", 1)[-1]
+                if docid in seen:
+                    new[k] = v
+            else:
+                if k in seen:
+                    new[k] = v
+        return new
+
+    state = prune_state(state, seen_ids)
+
+    # Persist state atomically
+    try:
+        atomic_write_json(state_path, state)
+    except Exception as e:
+        logger.warning("Failed to write state: %s", e)
+
+    # Update blog index
+    update_blog_index(posts_for_index, blog_index_path, posts_dir)
+
+    logger.info("Sync complete.")
+
+
+def update_blog_index(posts: List[Dict], blog_index_path: Path, posts_dir: Path) -> None:
+    """Replace the AUTO section in the blog index with an ordered list of post cards."""
+    if not blog_index_path.exists():
+        logger.debug("Blog index not found at %s; skipping index update.", blog_index_path)
         return
     try:
-        with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
-            html = f.read()
-    except Exception:
+        html = blog_index_path.read_text(encoding="utf-8")
+    except Exception as e:
+        logger.warning("Failed reading blog index: %s", e)
         return
 
-    start_tag = '<!-- AUTO:START -->'
-    end_tag = '<!-- AUTO:END -->'
-    start_idx = html.find(start_tag)
-    end_idx = html.find(end_tag)
-    if start_idx == -1 or end_idx == -1:
+    start_tag = "<!-- AUTO:START -->"
+    end_tag = "<!-- AUTO:END -->"
+    si = html.find(start_tag)
+    ei = html.find(end_tag)
+    if si == -1 or ei == -1 or ei < si:
+        logger.debug("Auto markers not found or malformed in blog index; skipping.")
         return
 
-    posts_sorted = sorted(posts, key=lambda p: p['date'], reverse=True)
-    cards = []
+    posts_sorted = sorted(posts, key=lambda p: p["date"], reverse=True)
+    cards: List[str] = []
     for post in posts_sorted:
-        summary = post.get('summary', '')
-        summary_html = f'<p class="article-summary">{summary}</p>' if summary else ''
+        summary_html = f'<p class="article-summary">{post["summary"]}</p>' if post.get("summary") else ""
+        # link is relative to the blog index, which expects blog/<filename>
+        link = f"blog/{post['filename']}"
         cards.append(
-            '                <article class="article-preview">\n'
-            '                    <div class="preview-meta">\n'
-            '                        <span>' + post['date'] + '</span>\n'
-            '                        <span class="tag tag-green">Doc</span>\n'
-            '                    </div>\n'
-            '                    <h3><a href="blog/' + post['filename'] + '">' + post['title'] + '</a></h3>\n'
-            f'                    {summary_html}\n'
-            '                </article>'
+            "                <article class=\"article-preview\">\n"
+            "                    <div class=\"preview-meta\">\n"
+            f"                        <span>{post['date']}</span>\n"
+            "                        <span class=\"tag tag-green\">Doc</span>\n"
+            "                    </div>\n"
+            f"                    <h3><a href=\"{link}\">{post['title']}</a></h3>\n"
+            f"                    {summary_html}\n"
+            "                </article>"
         )
 
-    if cards:
-        section_body = '\n\n'.join(cards)
-    else:
-        section_body = (
-            '                <div class="placeholder-section">\n'
-            '                    <p>Synced posts will appear here after the workflow runs.</p>\n'
-            '                </div>'
-        )
-
-    section = (
-        start_tag + '\n'
-        '            <section class="section-rule" id="docs">\n'
-        '                <h2>Synced Docs</h2>\n'
-        + section_body + '\n'
-        '            </section>\n'
-        '            ' + end_tag
+    section_body = "\n\n".join(cards) if cards else (
+        '                <div class="placeholder-section">\n'
+        '                    <p>Synced posts will appear here after the workflow runs.</p>\n'
+        '                </div>'
     )
 
-    new_html = html[:start_idx] + section + html[end_idx + len(end_tag):]
+    new_section = (
+        start_tag + "\n"
+        "            <section class=\"section-rule\" id=\"docs\">\n"
+        "                <h2>Synced Docs</h2>\n"
+        + section_body + "\n"
+        "            </section>\n"
+        + "            " + end_tag
+    )
+
+    new_html = html[:si] + new_section + html[ei + len(end_tag):]
     try:
-        with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f:
-            f.write(new_html)
-    except Exception:
-        return
+        blog_index_path.write_text(new_html, encoding="utf-8")
+        logger.info("Updated blog index at %s", blog_index_path)
+    except Exception as e:
+        logger.warning("Failed to write blog index: %s", e)
 
-try:
-    with open(STATE_PATH, 'w', encoding='utf-8') as f:
-        json.dump(state, f, indent=2, sort_keys=True)
-except Exception:
-    pass
 
-update_blog_index(posts_for_index)
+# ----- CLI Entrypoint -----
+def main(argv=None):
+    p = argparse.ArgumentParser(description="Sync Google Docs folder to blog posts")
+    p.add_argument("--folder", help="Drive folder id (overrides env DRIVE_FOLDER_ID)")
+    p.add_argument("--creds", help="Path to service account JSON (overrides env CREDS_FILE)")
+    p.add_argument("--posts-dir", default=str(DEFAULT_POSTS_DIR), help="Directory for posts")
+    p.add_argument("--state", default=str(DEFAULT_STATE_PATH), help="Path to sync state file")
+    p.add_argument("--index", default=str(DEFAULT_BLOG_INDEX), help="Blog index HTML path")
+    args = p.parse_args(argv)
 
-print("Sync complete!")
+    folder_id = args.folder or os.getenv("DRIVE_FOLDER_ID")
+    creds_file = args.creds or os.getenv("CREDS_FILE")
+    if not folder_id:
+        logger.error("DRIVE_FOLDER_ID not set (env or --folder). Exiting.")
+        sys.exit(1)
+    if not creds_file:
+        logger.error("CREDS_FILE not set (env or --creds). Exiting.")
+        sys.exit(1)
+    if not Path(creds_file).exists():
+        logger.error("Credentials file not found at %s. Exiting.", creds_file)
+        sys.exit(1)
 
+    drive = get_drive_service(creds_file)
+    docs = get_docs_service(creds_file)
+    sync_folder(
+        drive_service=drive,
+        docs_service=docs,
+        folder_id=folder_id,
+        posts_dir=Path(args.posts_dir),
+        state_path=Path(args.state),
+        blog_index_path=Path(args.index),
+    )
+
+
+if __name__ == "__main__":
+    main()
