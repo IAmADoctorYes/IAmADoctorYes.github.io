@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
 </head>
-<body>
+<body data-route="my-work">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -22,45 +22,50 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="my-work.html">My Work</a></li>
-                <li><a href="passion-projects.html">Passion Projects</a></li>
-                <li><a href="blog.html">Articles &amp; Reports</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="music.html">Music</a></li>
-                <li><a href="shop.html">Shop</a></li>
+                <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="about.html" data-nav-route="about">About</a></li>
+                <li><a href="music.html" data-nav-route="music">Music</a></li>
+                <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content">
+        <main id="main" class="page-content" aria-labelledby="projects-title">
 
             <section class="hero">
-                <h1>Projects</h1>
+                <h1 id="projects-title">Projects</h1>
             </section>
 
-            <section class="section-rule">
-                <h2>WV Labor Market Information Site</h2>
+            <section class="section-rule" aria-labelledby="projects-lmi-heading">
+                <h2 id="projects-lmi-heading">WV Labor Market Information Site</h2>
                 <p class="small muted">2021&ndash;Present</p>
                 <p>
                     My main focus. I maintain and modernize
                     <a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">lmi.workforcewv.org <i class="bi bi-box-arrow-up-right"></i></a>
-                    — West Virginia's public labor market data dashboard.
+                    — West Virginia's public labor market data dashboard. The site covers
+                    unemployment rates, job openings, wages, labor force participation, and
+                    employment trends across the state.
                 </p>
-                <p class="small muted">Outcome metric: 50% faster quarterly refresh steps in modernized report batches.</p>
-                <a href="projects/wv-lmi-modernization.html" class="read-more">Full write-up <i class="bi bi-arrow-right"></i></a>
+                <p>
+                    Behind it I build the data pipelines that pull from federal sources (BLS, Census),
+                    automate the quarterly reporting process, and handle the SAS-to-Python migration
+                    that's been ongoing since I started.
+                </p>
             </section>
 
-            <section class="section-rule">
-                <h2>Synthetic Data for Fish Detection</h2>
+            <section class="section-rule" aria-labelledby="projects-fish-detection-heading">
+                <h2 id="projects-fish-detection-heading">Synthetic Data for Fish Detection</h2>
                 <p class="small muted">2024 &middot; Published Research</p>
                 <p>
                     Used physics simulation to generate training data for a computer vision model
-                    that detects fish in stream environments. Collaboration with WVU and The Conservation Fund.
+                    that detects fish in stream environments. Cut manual labeling needs by 90%
+                    and hit 91.8% accuracy. Collaboration with WVU and The Conservation Fund.
                 </p>
-                <p class="small muted">Outcome metric: 91.8% detection accuracy with 90% less real labeled data.</p>
                 <p class="small muted">
                     Sensors, Vol. 24, Issue 17, Article 5816 &middot;
                     <a href="https://www.mdpi.com/1424-8220/24/17/5816" target="_blank" rel="noopener">
@@ -76,20 +81,19 @@
             <div class="sidebar-section">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="my-work.html">My Work</a></li>
-                    <li><a href="passion-projects.html">Passion Projects</a></li>
-                    <li><a href="blog.html">Articles &amp; Reports</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="music.html">Music</a></li>
-                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                    <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="about.html" data-nav-route="about">About</a></li>
+                    <li><a href="music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <h4>Links</h4>
                 <ul>
                     <li><a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">LMI Site <i class="bi bi-box-arrow-up-right"></i></a></li>
-                    <li><a href="projects/wv-lmi-modernization.html">WV LMI Modernization</a></li>
                     <li><a href="projects/fish-detection.html">Fish Detection Write-up</a></li>
                 </ul>
             </div>
