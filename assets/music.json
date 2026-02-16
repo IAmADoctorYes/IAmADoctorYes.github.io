@@ -1,0 +1,11 @@
+[
+    {
+        "title": "Example Track",
+        "artist": "Sullivan Steele",
+        "instrument": "Guitar",
+        "date": "2025",
+        "description": "Replace this with a real recording. Drop MP3s into assets/audio/ and update the src path.",
+        "src": "/assets/audio/example.mp3",
+        "tags": ["guitar", "solo"]
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "title": "Example Etched Glass",
+        "description": "Replace this with a real product. Add images to assets/products/ and update the fields below.",
+        "price": "$35",
+        "type": "physical",
+        "image": "/assets/products/placeholder.jpg",
+        "link": "mailto:sullivanrsteele@gmail.com?subject=Shop%20Inquiry",
+        "linkLabel": "Inquire",
+        "tags": ["glasswork", "custom"]
+    },
+    {
+        "title": "Example 3D Model",
+        "description": "Replace this with a real digital product listing.",
+        "price": "$10",
+        "type": "digital",
+        "image": "/assets/products/placeholder.jpg",
+        "link": "mailto:sullivanrsteele@gmail.com?subject=Shop%20Inquiry",
+        "linkLabel": "Inquire",
+        "tags": ["3d-model", "digital"]
+    }
+]
