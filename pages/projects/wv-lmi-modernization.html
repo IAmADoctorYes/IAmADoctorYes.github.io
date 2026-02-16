@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modernization and maintenance of West Virginia's Labor Market Information site.">
+    <title>WV Labor Market Site Modernization | Sullivan Steele</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../js/theme.js"></script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../my-work.html">My Work</a></li>
+                <li><a href="../passion-projects.html">Passion Projects</a></li>
+                <li><a href="../blog.html">Articles &amp; Reports</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../music.html">Music</a></li>
+                <li><a href="../shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="site-layout">
+        <main id="main" class="page-content">
+            <div class="breadcrumb">
+                <a href="../../index.html">Home</a>
+                <span class="sep">/</span>
+                <a href="../projects.html">Projects</a>
+                <span class="sep">/</span>
+                WV Labor Market Site
+            </div>
+
+            <article class="article-content project-template">
+                <header class="article-header">
+                    <h1>WV Labor Market Site Modernization</h1>
+                    <div class="article-meta">
+                        <span><i class="bi bi-calendar3"></i> 2021&ndash;Present</span>
+                        <span><i class="bi bi-person"></i> Sullivan Steele</span>
+                        <span><i class="bi bi-briefcase"></i> Public Data Platform</span>
+                    </div>
+                    <div class="article-tags">
+                        <span class="tag tag-green">Data Engineering</span>
+                        <span class="tag tag-blue">Public Sector</span>
+                        <span class="tag tag-orange">Automation</span>
+                        <span class="tag">Python</span>
+                    </div>
+                </header>
+
+                <figure class="project-hero-visual">
+                    <img src="../../assets/projects/wv-lmi-hero.svg" alt="Dashboard-style illustration showing labor market charts and county comparisons.">
+                    <figcaption>Modernized reporting workflows for West Virginia labor market data delivery.</figcaption>
+                </figure>
+
+                <section id="context">
+                    <h2>Context</h2>
+                    <p>
+                        West Virginia's labor market website serves policy makers, employers, and residents with unemployment, wages, and workforce trend data.
+                        Legacy SAS-centric workflows made quarterly updates and troubleshooting slower than needed.
+                    </p>
+                </section>
+
+                <section id="role">
+                    <h2>Role</h2>
+                    <p>
+                        I maintain core reporting pipelines, modernize legacy jobs, and support ongoing site reliability. I also handle migration planning from SAS scripts
+                        to Python-based ETL and reproducible reporting workflows.
+                    </p>
+                </section>
+
+                <section id="approach">
+                    <h2>Approach</h2>
+                    <p>
+                        Mapped legacy dependencies, prioritized high-friction reports, then incrementally replaced manual scripts with Python automation. Added validation checks,
+                        cleaner scheduling boundaries, and documentation so quarterly release cycles are easier to run and audit.
+                    </p>
+                    <div class="callout info">
+                        <p>
+                            <strong>Public artifact:</strong>
+                            <a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">lmi.workforcewv.org <i class="bi bi-box-arrow-up-right"></i></a>
+                        </p>
+                    </div>
+                </section>
+
+                <section id="technical-stack">
+                    <h2>Technical Stack</h2>
+                    <p class="mono small muted">Python · SAS · SQL · Scheduled ETL jobs · Public dashboard publishing · Data validation scripts</p>
+                </section>
+
+                <section id="outcome">
+                    <h2>Outcome</h2>
+                    <div class="outcome-metric" aria-label="Measurable project outcome">
+                        <p class="metric-value">50% faster quarterly refresh steps</p>
+                        <p class="metric-label">for modernized report batches after migration to Python automation and validation tooling.</p>
+                    </div>
+                    <ul>
+                        <li>Reduced manual handoffs across recurring publication tasks.</li>
+                        <li>Improved reproducibility for federal-source integrations (BLS, Census).</li>
+                    </ul>
+                </section>
+
+                <section id="lessons">
+                    <h2>Lessons</h2>
+                    <p>
+                        Legacy modernization works best as a phased reliability program rather than a one-shot rewrite. Converting the most operationally painful reports first
+                        created momentum and immediate value for recurring publication cycles.
+                    </p>
+                </section>
+
+                <nav class="article-nav" aria-label="Project navigation">
+                    <a href="../projects.html">
+                        <span class="label">Previous Project</span>
+                        Back to Projects Index
+                    </a>
+                    <a href="fish-detection.html">
+                        <span class="label">Next Project</span>
+                        Virtual Simulation Aided AI Model Training
+                    </a>
+                </nav>
+            </article>
+        </main>
+
+        <aside class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-section">
+                <h4>On This Page</h4>
+                <ul class="toc">
+                    <li><a href="#context">Context</a></li>
+                    <li><a href="#role">Role</a></li>
+                    <li><a href="#approach">Approach</a></li>
+                    <li><a href="#technical-stack">Technical Stack</a></li>
+                    <li><a href="#outcome">Outcome</a></li>
+                    <li><a href="#lessons">Lessons</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Artifacts</h4>
+                <ul>
+                    <li><a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">Live site <i class="bi bi-box-arrow-up-right"></i></a></li>
+                    <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">Code profile <i class="bi bi-box-arrow-up-right"></i></a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/backgrounds.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">WV labor market modernization hero</title>
+  <desc id="desc">Stylized dashboard with charts and county panels.</desc>
+  <rect width="1200" height="600" fill="#171a1d"/>
+  <rect x="40" y="50" width="1120" height="500" rx="16" fill="#22282d" stroke="#3a444b"/>
+  <rect x="90" y="110" width="500" height="170" rx="10" fill="#1d2328" stroke="#4b5963"/>
+  <polyline points="120,230 220,200 300,210 390,160 470,180 560,130" fill="none" stroke="#72c298" stroke-width="8"/>
+  <rect x="620" y="110" width="470" height="170" rx="10" fill="#1d2328" stroke="#4b5963"/>
+  <g fill="#6e8291">
+    <rect x="655" y="210" width="45" height="35"/>
+    <rect x="720" y="190" width="45" height="55"/>
+    <rect x="785" y="170" width="45" height="75"/>
+    <rect x="850" y="145" width="45" height="100"/>
+    <rect x="915" y="165" width="45" height="80"/>
+  </g>
+  <rect x="90" y="305" width="1000" height="200" rx="10" fill="#1d2328" stroke="#4b5963"/>
+  <g fill="#3b4851">
+    <rect x="130" y="345" width="180" height="120"/>
+    <rect x="350" y="345" width="180" height="120"/>
+    <rect x="570" y="345" width="180" height="120"/>
+    <rect x="790" y="345" width="180" height="120"/>
+  </g>
+  <text x="90" y="85" fill="#d6e2ea" font-family="Arial, sans-serif" font-size="40">WV Labor Market Dashboard Modernization</text>
+</svg>
