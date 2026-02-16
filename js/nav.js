@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '/pages/projects.html': 'projects',
             '/pages/passion-projects.html': 'passion-projects',
             '/pages/blog.html': 'blog',
+            '/pages/gallery.html': 'gallery',
             '/pages/about.html': 'about',
             '/pages/music.html': 'music',
             '/pages/shop.html': 'shop',

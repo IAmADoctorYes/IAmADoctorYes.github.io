@@ -1,0 +1,26 @@
+[
+    {
+        "src": "/assets/projects/fish-detection-hero.svg",
+        "alt": "Fish detection simulation diagram",
+        "title": "Fish Detection Research",
+        "description": "Physics-based simulation for generating synthetic training data for computer vision fish detection.",
+        "link": "/pages/projects/fish-detection.html",
+        "tags": ["research", "machine-learning", "computer-vision"]
+    },
+    {
+        "src": "/assets/projects/wv-lmi-hero.svg",
+        "alt": "WV Labor Market Information dashboard",
+        "title": "WV LMI Modernization",
+        "description": "Maintaining and modernizing West Virginia's public labor market data dashboard.",
+        "link": "/pages/projects/wv-lmi-modernization.html",
+        "tags": ["work", "data", "python"]
+    },
+    {
+        "src": "/assets/portrait-full.jpg",
+        "alt": "Sullivan Steele portrait",
+        "title": "About Me",
+        "description": "Data scientist, musician, and maker from West Virginia.",
+        "link": "/pages/about.html",
+        "tags": ["about"]
+    }
+]

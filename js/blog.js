@@ -42,19 +42,19 @@
 
         var safeTitle = escapeHtml(post.title || 'Untitled post');
         var safePreview = escapeHtml(post.preview || '');
-        var safeSlug = escapeHtml(post.slug || '');
+        var safeHref = escapeHtml(post.href || ('blog/' + (post.slug || '')));
         var formattedDate = formatDate(post.date);
 
         return [
             '<article class="article-preview">',
-                '<h3><a href="blog/' + safeSlug + '">' + safeTitle + '</a></h3>',
+                '<h3><a href="' + safeHref + '">' + safeTitle + '</a></h3>',
                 '<div class="preview-meta">',
                     formattedDate ? '<span><i class="bi bi-calendar3"></i> ' + formattedDate + '</span>' : '',
                     tags.length ? '<span><i class="bi bi-tags"></i> ' + tags.length + ' tag(s)</span>' : '<span><i class="bi bi-tags"></i> No tags</span>',
                 '</div>',
                 '<p>' + safePreview + '...</p>',
                 tagMarkup ? '<div class="article-tags">' + tagMarkup + '</div>' : '',
-                '<a class="read-more" href="blog/' + safeSlug + '">Read article <i class="bi bi-arrow-right"></i></a>',
+                '<a class="read-more" href="' + safeHref + '">Read article <i class="bi bi-arrow-right"></i></a>',
             '</article>'
         ].join('');
     }
@@ -96,7 +96,7 @@
         render(filtered, query);
     }
 
-    fetch('../assets/search-index.json')
+    fetch('/assets/search-index.json')
         .then(function (response) {
             if (!response.ok) {
                 throw new Error('Failed to load search index');
@@ -105,7 +105,13 @@
             return response.json();
         })
         .then(function (data) {
-            posts = Array.isArray(data) ? data : [];
+            var all = Array.isArray(data) ? data : [];
+            /* Filter to article-category entries only */
+            posts = all.filter(function (p) {
+                return p.category === 'article' || p.category === 'articles';
+            });
+            /* If no articles found, show all entries so the page isn't empty */
+            if (!posts.length) posts = all;
             render(posts, '');
         })
         .catch(function () {

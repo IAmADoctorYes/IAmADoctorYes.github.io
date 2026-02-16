@@ -198,9 +198,11 @@ def save_html(filename, title, content):
                 <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
                 <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
                 <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="../gallery.html" data-nav-route="gallery">Gallery</a></li>
                 <li><a href="../about.html" data-nav-route="about">About</a></li>
                 <li><a href="../music.html" data-nav-route="music">Music</a></li>
                 <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
+                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
@@ -234,6 +236,7 @@ def save_html(filename, title, content):
                     <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
                     <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
                     <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="../gallery.html" data-nav-route="gallery">Gallery</a></li>
                     <li><a href="../about.html" data-nav-route="about">About</a></li>
                     <li><a href="../music.html" data-nav-route="music">Music</a></li>
                     <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
@@ -253,6 +256,7 @@ def save_html(filename, title, content):
         </div>
     </footer>
 
+    <script src="../../js/search.js"></script>
     <script src="../../js/nav.js"></script>
     <script src="../../js/backgrounds.js"></script>
 </body>
