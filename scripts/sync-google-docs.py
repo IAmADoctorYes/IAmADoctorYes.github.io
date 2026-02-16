@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 
 # ================= CONFIG =================
 DOCS_FOLDER_ID = "YOUR_FOLDER_ID"
-OUTPUT_DIR = "blog"
+OUTPUT_DIR = "pages/blog"
 INDEX_FILE = "assets/search-index.json"
 MAX_POSTS = 150
 # ==========================================
