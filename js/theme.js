@@ -19,9 +19,10 @@
         const btn = document.querySelector('.theme-toggle');
         if (btn) {
             btn.innerHTML = theme === 'light'
-                ? '<i class="bi bi-moon"></i>'
-                : '<i class="bi bi-sun"></i>';
+                ? '<i class="bi bi-moon" aria-hidden="true"></i>'
+                : '<i class="bi bi-sun" aria-hidden="true"></i>';
             btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+            btn.setAttribute('aria-pressed', theme === 'dark' ? 'false' : 'true');
         }
     }
 

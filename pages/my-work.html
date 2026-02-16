@@ -15,7 +15,7 @@
 <body>
     <a href="#main" class="skip-link">Skip to main content</a>
 
-    <nav>
+    <nav aria-label="Primary">
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">SULLIVAN STEELE</a>
             <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
@@ -29,7 +29,7 @@
                 <li><a href="about.html">About</a></li>
                 <li><a href="music.html">Music</a></li>
                 <li><a href="shop.html">Shop</a></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button class="theme-toggle" aria-label="Switch to light mode" aria-pressed="false"><i class="bi bi-sun" aria-hidden="true"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -79,7 +79,7 @@
 
         <aside class="sidebar" aria-label="Page navigation and links">
             <div class="sidebar-section">
-                <h4>Pages</h4>
+                <h2 class="sidebar-heading">Pages</h2>
                 <ul>
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="my-work.html">My Work</a></li>
@@ -91,7 +91,7 @@
                 </ul>
             </div>
             <div class="sidebar-section">
-                <h4>Links</h4>
+                <h2 class="sidebar-heading">Links</h2>
                 <ul>
                     <li><a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">LMI Site <i class="bi bi-box-arrow-up-right"></i></a></li>
                     <li><a href="projects/fish-detection.html">Fish Detection Write-up</a></li>

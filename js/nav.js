@@ -2,15 +2,34 @@ document.addEventListener('DOMContentLoaded', function() {
     var menuToggle = document.querySelector('.menu-toggle');
     var navLinks = document.querySelector('.nav-links');
 
-    if (menuToggle) {
+    function closeMenu() {
+        if (!menuToggle || !navLinks) return;
+        navLinks.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    if (menuToggle && navLinks) {
         menuToggle.addEventListener('click', function() {
             var isOpen = navLinks.classList.toggle('active');
             menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
+
+        menuToggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        navLinks.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+                menuToggle.focus();
+            }
+        });
+
         document.querySelectorAll('.nav-links a').forEach(function(link) {
             link.addEventListener('click', function() {
-                navLinks.classList.remove('active');
-                menuToggle.setAttribute('aria-expanded', 'false');
+                closeMenu();
             });
         });
     }
@@ -33,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 var target = document.querySelector(href);
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    target.setAttribute('tabindex', '-1');
+                    target.focus({ preventScroll: true });
                 }
             }
         });
