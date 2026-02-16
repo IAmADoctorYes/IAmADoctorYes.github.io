@@ -2,14 +2,14 @@ name: Sync Google Docs to Blog
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: "0 */6 * * *"   # every 6 hours
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: sync-google-docs
+  group: google-docs-sync
   cancel-in-progress: true
 
 jobs:
@@ -17,41 +17,100 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    env:
+      PYTHON_VERSION: "3.11"
+      STATE_FILE: scripts/sync-state.json
+      BLOG_DIR: pages/blog
+      BACKGROUND_DIR: assets/backgrounds
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    # ---------------------------------------------------------
+    # Checkout repo
+    # ---------------------------------------------------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: pip
+    # ---------------------------------------------------------
+    # Setup Python + pip cache
+    # ---------------------------------------------------------
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: "pip"
 
-      - name: Install dependencies
-        run: pip install google-api-python-client beautifulsoup4
+    # ---------------------------------------------------------
+    # Install dependencies (deterministic)
+    # ---------------------------------------------------------
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install google-api-python-client beautifulsoup4 requests python-dateutil
 
-      - name: Restore state cache
-        uses: actions/cache@v4
-        with:
-          path: scripts/sync-state.json
-          key: sync-state-${{ runner.os }}
+    # ---------------------------------------------------------
+    # Restore sync state cache
+    # ---------------------------------------------------------
+    - name: Restore state cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STATE_FILE }}
+        key: sync-state-${{ runner.os }}-${{ hashFiles('scripts/sync-google-docs.py') }}
+        restore-keys: |
+          sync-state-${{ runner.os }}-
 
-      - name: Create credentials file
-        run: echo "${{ secrets.GOOGLE_DRIVE_CREDS }}" | base64 -d > creds.json
+    # ---------------------------------------------------------
+    # Ensure required folders exist
+    # ---------------------------------------------------------
+    - name: Ensure directories
+      run: |
+        mkdir -p scripts
+        mkdir -p $BLOG_DIR
+        mkdir -p $BACKGROUND_DIR
 
-      - name: Sync Google Docs
-        env:
-          DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          CREDS_FILE: creds.json
-        run: python scripts/sync-google-docs.py
+    # ---------------------------------------------------------
+    # Create Google credentials file
+    # ---------------------------------------------------------
+    - name: Create credentials file
+      run: |
+        echo "${{ secrets.GOOGLE_DRIVE_CREDS }}" | base64 --decode > creds.json
+        test -s creds.json || (echo "Credentials file empty!" && exit 1)
 
-      - name: Fetch background images
-        run: python scripts/fetch-backgrounds.py
+    # ---------------------------------------------------------
+    # Run sync script
+    # ---------------------------------------------------------
+    - name: Sync Google Docs → Blog
+      env:
+        DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+        CREDS_FILE: creds.json
+      run: |
+        python scripts/sync-google-docs.py
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Auto: Sync Google Docs"
-          file_pattern: "pages/blog/ pages/blog.html scripts/sync-state.json assets/backgrounds/"
+    # ---------------------------------------------------------
+    # Fetch background images (optional step)
+    # Will not fail workflow if script intentionally exits 0
+    # ---------------------------------------------------------
+    - name: Fetch background images
+      run: |
+        if [ -f scripts/fetch-backgrounds.py ]; then
+          python scripts/fetch-backgrounds.py
+        else
+          echo "No background script found — skipping."
+        fi
+
+    # ---------------------------------------------------------
+    # Commit changes if any exist
+    # ---------------------------------------------------------
+    - name: Commit changes
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git add $BLOG_DIR pages/blog.html $BACKGROUND_DIR $STATE_FILE
+          git commit -m "Auto: Sync Google Docs"
+          git push
+        else
+          echo "No changes to commit."
+        fi
