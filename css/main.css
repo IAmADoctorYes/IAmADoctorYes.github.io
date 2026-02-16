@@ -103,6 +103,12 @@ body {
     outline: 2px solid var(--accent-green);
     outline-offset: 2px;
 }
+.nav-links a:focus-visible,
+.menu-toggle:focus-visible,
+.theme-toggle:focus-visible,
+.skip-link:focus-visible {
+    outline-width: 3px;
+}
 a:focus:not(:focus-visible),
 button:focus:not(:focus-visible) {
     outline: none;
@@ -165,15 +171,35 @@ small, .small { font-size: 0.875rem; }
 
 /* SKIP LINK */
 .skip-link {
-    position: absolute;
-    left: -9999px;
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    transform: translateY(-150%);
     z-index: 9999;
     padding: 0.75rem 1.5rem;
     background: var(--accent-green);
     color: var(--bg);
     font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius);
+    transition: transform 0.2s ease;
 }
-.skip-link:focus { left: 0; top: 0; }
+.skip-link:focus,
+.skip-link:focus-visible {
+    transform: translateY(0);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
 /* =========================================================
    COMPONENT: NAVIGATION
@@ -217,6 +243,7 @@ nav {
     transition: color 0.15s, border-color 0.15s;
 }
 .nav-links a:hover,
+.nav-links a[aria-current="page"],
 .nav-links a.active {
     color: var(--text) !important;
     border-bottom-color: var(--accent-orange);
@@ -853,6 +880,9 @@ footer {
         padding: 0.75rem 1.5rem;
         border-bottom: 1px solid var(--border);
     }
+    .nav-links[hidden] {
+        display: none !important;
+    }
     .nav-links.active { display: flex; }
     .menu-toggle { display: flex; }
     .hero h1 { font-size: 1.8rem; }
@@ -910,6 +940,48 @@ footer {
     pre { border: 1px solid #ccc; }
 }
 
+
+/* BLOG INDEX */
+.blog-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    .portrait,
+    .route-card,
+    .skip-link {
+        transition: none !important;
+    }
+
+    .portrait:hover,
+    .route-card:hover {
+        transform: none;
+    }
+}
+.blog-search {
+    width: 100%;
+    max-width: 580px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+    color: var(--text);
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+}
+.blog-search::placeholder {
+    color: var(--text-muted);
+}
+.blog-list {
+    display: grid;
+    gap: var(--gap-sm);
+}
+.empty-state {
+    color: var(--text-muted);
+    font-style: italic;
+}
 
 /* =========================================================
    COMPONENT: FORMS + BLOG LIST

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
 </head>
-<body>
+<body data-route="about">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -22,30 +22,31 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="my-work.html">My Work</a></li>
-                <li><a href="passion-projects.html">Passion Projects</a></li>
-                <li><a href="blog.html">Articles &amp; Reports</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="music.html">Music</a></li>
-                <li><a href="shop.html">Shop</a></li>
+                <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="about.html" data-nav-route="about">About</a></li>
+                <li><a href="music.html" data-nav-route="music">Music</a></li>
+                <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content">
+        <main id="main" class="page-content" aria-labelledby="about-title">
 
             <section class="hero">
-                <h1>About</h1>
+                <h1 id="about-title">About</h1>
             </section>
 
-            <section class="section-rule intro-with-portrait" id="intro">
+            <section class="section-rule intro-with-portrait" id="intro" aria-labelledby="intro-heading">
                 <div class="intro-portrait">
                     <img src="../assets/portrait-detail.jpg" alt="Portrait of Sullivan Steele" class="portrait">
                 </div>
                 <div>
+                    <h2 id="intro-heading">Overview</h2>
                     <p>
                         I'm from Charleston, West Virginia. I grew up around restaurants, workshops,
                         and people who figured things out with their hands. That stuck.
@@ -60,8 +61,8 @@
                 </div>
             </section>
 
-            <section class="section-rule" id="research">
-                <h2>Research</h2>
+            <section class="section-rule" id="research" aria-labelledby="research-heading">
+                <h2 id="research-heading">Research</h2>
                 <p>
                     I published a paper in 2024 on using physics simulation to generate
                     synthetic training data for computer vision, with WVU and The Conservation Fund.
@@ -74,8 +75,8 @@
                 </p>
             </section>
 
-            <section class="section-rule" id="other">
-                <h2>Other Things</h2>
+            <section class="section-rule" id="other" aria-labelledby="other-heading">
+                <h2 id="other-heading">Other Things</h2>
                 <p>
                     I play guitar, upright bass, and bass guitar. I toured Europe with
                     the WV Youth Orchestra and still play regularly. I also do woodworking,
@@ -85,8 +86,8 @@
                 </p>
             </section>
 
-            <section class="section-rule" id="contact">
-                <h2>Contact</h2>
+            <section class="section-rule" id="contact" aria-labelledby="contact-heading">
+                <h2 id="contact-heading">Contact</h2>
                 <ul class="no-bullets">
                     <li><i class="bi bi-envelope"></i> <a href="mailto:sullivanrsteele@gmail.com">sullivanrsteele@gmail.com</a></li>
                     <li><i class="bi bi-github"></i> <a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
@@ -100,13 +101,13 @@
             <div class="sidebar-section">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="my-work.html">My Work</a></li>
-                    <li><a href="passion-projects.html">Passion Projects</a></li>
-                    <li><a href="blog.html">Articles &amp; Reports</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="music.html">Music</a></li>
-                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                    <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="about.html" data-nav-route="about">About</a></li>
+                    <li><a href="music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">

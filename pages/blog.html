@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
-<body>
+<body data-route="blog">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -25,32 +25,34 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="my-work.html">My Work</a></li>
-                <li><a href="passion-projects.html">Passion Projects</a></li>
-                <li><a href="blog.html">Articles &amp; Reports</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="music.html">Music</a></li>
-                <li><a href="shop.html">Shop</a></li>
+                <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="about.html" data-nav-route="about">About</a></li>
+                <li><a href="music.html" data-nav-route="music">Music</a></li>
+                <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content">
+        <main id="main" class="page-content" aria-labelledby="blog-title">
             <section class="hero">
-                <h1>Articles &amp; Reports</h1>
+                <h1 id="blog-title">Articles &amp; Reports</h1>
                 <p class="hero-sub">Searchable notes, reports, and opinion pieces on data, work, and West Virginia.</p>
             </section>
 
-            <section class="section-rule blog-controls" aria-label="Search and filter articles">
+            <section class="section-rule blog-controls" aria-labelledby="blog-controls-heading">
+                <h2 id="blog-controls-heading" class="visually-hidden">Search and filter articles</h2>
                 <label for="search" class="small muted">Search titles, previews, and tags</label>
                 <input id="search" class="blog-search" type="search" placeholder="Try: labor, education, housing..." autocomplete="off">
                 <p id="results-status" class="small muted" role="status" aria-live="polite">Loading posts…</p>
             </section>
 
-            <section class="section-rule" aria-label="Article results">
+            <section class="section-rule" aria-labelledby="blog-results-heading">
+                <h2 id="blog-results-heading" class="visually-hidden">Article results</h2>
                 <div id="posts" class="blog-list">
                     <p class="empty-state">Loading posts...</p>
                 </div>
@@ -61,13 +63,13 @@
             <div class="sidebar-section">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="my-work.html">My Work</a></li>
-                    <li><a href="passion-projects.html">Passion Projects</a></li>
-                    <li><a href="blog.html">Articles &amp; Reports</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="music.html">Music</a></li>
-                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                    <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="about.html" data-nav-route="about">About</a></li>
+                    <li><a href="music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
