@@ -2,6 +2,8 @@ import os
 import re
 import json
 import html
+import shutil
+import tempfile
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
@@ -104,8 +106,6 @@ def get_docs(drive_service, docs_folder_id):
 
 
 def save_html(filename, title, content):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
     html_content = f"""<html>
 <head>
 <title>{html.escape(title)}</title>
@@ -118,7 +118,7 @@ def save_html(filename, title, content):
 </html>
 """
 
-    with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf8") as f:
+    with open(filename, "w", encoding="utf8") as f:
         f.write(html_content)
 
 
@@ -141,6 +141,7 @@ def main():
         raise RuntimeError(f"Failed to list Google Docs from Drive folder: {message}") from exc
 
     posts = []
+    docs_content = []
 
     for file in docs:
         doc = docs_service.documents().get(documentId=file["id"]).execute()
@@ -151,8 +152,7 @@ def main():
         preview = text[:200].replace("\n", " ")
         tags = extract_tags(text)
 
-        save_html(slug, title, text)
-
+        docs_content.append((slug, title, text))
         posts.append({
             "title": title,
             "slug": slug,
@@ -164,9 +164,39 @@ def main():
     posts.sort(key=lambda x: x["date"], reverse=True)
     posts = posts[:MAX_POSTS]
 
+    temp_output_dir = tempfile.mkdtemp(prefix="blog-sync-")
+    temp_index_file = f"{INDEX_FILE}.tmp"
+
+    os.makedirs(temp_output_dir, exist_ok=True)
+    for slug, title, text in docs_content:
+        save_html(os.path.join(temp_output_dir, slug), title, text)
+
     os.makedirs("assets", exist_ok=True)
-    with open(INDEX_FILE, "w", encoding="utf8") as f:
+    with open(temp_index_file, "w", encoding="utf8") as f:
         json.dump(posts, f, indent=2)
+
+    backup_output_dir = f"{OUTPUT_DIR}.bak"
+    try:
+        if os.path.exists(backup_output_dir):
+            shutil.rmtree(backup_output_dir)
+
+        if os.path.exists(OUTPUT_DIR):
+            os.replace(OUTPUT_DIR, backup_output_dir)
+
+        os.replace(temp_output_dir, OUTPUT_DIR)
+        os.replace(temp_index_file, INDEX_FILE)
+
+        if os.path.exists(backup_output_dir):
+            shutil.rmtree(backup_output_dir)
+    except Exception:
+        if os.path.exists(temp_output_dir):
+            shutil.rmtree(temp_output_dir)
+        if os.path.exists(temp_index_file):
+            os.remove(temp_index_file)
+
+        if os.path.exists(backup_output_dir) and not os.path.exists(OUTPUT_DIR):
+            os.replace(backup_output_dir, OUTPUT_DIR)
+        raise
 
     print("Synced", len(posts), "posts")
 
