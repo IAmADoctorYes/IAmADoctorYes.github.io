@@ -4,6 +4,7 @@
     var BG_LIGHT_PATH = '/assets/backgrounds/bg-light.jpg';
     var META_DARK_PATH = '/assets/backgrounds/bg-dark.json';
     var META_LIGHT_PATH = '/assets/backgrounds/bg-light.json';
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function getCurrentTheme() {
         var attr = document.documentElement.getAttribute('data-theme');
@@ -16,12 +17,20 @@
     }
 
     function setBackground(url) {
-        var img = new Image();
-        img.onload = function() {
+        var apply = function() {
             document.documentElement.style.setProperty('--bg-image', 'url("' + url + '")');
         };
+
+        if (prefersReducedMotion.matches) {
+            apply();
+            return;
+        }
+
+        var img = new Image();
+        img.onload = apply;
         img.onerror = function() {
             console.warn('Background image failed to load:', url);
+            apply();
         };
         img.src = url;
     }
@@ -63,12 +72,11 @@
     function applyForTheme(theme) {
         var bgPath = theme === 'light' ? BG_LIGHT_PATH : BG_DARK_PATH;
         var metaPath = theme === 'light' ? META_LIGHT_PATH : META_DARK_PATH;
-        
-        // Set background image immediately (path includes cache-busting via timestamp)
+
+        // Keep a short-lived cache to avoid stale imagery while reducing repeated downloads.
         var cacheBust = '?t=' + Math.floor(Date.now() / (1000 * 60 * 60 * 12)); // 12 hour cache
         setBackground(bgPath + cacheBust);
-        
-        // Load and set credit info
+
         loadMetadata(metaPath, function(meta) {
             if (meta) {
                 setCreditLink(meta.title || 'Background Image', meta.source || 'Unknown', meta.href || '#');
@@ -81,6 +89,5 @@
     };
 
     // Apply background for current theme
-    var theme = getCurrentTheme();
-    applyForTheme(theme);
+    applyForTheme(getCurrentTheme());
 })();
