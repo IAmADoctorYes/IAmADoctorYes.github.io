@@ -333,6 +333,28 @@ nav {
     color: var(--text-muted);
     max-width: var(--reading-width);
 }
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.15rem;
+}
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--bg);
+}
+.btn-primary:hover {
+    background: transparent;
+    color: var(--accent-green);
+}
+.btn-secondary {
+    border-color: var(--border);
+    color: var(--text);
+}
+.btn-secondary:hover {
+    border-color: var(--accent-green);
+    color: var(--bg);
+}
 
 /* HERO WITH PORTRAIT */
 .hero-with-portrait {
@@ -755,7 +777,7 @@ footer {
     color: var(--accent-green);
     margin-right: 0;
     display: block;
-    margin-bottom: var(--space-2);
+    margin-bottom: 0.5rem;
 }
 .route-card h3 {
     font-size: 1rem;
@@ -766,6 +788,34 @@ footer {
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-bottom: 0;
+}
+
+/* PROOF STRIP */
+.proof-strip {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-bottom: 2.25rem;
+}
+.proof-item {
+    padding: 0.85rem 1rem;
+    border-right: 1px solid var(--border);
+}
+.proof-item:last-child {
+    border-right: none;
+}
+.proof-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.15rem;
 }
 @media (max-width: 600px) {
     .route-grid { grid-template-columns: 1fr; }
@@ -806,14 +856,26 @@ footer {
     .nav-links.active { display: flex; }
     .menu-toggle { display: flex; }
     .hero h1 { font-size: 1.8rem; }
+    .hero { padding-top: 1rem; }
+    .hero-sub { margin-bottom: 0.65rem; }
     .auto-grid { grid-template-columns: 1fr; }
     .hero-with-portrait {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
     }
     .hero-portrait {
-        max-width: 250px;
+        max-width: 180px;
         margin: 0 auto;
+    }
+    .proof-strip {
+        grid-template-columns: 1fr;
+    }
+    .proof-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .proof-item:last-child {
+        border-bottom: none;
     }
     .intro-with-portrait {
         grid-template-columns: 1fr;
@@ -829,6 +891,14 @@ footer {
 @media (max-width: 480px) {
     body { font-size: 15px; }
     .site-layout { padding: 1.5rem 1rem 2rem; }
+    .hero h1 { font-size: 1.55rem; }
+    .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .hero-actions .btn {
+        text-align: center;
+    }
 }
 
 @media print {
