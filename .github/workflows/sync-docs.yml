@@ -85,8 +85,8 @@ jobs:
     # ---------------------------------------------------------
     - name: Sync Google Docs → Blog
       env:
-        DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-        CREDS_FILE: creds.json
+        GOOGLE_DOCS_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+        GOOGLE_APPLICATION_CREDENTIALS: creds.json
       run: |
         python scripts/sync-google-docs.py
 
@@ -111,7 +111,7 @@ jobs:
         git config user.email "actions@github.com"
 
         if [[ -n "$(git status --porcelain)" ]]; then
-          git add $BLOG_DIR pages/blog.html $BACKGROUND_DIR $STATE_FILE
+          git add $BLOG_DIR assets/search-index.json pages/blog.html $BACKGROUND_DIR $STATE_FILE
           git commit -m "Auto: Sync Google Docs"
           git push
         else
