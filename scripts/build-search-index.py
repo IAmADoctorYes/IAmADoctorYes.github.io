@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
-"""Build a site-wide search index by crawling all HTML files in the repo.
+"""Build a site-wide search index from HTML files.
 
-No Google API credentials needed — this script reads the HTML on disk,
-extracts metadata (title, description, tags, body text), and writes
-assets/search-index.json.
-
-Usage:
-    python scripts/build-search-index.py          # from repo root
-    python scripts/build-search-index.py --root .  # explicit root
+Usage:  python scripts/build-search-index.py
 """
 
 import argparse
@@ -21,11 +15,9 @@ from pathlib import Path
 
 INDEX_FILE = "assets/search-index.json"
 
-# Directories / filenames to skip entirely
-SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__", "scripts"}
+SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__", "scripts", "content"}
 SKIP_FILES = {"_TEMPLATE.html"}
 
-# Category rules: path prefix → (category label, icon class)
 CATEGORY_RULES = [
     ("pages/blog/", "article", "bi-journal-text"),
     ("pages/projects/", "project-detail", "bi-file-earmark-text"),
@@ -36,13 +28,11 @@ CATEGORY_RULES = [
     ("pages/about", "about", "bi-person"),
     ("pages/blog.html", "articles", "bi-journal-text"),
     ("pages/gallery", "gallery", "bi-images"),
-    ("pages/passion-projects", "projects", "bi-kanban"),
     ("index.html", "home", "bi-house"),
 ]
 
 
 class HTMLMetaExtractor(HTMLParser):
-    """Lightweight HTML parser that pulls metadata + visible text."""
 
     def __init__(self):
         super().__init__()
@@ -61,7 +51,6 @@ class HTMLMetaExtractor(HTMLParser):
         self._h1 = ""
         self._in_h1 = False
 
-    # ---- tag tracking ----
     def handle_starttag(self, tag, attrs):
         attrs_dict = dict(attrs)
         self._current_tag = tag
@@ -111,7 +100,6 @@ class HTMLMetaExtractor(HTMLParser):
             self.title += data
         if self._in_h1:
             self._h1 += data
-        # Collect visible body text (skip nav/footer/aside/script/style)
         if (
             self._in_body
             and not self._in_nav
@@ -126,7 +114,6 @@ class HTMLMetaExtractor(HTMLParser):
 
     @property
     def clean_title(self):
-        """Return the title without ' | Sullivan Steele' suffix."""
         raw = self.title.strip()
         return re.sub(r"\s*\|\s*Sullivan Steele$", "", raw).strip() or raw
 
@@ -140,7 +127,6 @@ class HTMLMetaExtractor(HTMLParser):
 
 
 def categorize(rel_path: str):
-    """Return (category, icon) based on the file's relative path."""
     normalized = rel_path.replace("\\", "/")
     for prefix, cat, icon in CATEGORY_RULES:
         if normalized.startswith(prefix) or normalized == prefix:
@@ -149,7 +135,6 @@ def categorize(rel_path: str):
 
 
 def index_file(filepath: Path, root: Path) -> dict | None:
-    """Parse a single HTML file and return an index entry."""
     try:
         raw = filepath.read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -165,22 +150,18 @@ def index_file(filepath: Path, root: Path) -> dict | None:
     title = parser.clean_title or parser.heading or rel
     category, icon = categorize(rel)
 
-    # Build a preview from description or body text
     preview = parser.description or parser.body_text[:250]
     preview = re.sub(r"\s+", " ", preview).strip()
     if len(preview) > 250:
         preview = preview[:247] + "..."
 
-    # Tags: combine explicit keywords + category
     tags = list(parser.keywords)
     if category not in tags:
         tags.append(category)
 
-    # Use file modification time as date
     mtime = filepath.stat().st_mtime
     date_str = datetime.fromtimestamp(mtime, tz=timezone.utc).isoformat()
 
-    # Build the URL path (relative to site root for href)
     href = "/" + rel if not rel.startswith("/") else rel
 
     return {
@@ -198,7 +179,6 @@ def index_file(filepath: Path, root: Path) -> dict | None:
 def build_index(root: Path) -> list[dict]:
     entries = []
     for dirpath, dirnames, filenames in os.walk(root):
-        # Prune skipped directories
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
 
         for fname in filenames:
@@ -234,7 +214,7 @@ def main():
 
     print(f"Indexed {len(entries)} pages → {out_path}")
 
-    # Print a summary by category
+
     cats = {}
     for e in entries:
         cats.setdefault(e["category"], []).append(e["title"])

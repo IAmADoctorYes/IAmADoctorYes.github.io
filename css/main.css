@@ -846,6 +846,7 @@ footer {
 }
 @media (max-width: 600px) {
     .route-grid { grid-template-columns: 1fr; }
+    .proof-strip { grid-template-columns: 1fr; }
 }
 
 /* RESPONSIVE */
@@ -1326,4 +1327,24 @@ footer {
 }
 @media (max-width: 480px) {
     .gallery-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   COMPONENT: PDF ACTIONS
+   ========================================================= */
+.pdf-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-4);
+}
+.pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.88rem;
+}
+.pdf-btn .bi {
+    font-size: 1rem;
+    margin-right: 0;
 }

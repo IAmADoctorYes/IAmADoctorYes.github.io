@@ -106,16 +106,14 @@
         })
         .then(function (data) {
             var all = Array.isArray(data) ? data : [];
-            /* Filter to article-category entries only */
             posts = all.filter(function (p) {
                 return p.category === 'article' || p.category === 'articles';
             });
-            /* If no articles found, show all entries so the page isn't empty */
             if (!posts.length) posts = all;
             render(posts, '');
         })
         .catch(function () {
-            postsContainer.innerHTML = '<p class="empty-state">Search index unavailable. Run scripts/sync-google-docs.py to regenerate assets/search-index.json.</p>';
+            postsContainer.innerHTML = '<p class="empty-state">Search index unavailable.</p>';
             status.textContent = 'Search index unavailable';
         });
 

@@ -1,17 +1,5 @@
 [
   {
-    "title": "Gallery",
-    "slug": "pages/gallery.html",
-    "href": "/pages/gallery.html",
-    "preview": "Gallery \u2014 photos, visuals, and project snapshots by Sullivan Steele",
-    "tags": [
-      "gallery"
-    ],
-    "category": "gallery",
-    "icon": "bi-images",
-    "date": "2026-02-16T18:35:22.065785+00:00"
-  },
-  {
     "title": "Sullivan Steele",
     "slug": "index.html",
     "href": "/index.html",
@@ -21,7 +9,55 @@
     ],
     "category": "home",
     "icon": "bi-house",
-    "date": "2026-02-16T18:35:22.058749+00:00"
+    "date": "2026-02-16T19:06:13.750907+00:00"
+  },
+  {
+    "title": "Virtual Simulation Aided AI Model Training",
+    "slug": "pages/projects/fish-detection.html",
+    "href": "/pages/projects/fish-detection.html",
+    "preview": "Synthetic data generation for computer vision using physics simulation",
+    "tags": [
+      "project-detail"
+    ],
+    "category": "project-detail",
+    "icon": "bi-file-earmark-text",
+    "date": "2026-02-16T19:06:13.750907+00:00"
+  },
+  {
+    "title": "Articles & Reports",
+    "slug": "pages/blog.html",
+    "href": "/pages/blog.html",
+    "preview": "Articles and reports on West Virginia, data work, and long-form writing by Sullivan Steele",
+    "tags": [
+      "articles"
+    ],
+    "category": "articles",
+    "icon": "bi-journal-text",
+    "date": "2026-02-16T19:02:59.634716+00:00"
+  },
+  {
+    "title": "Gallery",
+    "slug": "pages/gallery.html",
+    "href": "/pages/gallery.html",
+    "preview": "Gallery \u2014 photos, visuals, and project snapshots by Sullivan Steele",
+    "tags": [
+      "gallery"
+    ],
+    "category": "gallery",
+    "icon": "bi-images",
+    "date": "2026-02-16T19:02:59.634716+00:00"
+  },
+  {
+    "title": "Music",
+    "slug": "pages/music.html",
+    "href": "/pages/music.html",
+    "preview": "Music \u2014 guitar, bass, and instrumental recordings by Sullivan Steele",
+    "tags": [
+      "music"
+    ],
+    "category": "music",
+    "icon": "bi-music-note-beamed",
+    "date": "2026-02-16T19:02:59.634716+00:00"
   },
   {
     "title": "About",
@@ -36,30 +72,6 @@
     "date": "2026-02-16T18:35:22.058749+00:00"
   },
   {
-    "title": "Articles & Reports",
-    "slug": "pages/blog.html",
-    "href": "/pages/blog.html",
-    "preview": "Articles and reports on West Virginia, data work, and long-form writing by Sullivan Steele",
-    "tags": [
-      "articles"
-    ],
-    "category": "articles",
-    "icon": "bi-journal-text",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "Music",
-    "slug": "pages/music.html",
-    "href": "/pages/music.html",
-    "preview": "Music \u2014 guitar, bass, and instrumental recordings by Sullivan Steele",
-    "tags": [
-      "music"
-    ],
-    "category": "music",
-    "icon": "bi-music-note-beamed",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
     "title": "My Work",
     "slug": "pages/my-work.html",
     "href": "/pages/my-work.html",
@@ -69,18 +81,6 @@
     ],
     "category": "work",
     "icon": "bi-briefcase",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "Passion Projects",
-    "slug": "pages/passion-projects.html",
-    "href": "/pages/passion-projects.html",
-    "preview": "Passion Projects \u2014 art, experiments, and non-work projects by Sullivan Steele",
-    "tags": [
-      "projects"
-    ],
-    "category": "projects",
-    "icon": "bi-kanban",
     "date": "2026-02-16T18:35:22.058749+00:00"
   },
   {
@@ -105,18 +105,6 @@
     ],
     "category": "shop",
     "icon": "bi-bag",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "Virtual Simulation Aided AI Model Training",
-    "slug": "pages/projects/fish-detection.html",
-    "href": "/pages/projects/fish-detection.html",
-    "preview": "Synthetic data generation for computer vision using physics simulation",
-    "tags": [
-      "project-detail"
-    ],
-    "category": "project-detail",
-    "icon": "bi-file-earmark-text",
     "date": "2026-02-16T18:35:22.058749+00:00"
   },
   {

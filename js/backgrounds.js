@@ -1,5 +1,4 @@
 (function() {
-    // Load background images from local assets (absolute paths from root)
     var BG_DARK_PATH = '/assets/backgrounds/bg-dark.jpg';
     var BG_LIGHT_PATH = '/assets/backgrounds/bg-light.jpg';
     var META_DARK_PATH = '/assets/backgrounds/bg-dark.json';
@@ -73,8 +72,7 @@
         var bgPath = theme === 'light' ? BG_LIGHT_PATH : BG_DARK_PATH;
         var metaPath = theme === 'light' ? META_LIGHT_PATH : META_DARK_PATH;
 
-        // Keep a short-lived cache to avoid stale imagery while reducing repeated downloads.
-        var cacheBust = '?t=' + Math.floor(Date.now() / (1000 * 60 * 60 * 12)); // 12 hour cache
+        var cacheBust = '?t=' + Math.floor(Date.now() / (1000 * 60 * 60 * 12));
         setBackground(bgPath + cacheBust);
 
         loadMetadata(metaPath, function(meta) {
@@ -88,6 +86,5 @@
         applyForTheme(newTheme || getCurrentTheme());
     };
 
-    // Apply background for current theme
     applyForTheme(getCurrentTheme());
 })();

@@ -1,15 +1,9 @@
-/**
- * Gallery – loads items from /assets/gallery.json and renders an
- * interactive image grid with hover descriptions and optional links.
- *
- * Clicking an image opens a lightbox overlay with the full description.
- */
 (function () {
     'use strict';
 
     var grid = document.getElementById('gallery-grid');
     var statusEl = document.getElementById('gallery-status');
-    if (!grid) return;   /* only runs on the gallery page */
+    if (!grid) return;
 
     function escapeHtml(s) {
         return String(s)
@@ -51,7 +45,6 @@
         ].join('\n');
     }
 
-    /* ---- lightbox ---- */
     var lightbox = document.createElement('div');
     lightbox.className = 'gallery-lightbox';
     lightbox.hidden = true;
@@ -107,7 +100,6 @@
         if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
     });
 
-    /* ---- render ---- */
     function renderGallery(items) {
         if (!items.length) {
             grid.innerHTML = '<p class="empty-state">No gallery items yet. Add entries to assets/gallery.json.</p>';
@@ -117,10 +109,8 @@
         grid.innerHTML = items.map(buildCard).join('');
         if (statusEl) statusEl.textContent = items.length + ' item(s)';
 
-        /* Attach lightbox openers to all cards */
         grid.querySelectorAll('.gallery-card').forEach(function (card, i) {
             function open(e) {
-                /* Don't hijack if clicking the direct link */
                 if (e.target.closest('.gallery-card-link') && items[i].link) return;
                 e.preventDefault();
                 openLightbox(items[i]);
@@ -135,7 +125,6 @@
         });
     }
 
-    /* ---- load data ---- */
     fetch('/assets/gallery.json')
         .then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status);
