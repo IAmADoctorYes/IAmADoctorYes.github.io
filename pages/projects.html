@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
 </head>
-<body>
+<body data-route="my-work">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -22,27 +22,27 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="my-work.html">My Work</a></li>
-                <li><a href="passion-projects.html">Passion Projects</a></li>
-                <li><a href="blog.html">Articles &amp; Reports</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="music.html">Music</a></li>
-                <li><a href="shop.html">Shop</a></li>
+                <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="about.html" data-nav-route="about">About</a></li>
+                <li><a href="music.html" data-nav-route="music">Music</a></li>
+                <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content">
+        <main id="main" class="page-content" aria-labelledby="projects-title">
 
             <section class="hero">
-                <h1>Projects</h1>
+                <h1 id="projects-title">Projects</h1>
             </section>
 
-            <section class="section-rule">
-                <h2>WV Labor Market Information Site</h2>
+            <section class="section-rule" aria-labelledby="projects-lmi-heading">
+                <h2 id="projects-lmi-heading">WV Labor Market Information Site</h2>
                 <p class="small muted">2021&ndash;Present</p>
                 <p>
                     My main focus. I maintain and modernize
@@ -58,8 +58,8 @@
                 </p>
             </section>
 
-            <section class="section-rule">
-                <h2>Synthetic Data for Fish Detection</h2>
+            <section class="section-rule" aria-labelledby="projects-fish-detection-heading">
+                <h2 id="projects-fish-detection-heading">Synthetic Data for Fish Detection</h2>
                 <p class="small muted">2024 &middot; Published Research</p>
                 <p>
                     Used physics simulation to generate training data for a computer vision model
@@ -81,13 +81,13 @@
             <div class="sidebar-section">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="my-work.html">My Work</a></li>
-                    <li><a href="passion-projects.html">Passion Projects</a></li>
-                    <li><a href="blog.html">Articles &amp; Reports</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="music.html">Music</a></li>
-                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                    <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="about.html" data-nav-route="about">About</a></li>
+                    <li><a href="music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">

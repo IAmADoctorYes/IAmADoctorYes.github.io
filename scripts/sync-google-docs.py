@@ -2,6 +2,8 @@ import os
 import re
 import json
 import html
+import shutil
+import tempfile
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
@@ -104,31 +106,7 @@ def get_docs(drive_service, docs_folder_id):
 
 
 def save_html(filename, title, content):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    paragraphs = []
-    for block in re.split(r"\n\s*\n", content.strip()):
-        lines = [line.strip() for line in block.splitlines() if line.strip()]
-        if not lines:
-            continue
-
-        paragraph_text = " ".join(lines)
-        if re.match(r"^#{1,6}\s+", paragraph_text):
-            heading_level = min(paragraph_text.count("#", 0, paragraph_text.find(" ")), 6)
-            heading_text = paragraph_text[heading_level:].strip()
-            paragraphs.append(f"<h{heading_level + 1}>{html.escape(heading_text)}</h{heading_level + 1}>")
-            continue
-
-        if len(lines) == 1 and paragraph_text.endswith(":") and len(paragraph_text) < 80:
-            paragraphs.append(f"<h2>{html.escape(paragraph_text[:-1])}</h2>")
-            continue
-
-        paragraphs.append(f"<p>{html.escape(paragraph_text)}</p>")
-
-    article_body = "\n                    ".join(paragraphs) if paragraphs else "<p></p>"
-
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
+    html_content = f"""<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -197,7 +175,7 @@ def save_html(filename, title, content):
 </html>
 """
 
-    with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf8") as f:
+    with open(filename, "w", encoding="utf8") as f:
         f.write(html_content)
 
 
@@ -220,6 +198,7 @@ def main():
         raise RuntimeError(f"Failed to list Google Docs from Drive folder: {message}") from exc
 
     posts = []
+    docs_content = []
 
     for file in docs:
         doc = docs_service.documents().get(documentId=file["id"]).execute()
@@ -230,8 +209,7 @@ def main():
         preview = text[:200].replace("\n", " ")
         tags = extract_tags(text)
 
-        save_html(slug, title, text)
-
+        docs_content.append((slug, title, text))
         posts.append({
             "title": title,
             "slug": slug,
@@ -243,9 +221,39 @@ def main():
     posts.sort(key=lambda x: x["date"], reverse=True)
     posts = posts[:MAX_POSTS]
 
+    temp_output_dir = tempfile.mkdtemp(prefix="blog-sync-")
+    temp_index_file = f"{INDEX_FILE}.tmp"
+
+    os.makedirs(temp_output_dir, exist_ok=True)
+    for slug, title, text in docs_content:
+        save_html(os.path.join(temp_output_dir, slug), title, text)
+
     os.makedirs("assets", exist_ok=True)
-    with open(INDEX_FILE, "w", encoding="utf8") as f:
+    with open(temp_index_file, "w", encoding="utf8") as f:
         json.dump(posts, f, indent=2)
+
+    backup_output_dir = f"{OUTPUT_DIR}.bak"
+    try:
+        if os.path.exists(backup_output_dir):
+            shutil.rmtree(backup_output_dir)
+
+        if os.path.exists(OUTPUT_DIR):
+            os.replace(OUTPUT_DIR, backup_output_dir)
+
+        os.replace(temp_output_dir, OUTPUT_DIR)
+        os.replace(temp_index_file, INDEX_FILE)
+
+        if os.path.exists(backup_output_dir):
+            shutil.rmtree(backup_output_dir)
+    except Exception:
+        if os.path.exists(temp_output_dir):
+            shutil.rmtree(temp_output_dir)
+        if os.path.exists(temp_index_file):
+            os.remove(temp_index_file)
+
+        if os.path.exists(backup_output_dir) and not os.path.exists(OUTPUT_DIR):
+            os.replace(backup_output_dir, OUTPUT_DIR)
+        raise
 
     print("Synced", len(posts), "posts")
 
