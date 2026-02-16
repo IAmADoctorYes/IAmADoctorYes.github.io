@@ -3,6 +3,7 @@ import re
 import json
 import html
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 
 # ================= CONFIG =================
@@ -15,7 +16,10 @@ LEGACY_CREDENTIALS_ENV = "CREDS_FILE"
 LEGACY_FOLDER_ENV = "DRIVE_FOLDER_ID"
 # ==========================================
 
-SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
+SCOPES = [
+    "https://www.googleapis.com/auth/documents.readonly",
+    "https://www.googleapis.com/auth/drive.metadata.readonly",
+]
 
 
 def get_credentials():
@@ -124,7 +128,18 @@ def main():
     drive_service = build("drive", "v3", credentials=creds)
     docs_folder_id = get_docs_folder_id()
 
-    docs = get_docs(drive_service, docs_folder_id)
+    try:
+        docs = get_docs(drive_service, docs_folder_id)
+    except HttpError as exc:
+        message = str(exc)
+        if getattr(exc, "resp", None) is not None and exc.resp.status == 403:
+            raise RuntimeError(
+                "Google Drive API returned 403. Ensure the service account has access to "
+                "the target folder and credentials include Drive scope "
+                "(drive.metadata.readonly or broader)."
+            ) from exc
+        raise RuntimeError(f"Failed to list Google Docs from Drive folder: {message}") from exc
+
     posts = []
 
     for file in docs:

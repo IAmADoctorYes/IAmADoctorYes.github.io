@@ -40,3 +40,7 @@ If your site tooling complains about `credentials.json`, use one (or more) of th
 - Add secret scanning in CI to prevent accidental key commits.
 - Rotate service account keys regularly.
 - Restrict the service account to read-only scopes and only required Docs/Drive resources.
+
+## 8) If you see `insufficient authentication scopes`
+- Recreate credentials or token with both Docs and Drive metadata scopes.
+- Ensure the service account can access (or is shared on) the target Drive folder.
