@@ -1,205 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Blog</title>
-
-  <!-- SEO -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Blog posts and writings">
-  <link rel="canonical" href="/blog.html">
-
-  <!-- Styles -->
-  <style>
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
-      background:#0f1115;
-      color:#e6e6e6;
-      line-height:1.6;
-    }
-
-    header{
-      padding:2rem 1rem 1rem;
-      text-align:center;
-      border-bottom:1px solid #222;
-    }
-
-    h1{
-      margin:0;
-      font-weight:600;
-      letter-spacing:.5px;
-    }
-
-    #search{
-      margin-top:1.2rem;
-      width:min(500px,90%);
-      padding:.7rem .9rem;
-      border-radius:10px;
-      border:1px solid #333;
-      background:#151922;
-      color:#fff;
-      font-size:1rem;
-      outline:none;
-    }
-
-    #search:focus{
-      border-color:#4da3ff;
-      box-shadow:0 0 0 1px #4da3ff33;
-    }
-
-    main{
-      max-width:900px;
-      margin:auto;
-      padding:1.5rem;
-    }
-
-    .post{
-      padding:1.4rem;
-      margin-bottom:1.2rem;
-      border-radius:14px;
-      background:#151922;
-      border:1px solid #222;
-      transition:.15s ease;
-    }
-
-    .post:hover{
-      transform:translateY(-2px);
-      border-color:#333;
-    }
-
-    .post h2{
-      margin:.2rem 0 .4rem;
-      font-size:1.4rem;
-    }
-
-    .post a{
-      text-decoration:none;
-      color:#6cb6ff;
-    }
-
-    .post a:hover{
-      text-decoration:underline;
-    }
-
-    .preview{
-      opacity:.85;
-      margin:.5rem 0 .7rem;
-    }
-
-    .tags{
-      font-size:.8rem;
-      opacity:.6;
-    }
-
-    .empty{
-      text-align:center;
-      opacity:.5;
-      margin-top:3rem;
-      font-size:1.1rem;
-    }
-
-    footer{
-      text-align:center;
-      padding:2rem 1rem;
-      opacity:.5;
-      font-size:.85rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Articles and reports on West Virginia, data work, and long-form writing by Sullivan Steele">
+    <title>Articles &amp; Reports | Sullivan Steele</title>
+    <link rel="canonical" href="/pages/blog.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/theme.js"></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
-
 <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
 
-<header>
-  <h1>Blog</h1>
-  <input id="search" type="text" placeholder="Search posts...">
-</header>
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="my-work.html">My Work</a></li>
+                <li><a href="passion-projects.html">Passion Projects</a></li>
+                <li><a href="blog.html">Articles &amp; Reports</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="music.html">Music</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
 
-<main id="posts">
-  <div class="empty">Loading posts...</div>
-</main>
+    <div class="site-layout">
+        <main id="main" class="page-content">
+            <section class="hero">
+                <h1>Articles &amp; Reports</h1>
+                <p class="hero-sub">Searchable notes, reports, and opinion pieces on data, work, and West Virginia.</p>
+            </section>
 
-<footer>
-  Updated automatically • Powered by GitHub Pages
-</footer>
+            <section class="section-rule blog-controls" aria-label="Search and filter articles">
+                <label for="search" class="small muted">Search titles, previews, and tags</label>
+                <input id="search" class="blog-search" type="search" placeholder="Try: labor, education, housing..." autocomplete="off">
+                <p id="results-status" class="small muted" role="status" aria-live="polite">Loading posts…</p>
+            </section>
 
-<script>
-let POSTS = [];
-const container = document.getElementById("posts");
-const searchBox = document.getElementById("search");
+            <section class="section-rule" aria-label="Article results">
+                <div id="posts" class="blog-list">
+                    <p class="empty-state">Loading posts...</p>
+                </div>
+            </section>
+        </main>
 
-/* ---------- render ---------- */
+        <aside class="sidebar" aria-label="Page navigation and resources">
+            <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="my-work.html">My Work</a></li>
+                    <li><a href="passion-projects.html">Passion Projects</a></li>
+                    <li><a href="blog.html">Articles &amp; Reports</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="music.html">Music</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Blog</h4>
+                <ul>
+                    <li><a href="blog/readme.md">Authoring notes</a></li>
+                    <li><a href="https://github.com/IAmADoctorYes/IAmADoctorYes.github.io" target="_blank" rel="noopener">Repository <i class="bi bi-box-arrow-up-right"></i></a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
 
-function render(list){
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
 
-  if(!list.length){
-    container.innerHTML =
-      `<div class="empty">No posts found</div>`;
-    return;
-  }
-
-  container.innerHTML = "";
-
-  const frag = document.createDocumentFragment();
-
-  list.forEach(post=>{
-    const el = document.createElement("article");
-    el.className = "post";
-
-    el.innerHTML = `
-      <h2>
-        <a href="/blog/${post.slug}">
-          ${post.title}
-        </a>
-      </h2>
-
-      <div class="preview">
-        ${post.preview}…
-      </div>
-
-      <div class="tags">
-        ${post.tags.join(" • ")}
-      </div>
-    `;
-
-    frag.appendChild(el);
-  });
-
-  container.appendChild(frag);
-}
-
-/* ---------- load index ---------- */
-
-fetch("/assets/search-index.json")
-  .then(r=>r.json())
-  .then(data=>{
-    POSTS = data;
-    render(POSTS);
-  })
-  .catch(()=>{
-    container.innerHTML =
-      `<div class="empty">Failed to load posts</div>`;
-  });
-
-/* ---------- live search ---------- */
-
-searchBox.addEventListener("input", e=>{
-  const q = e.target.value.toLowerCase().trim();
-
-  if(!q){
-    render(POSTS);
-    return;
-  }
-
-  const filtered = POSTS.filter(p =>
-    p.title.toLowerCase().includes(q) ||
-    p.preview.toLowerCase().includes(q) ||
-    p.tags.join(" ").toLowerCase().includes(q)
-  );
-
-  render(filtered);
-});
-</script>
-
+    <script src="../js/blog.js"></script>
+    <script src="../js/nav.js"></script>
+    <script src="../js/backgrounds.js"></script>
 </body>
 </html>
