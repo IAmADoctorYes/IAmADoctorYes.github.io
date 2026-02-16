@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">Fish detection synthetic data hero</title>
+  <desc id="desc">Stylized underwater scene with fish silhouettes and detection boxes.</desc>
+  <defs>
+    <linearGradient id="water" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#193a45"/>
+      <stop offset="100%" stop-color="#0f2028"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#water)"/>
+  <g fill="#8ac7c2" opacity="0.8">
+    <ellipse cx="220" cy="180" rx="70" ry="28"/><polygon points="290,180 335,160 335,200"/>
+    <ellipse cx="510" cy="300" rx="90" ry="34"/><polygon points="600,300 650,275 650,325"/>
+    <ellipse cx="870" cy="220" rx="75" ry="30"/><polygon points="945,220 990,195 990,245"/>
+  </g>
+  <g stroke="#9ee5b6" stroke-width="4" fill="none" opacity="0.9">
+    <rect x="140" y="130" width="220" height="110"/>
+    <rect x="390" y="240" width="280" height="130"/>
+    <rect x="770" y="155" width="240" height="130"/>
+  </g>
+  <text x="60" y="70" fill="#d2f3eb" font-family="Arial, sans-serif" font-size="40">Synthetic Scene → CV Detection Training</text>
+</svg>
