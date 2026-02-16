@@ -2,7 +2,6 @@ import os
 import re
 import json
 import html
-from datetime import datetime
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
@@ -11,16 +10,55 @@ DOCS_FOLDER_ID = "YOUR_FOLDER_ID"
 OUTPUT_DIR = "pages/blog"
 INDEX_FILE = "assets/search-index.json"
 MAX_POSTS = 150
+CREDENTIALS_FILE = "credentials.json"
+LEGACY_CREDENTIALS_ENV = "CREDS_FILE"
+LEGACY_FOLDER_ENV = "DRIVE_FOLDER_ID"
 # ==========================================
 
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
-creds = service_account.Credentials.from_service_account_file(
-    "credentials.json", scopes=SCOPES
-)
 
-docs_service = build("docs", "v1", credentials=creds)
-drive_service = build("drive", "v3", credentials=creds)
+def get_credentials():
+    """Load Google credentials from env var JSON or a local file."""
+    raw_service_account = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+    if raw_service_account:
+        try:
+            info = json.loads(raw_service_account)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                "GOOGLE_SERVICE_ACCOUNT_JSON is set but is not valid JSON."
+            ) from exc
+
+        return service_account.Credentials.from_service_account_info(
+            info, scopes=SCOPES
+        )
+
+    credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    if not credentials_path:
+        credentials_path = os.getenv(LEGACY_CREDENTIALS_ENV, CREDENTIALS_FILE)
+    if os.path.exists(credentials_path):
+        return service_account.Credentials.from_service_account_file(
+            credentials_path, scopes=SCOPES
+        )
+
+    raise RuntimeError(
+        "Google credentials not found. Provide one of the following:\n"
+        "1) Create a service-account key file and save it to credentials.json\n"
+        "2) Set GOOGLE_APPLICATION_CREDENTIALS (or legacy CREDS_FILE) to your key file path\n"
+        "3) Set GOOGLE_SERVICE_ACCOUNT_JSON to the raw key JSON"
+    )
+
+
+def get_docs_folder_id():
+    folder_id = os.getenv("GOOGLE_DOCS_FOLDER_ID")
+    if not folder_id:
+        folder_id = os.getenv(LEGACY_FOLDER_ENV, DOCS_FOLDER_ID)
+    if folder_id == "YOUR_FOLDER_ID":
+        raise RuntimeError(
+            "Google Docs folder ID is not configured. Set GOOGLE_DOCS_FOLDER_ID "
+            "(or legacy DRIVE_FOLDER_ID) or replace DOCS_FOLDER_ID in scripts/sync-google-docs.py."
+        )
+    return folder_id
 
 
 def slugify(text):
@@ -52,9 +90,9 @@ def extract_tags(text):
     return [t.strip() for t in tags.split(",") if t.strip()]
 
 
-def get_docs():
+def get_docs(drive_service, docs_folder_id):
     results = drive_service.files().list(
-        q=f"'{DOCS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document'",
+        q=f"'{docs_folder_id}' in parents and mimeType='application/vnd.google-apps.document'",
         fields="files(id, name, modifiedTime)",
     ).execute()
 
@@ -81,7 +119,12 @@ def save_html(filename, title, content):
 
 
 def main():
-    docs = get_docs()
+    creds = get_credentials()
+    docs_service = build("docs", "v1", credentials=creds)
+    drive_service = build("drive", "v3", credentials=creds)
+    docs_folder_id = get_docs_folder_id()
+
+    docs = get_docs(drive_service, docs_folder_id)
     posts = []
 
     for file in docs:

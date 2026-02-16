@@ -4,3 +4,6 @@ Thumbs.db
 *.log
 *.tmp
 .env
+credentials.json
+creds.json
+*.credentials.json
