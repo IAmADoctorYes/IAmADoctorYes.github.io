@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sullivan Steele — data scientist, maker, musician, lifelong learner from West Virginia">
     <title>Sullivan Steele</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -13,18 +13,17 @@
     <script src="js/theme.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <meta property="og:title" content="Sullivan Steele's Portfolio" />
-  <meta property="og:description" content="Explore my work, art, ideas, or contact me!" />
-  <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg" />
-  <meta property="og:url" content="https://www.sullivanrsteele.com" />
-  <meta property="og:type" content="website" />
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Sullivan Steele's Portfolio">
-  <meta name="twitter:description" content="Explore my work, art, ideas, or contact me!">
-  <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:title" content="Sullivan Steele's Portfolio">
+    <meta property="og:description" content="Data scientist, maker, musician — explore my work, projects, and writing.">
+    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:url" content="https://www.sullivanrsteele.com">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sullivan Steele's Portfolio">
+    <meta name="twitter:description" content="Data scientist, maker, musician — explore my work, projects, and writing.">
+    <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body>
+<body data-route="home">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -34,13 +33,13 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="pages/my-work.html">My Work</a></li>
-                <li><a href="pages/passion-projects.html">Passion Projects</a></li>
-                <li><a href="pages/blog.html">Articles &amp; Reports</a></li>
-                <li><a href="pages/about.html">About</a></li>
-                <li><a href="pages/music.html">Music</a></li>
-                <li><a href="pages/shop.html">Shop</a></li>
+                <li><a href="index.html" data-nav-route="home">Home</a></li>
+                <li><a href="pages/my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="pages/projects.html" data-nav-route="projects">Projects</a></li>
+                <li><a href="pages/blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="pages/about.html" data-nav-route="about">About</a></li>
+                <li><a href="pages/music.html" data-nav-route="music">Music</a></li>
+                <li><a href="pages/shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
@@ -127,13 +126,13 @@
             <div class="sidebar-section">
                 <h4>Pages</h4>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="pages/my-work.html">My Work</a></li>
-                    <li><a href="pages/passion-projects.html">Passion Projects</a></li>
-                    <li><a href="pages/blog.html">Articles &amp; Reports</a></li>
-                    <li><a href="pages/about.html">About</a></li>
-                    <li><a href="pages/music.html">Music</a></li>
-                    <li><a href="pages/shop.html">Shop</a></li>
+                    <li><a href="index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="pages/my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="pages/projects.html" data-nav-route="projects">Projects</a></li>
+                    <li><a href="pages/blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="pages/about.html" data-nav-route="about">About</a></li>
+                    <li><a href="pages/music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="pages/shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -148,7 +147,7 @@
 
     <footer>
         <div class="footer-inner">
-            <p>&copy; 2025 Sullivan Steele</p>
+            <p>&copy; 2026 Sullivan Steele</p>
             <ul class="footer-links">
                 <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
                 <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>

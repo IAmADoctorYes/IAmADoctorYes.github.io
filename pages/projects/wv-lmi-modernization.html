@@ -11,8 +11,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/main.css">
     <script src="../../js/theme.js"></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <meta property="og:title" content="WV Labor Market Site Modernization | Sullivan Steele">
+    <meta property="og:description" content="Modernization and maintenance of West Virginia's Labor Market Information site.">
+    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/projects/wv-lmi-modernization.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="WV Labor Market Site Modernization">
+    <meta name="twitter:description" content="Modernization and maintenance of West Virginia's Labor Market Information site.">
+    <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body>
+<body data-route="my-work">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -22,13 +33,13 @@
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../../index.html">Home</a></li>
-                <li><a href="../my-work.html">My Work</a></li>
-                <li><a href="../passion-projects.html">Passion Projects</a></li>
-                <li><a href="../blog.html">Articles &amp; Reports</a></li>
-                <li><a href="../about.html">About</a></li>
-                <li><a href="../music.html">Music</a></li>
-                <li><a href="../shop.html">Shop</a></li>
+                <li><a href="../../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
+                <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="../about.html" data-nav-route="about">About</a></li>
+                <li><a href="../music.html" data-nav-route="music">Music</a></li>
+                <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
@@ -37,9 +48,9 @@
     <div class="site-layout">
         <main id="main" class="page-content">
             <div class="breadcrumb">
-                <a href="../../index.html">Home</a>
+                <a href="../../index.html" data-nav-route="home">Home</a>
                 <span class="sep">/</span>
-                <a href="../projects.html">Projects</a>
+                <a href="../my-work.html" data-nav-route="my-work">My Work</a>
                 <span class="sep">/</span>
                 WV Labor Market Site
             </div>
@@ -135,6 +146,18 @@
 
         <aside class="sidebar" aria-label="Table of contents">
             <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
+                    <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="../about.html" data-nav-route="about">About</a></li>
+                    <li><a href="../music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
                 <h4>On This Page</h4>
                 <ul class="toc">
                     <li><a href="#context">Context</a></li>
@@ -157,7 +180,7 @@
 
     <footer>
         <div class="footer-inner">
-            <p>&copy; 2025 Sullivan Steele</p>
+            <p>&copy; 2026 Sullivan Steele</p>
             <ul class="footer-links">
                 <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
                 <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>

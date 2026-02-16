@@ -76,13 +76,14 @@ document.addEventListener('DOMContentLoaded', function() {
             '/': 'home',
             '/index.html': 'home',
             '/pages/my-work.html': 'my-work',
-            '/pages/projects.html': 'my-work',
+            '/pages/projects.html': 'projects',
             '/pages/passion-projects.html': 'passion-projects',
             '/pages/blog.html': 'blog',
             '/pages/about.html': 'about',
             '/pages/music.html': 'music',
             '/pages/shop.html': 'shop',
-            '/pages/projects/fish-detection.html': 'my-work'
+            '/pages/projects/fish-detection.html': 'my-work',
+            '/pages/projects/wv-lmi-modernization.html': 'my-work'
         };
 
         return routeMap[cleanedPath] || '';

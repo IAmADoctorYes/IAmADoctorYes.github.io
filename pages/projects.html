@@ -3,16 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Projects — completed work, research, and professional projects by Sullivan Steele">
+    <meta name="description" content="Projects — hobby builds, personal experiments, and side projects by Sullivan Steele">
     <title>Projects | Sullivan Steele</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <meta property="og:title" content="Projects | Sullivan Steele">
+    <meta property="og:description" content="Hobby builds, personal experiments, and side projects.">
+    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/projects.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Projects | Sullivan Steele">
+    <meta name="twitter:description" content="Hobby builds, personal experiments, and side projects.">
+    <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body data-route="my-work">
+<body data-route="projects">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -24,7 +35,7 @@
             <ul class="nav-links" id="nav-links">
                 <li><a href="../index.html" data-nav-route="home">Home</a></li>
                 <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
-                <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                <li><a href="projects.html" data-nav-route="projects">Projects</a></li>
                 <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
                 <li><a href="about.html" data-nav-route="about">About</a></li>
                 <li><a href="music.html" data-nav-route="music">Music</a></li>
@@ -39,40 +50,19 @@
 
             <section class="hero">
                 <h1 id="projects-title">Projects</h1>
-            </section>
-
-            <section class="section-rule" aria-labelledby="projects-lmi-heading">
-                <h2 id="projects-lmi-heading">WV Labor Market Information Site</h2>
-                <p class="small muted">2021&ndash;Present</p>
-                <p>
-                    My main focus. I maintain and modernize
-                    <a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">lmi.workforcewv.org <i class="bi bi-box-arrow-up-right"></i></a>
-                    — West Virginia's public labor market data dashboard. The site covers
-                    unemployment rates, job openings, wages, labor force participation, and
-                    employment trends across the state.
-                </p>
-                <p>
-                    Behind it I build the data pipelines that pull from federal sources (BLS, Census),
-                    automate the quarterly reporting process, and handle the SAS-to-Python migration
-                    that's been ongoing since I started.
+                <p class="hero-sub">
+                    Hobby builds, personal experiments, and side projects that keep me learning outside of work.
                 </p>
             </section>
 
-            <section class="section-rule" aria-labelledby="projects-fish-detection-heading">
-                <h2 id="projects-fish-detection-heading">Synthetic Data for Fish Detection</h2>
-                <p class="small muted">2024 &middot; Published Research</p>
-                <p>
-                    Used physics simulation to generate training data for a computer vision model
-                    that detects fish in stream environments. Cut manual labeling needs by 90%
-                    and hit 91.8% accuracy. Collaboration with WVU and The Conservation Fund.
-                </p>
-                <p class="small muted">
-                    Sensors, Vol. 24, Issue 17, Article 5816 &middot;
-                    <a href="https://www.mdpi.com/1424-8220/24/17/5816" target="_blank" rel="noopener">
-                        Paper <i class="bi bi-box-arrow-up-right"></i>
-                    </a>
-                </p>
-                <a href="projects/fish-detection.html" class="read-more">Full write-up <i class="bi bi-arrow-right"></i></a>
+            <section class="section-rule">
+                <div class="placeholder-section">
+                    <h2>Coming Soon</h2>
+                    <p>
+                        Games, creative coding experiments, and personal tools I'm building on the side.
+                        Check back or see <a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a> for current repos.
+                    </p>
+                </div>
             </section>
 
         </main>
@@ -83,7 +73,7 @@
                 <ul>
                     <li><a href="../index.html" data-nav-route="home">Home</a></li>
                     <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
-                    <li><a href="passion-projects.html" data-nav-route="passion-projects">Passion Projects</a></li>
+                    <li><a href="projects.html" data-nav-route="projects">Projects</a></li>
                     <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
                     <li><a href="about.html" data-nav-route="about">About</a></li>
                     <li><a href="music.html" data-nav-route="music">Music</a></li>
@@ -93,8 +83,7 @@
             <div class="sidebar-section">
                 <h4>Links</h4>
                 <ul>
-                    <li><a href="http://lmi.workforcewv.org/" target="_blank" rel="noopener">LMI Site <i class="bi bi-box-arrow-up-right"></i></a></li>
-                    <li><a href="projects/fish-detection.html">Fish Detection Write-up</a></li>
+                    <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub <i class="bi bi-box-arrow-up-right"></i></a></li>
                 </ul>
             </div>
         </aside>
@@ -102,7 +91,7 @@
 
     <footer>
         <div class="footer-inner">
-            <p>&copy; 2025 Sullivan Steele</p>
+            <p>&copy; 2026 Sullivan Steele</p>
             <ul class="footer-links">
                 <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
                 <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>

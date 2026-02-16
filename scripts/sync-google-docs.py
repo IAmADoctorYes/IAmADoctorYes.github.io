@@ -105,8 +105,61 @@ def get_docs(drive_service, docs_folder_id):
     return results.get("files", [])
 
 
+def index_local_html(output_dir, existing_slugs):
+    """Index hand-written HTML files in the blog directory that weren't synced from Google Docs.
+
+    Returns a list of post entries for any .html file in *output_dir* whose
+    filename is not already in *existing_slugs*.  This lets authors drop a
+    plain HTML file into pages/blog/ and have it appear in the search index
+    without needing Google Docs credentials.
+    """
+    local_posts = []
+    if not os.path.isdir(output_dir):
+        return local_posts
+
+    for fname in os.listdir(output_dir):
+        if not fname.endswith(".html") or fname.startswith("_") or fname in existing_slugs:
+            continue
+
+        filepath = os.path.join(output_dir, fname)
+        try:
+            with open(filepath, "r", encoding="utf8") as f:
+                raw = f.read()
+        except OSError:
+            continue
+
+        # Extract <title>…</title>
+        title_match = re.search(r"<title>(.*?)</title>", raw, re.IGNORECASE | re.DOTALL)
+        title = title_match.group(1).replace(" | Sullivan Steele", "").strip() if title_match else fname.replace(".html", "").replace("-", " ").title()
+
+        # Extract meta description
+        desc_match = re.search(r'<meta\s+name=["\']description["\']\s+content=["\']([^"\']*)["\']', raw, re.IGNORECASE)
+        preview = desc_match.group(1).strip() if desc_match else title
+
+        # Extract tags from a <meta name="keywords"> tag
+        kw_match = re.search(r'<meta\s+name=["\']keywords["\']\s+content=["\']([^"\']*)["\']', raw, re.IGNORECASE)
+        tags = [t.strip() for t in kw_match.group(1).split(",") if t.strip()] if kw_match else []
+
+        # Use file modification time
+        mtime = os.path.getmtime(filepath)
+        from datetime import datetime, timezone
+        date_str = datetime.fromtimestamp(mtime, tz=timezone.utc).isoformat()
+
+        local_posts.append({
+            "title": title,
+            "slug": fname,
+            "preview": preview[:200],
+            "tags": tags,
+            "date": date_str,
+        })
+
+    return local_posts
+
+
 def save_html(filename, title, content):
-    html_content = f"""<html>
+    article_body = content
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,8 +174,17 @@ def save_html(filename, title, content):
     <script src="../../js/theme.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <meta property="og:title" content="{html.escape(title)} | Sullivan Steele">
+    <meta property="og:description" content="{html.escape(title)}">
+    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/blog/{html.escape(filename)}">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{html.escape(title)}">
+    <meta name="twitter:description" content="{html.escape(title)}">
+    <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body>
+<body data-route="blog">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -132,13 +194,13 @@ def save_html(filename, title, content):
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
-                <li><a href="../../index.html">Home</a></li>
-                <li><a href="../my-work.html">My Work</a></li>
-                <li><a href="../passion-projects.html">Passion Projects</a></li>
-                <li><a href="../blog.html">Articles &amp; Reports</a></li>
-                <li><a href="../about.html">About</a></li>
-                <li><a href="../music.html">Music</a></li>
-                <li><a href="../shop.html">Shop</a></li>
+                <li><a href="../../index.html" data-nav-route="home">Home</a></li>
+                <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
+                <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
+                <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                <li><a href="../about.html" data-nav-route="about">About</a></li>
+                <li><a href="../music.html" data-nav-route="music">Music</a></li>
+                <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
                 <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
@@ -146,9 +208,16 @@ def save_html(filename, title, content):
 
     <div class="site-layout">
         <main id="main" class="page-content">
-            <article class="section-rule">
-                <header class="hero">
-                    <p class="small muted"><a href="../blog.html">&larr; Back to Articles &amp; Reports</a></p>
+            <div class="breadcrumb">
+                <a href="../../index.html" data-nav-route="home">Home</a>
+                <span class="sep">/</span>
+                <a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a>
+                <span class="sep">/</span>
+                {html.escape(title)}
+            </div>
+
+            <article class="article-content">
+                <header class="article-header">
                     <h1>{html.escape(title)}</h1>
                 </header>
                 <section class="article-body">
@@ -156,11 +225,26 @@ def save_html(filename, title, content):
                 </section>
             </article>
         </main>
+
+        <aside class="sidebar" aria-label="Page navigation">
+            <div class="sidebar-section">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="../../index.html" data-nav-route="home">Home</a></li>
+                    <li><a href="../my-work.html" data-nav-route="my-work">My Work</a></li>
+                    <li><a href="../projects.html" data-nav-route="projects">Projects</a></li>
+                    <li><a href="../blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
+                    <li><a href="../about.html" data-nav-route="about">About</a></li>
+                    <li><a href="../music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
+                </ul>
+            </div>
+        </aside>
     </div>
 
     <footer>
         <div class="footer-inner">
-            <p>&copy; 2025 Sullivan Steele</p>
+            <p>&copy; 2026 Sullivan Steele</p>
             <ul class="footer-links">
                 <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
                 <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
@@ -229,6 +313,15 @@ def main():
         save_html(os.path.join(temp_output_dir, slug), title, text)
 
     os.makedirs("assets", exist_ok=True)
+
+    # ── Local fallback: index hand-written HTML already in pages/blog/ ──
+    synced_slugs = {p["slug"] for p in posts}
+    local_posts = index_local_html(OUTPUT_DIR, synced_slugs)
+    posts.extend(local_posts)
+    posts.sort(key=lambda x: x["date"], reverse=True)
+    posts = posts[:MAX_POSTS]
+    # ────────────────────────────────────────────────────────────────────
+
     with open(temp_index_file, "w", encoding="utf8") as f:
         json.dump(posts, f, indent=2)
 
