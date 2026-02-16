@@ -108,12 +108,69 @@ def get_docs(drive_service, docs_folder_id):
 def save_html(filename, title, content):
     html_content = f"""<html>
 <head>
-<title>{html.escape(title)}</title>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{html.escape(title)} | Sullivan Steele">
+    <title>{html.escape(title)} | Sullivan Steele</title>
+    <link rel="canonical" href="/pages/blog/{html.escape(filename)}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../js/theme.js"></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
 <body>
-<h1>{html.escape(title)}</h1>
-<pre>{html.escape(content)}</pre>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../my-work.html">My Work</a></li>
+                <li><a href="../passion-projects.html">Passion Projects</a></li>
+                <li><a href="../blog.html">Articles &amp; Reports</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../music.html">Music</a></li>
+                <li><a href="../shop.html">Shop</a></li>
+                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="site-layout">
+        <main id="main" class="page-content">
+            <article class="section-rule">
+                <header class="hero">
+                    <p class="small muted"><a href="../blog.html">&larr; Back to Articles &amp; Reports</a></p>
+                    <h1>{html.escape(title)}</h1>
+                </header>
+                <section class="article-body">
+                    {article_body}
+                </section>
+            </article>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2025 Sullivan Steele</p>
+            <ul class="footer-links">
+                <li><a href="mailto:sullivanrsteele@gmail.com">Email</a></li>
+                <li><a href="https://github.com/IAmADoctorYes" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/sullivan-steele-166102140" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/backgrounds.js"></script>
 </body>
 </html>
 """
