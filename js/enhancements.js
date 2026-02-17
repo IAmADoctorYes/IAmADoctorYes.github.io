@@ -14,6 +14,17 @@
  *  - View Transitions API
  *  - Scroll-reveal animations
  *  - Collapsible sidebar sections
+ *  - External link indicators
+ *  - Smooth anchor offset
+ *  - Color-coded tag pills
+ *  - Search keyboard nav
+ *  - Image blur-up (progressive load)
+ *  - Responsive table wrapper
+ *  - Lazy-load sections (IntersectionObserver)
+ *  - Page last-updated badge
+ *  - Focus-visible rings
+ *  - Automatic heading anchors
+ *  - Prefetch on hover
  */
 (function () {
     'use strict';
@@ -510,6 +521,280 @@
     }
 
     /* -------------------------------------------------------
+       20. EXTERNAL LINK INDICATORS
+       Add an icon after links that leave the site.
+       ------------------------------------------------------- */
+    function markExternalLinks() {
+        var host = window.location.hostname;
+        document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+            try {
+                var linkHost = new URL(a.href).hostname;
+                if (linkHost === host) return;
+            } catch (e) { return; }
+            if (a.querySelector('.ext-icon') || a.classList.contains('share-link')) return;
+            if (a.closest('nav') || a.closest('footer')) return;
+            var icon = document.createElement('i');
+            icon.className = 'bi bi-box-arrow-up-right ext-icon';
+            icon.setAttribute('aria-hidden', 'true');
+            a.appendChild(icon);
+            if (!a.getAttribute('rel')) a.setAttribute('rel', 'noopener');
+            if (!a.getAttribute('target')) a.setAttribute('target', '_blank');
+        });
+    }
+
+    /* -------------------------------------------------------
+       21. SMOOTH ANCHOR OFFSET
+       Offset scroll-to-anchor by nav height so headings
+       aren't hidden behind the sticky nav.
+       ------------------------------------------------------- */
+    function applySmoothAnchorOffset() {
+        if (prefersReducedMotion) return;
+        document.addEventListener('click', function (e) {
+            var link = e.target.closest('a[href^="#"]');
+            if (!link) return;
+            var id = link.getAttribute('href').slice(1);
+            var target = document.getElementById(id);
+            if (!target) return;
+            e.preventDefault();
+            var navH = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 0;
+            var top = target.getBoundingClientRect().top + window.scrollY - navH - 16;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+            history.pushState(null, '', '#' + id);
+        });
+    }
+
+    /* -------------------------------------------------------
+       22. COLOR-CODED TAG PILLS
+       Give each unique tag a deterministic hue so pills
+       are visually distinct.
+       ------------------------------------------------------- */
+    function colorTagPills() {
+        var hues = [142, 200, 28, 280, 340, 56, 180, 310, 95, 240];
+        function tagHue(tag) {
+            var hash = 0;
+            for (var i = 0; i < tag.length; i++) hash = ((hash << 5) - hash) + tag.charCodeAt(i);
+            return hues[Math.abs(hash) % hues.length];
+        }
+        document.querySelectorAll('.tag, .filter-btn[data-type]').forEach(function (el) {
+            var text = (el.getAttribute('data-type') || el.textContent).trim().toLowerCase();
+            if (!text || text === 'all') return;
+            var h = tagHue(text);
+            el.style.setProperty('--tag-hue', h);
+            el.classList.add('tag-colored');
+        });
+    }
+
+    /* -------------------------------------------------------
+       23. SEARCH KEYBOARD NAVIGATION
+       Arrow keys + Enter in the search overlay results.
+       ------------------------------------------------------- */
+    function enhanceSearchKeyNav() {
+        var overlay = document.querySelector('.search-overlay');
+        if (!overlay) return;
+
+        overlay.addEventListener('keydown', function (e) {
+            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
+
+            var items = overlay.querySelectorAll('.search-result-link, .search-result a');
+            if (!items.length) return;
+
+            var focused = overlay.querySelector('.search-kb-focus');
+            var idx = -1;
+            items.forEach(function (el, i) { if (el === focused) idx = i; });
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                idx = (idx + 1) % items.length;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                idx = idx <= 0 ? items.length - 1 : idx - 1;
+            } else if (e.key === 'Enter' && focused) {
+                e.preventDefault();
+                focused.click();
+                return;
+            }
+
+            if (focused) focused.classList.remove('search-kb-focus');
+            items[idx].classList.add('search-kb-focus');
+            items[idx].scrollIntoView({ block: 'nearest' });
+        });
+    }
+
+    /* -------------------------------------------------------
+       24. IMAGE BLUR-UP (progressive loading)
+       Swap low-res placeholder to high-res on load.
+       Requires: <img data-src="hi-res.jpg" src="low-res.jpg" class="blur-up">
+       Also lazy-loads any image with data-src.
+       ------------------------------------------------------- */
+    function initBlurUp() {
+        var imgs = document.querySelectorAll('img[data-src]');
+        if (!imgs.length) return;
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var img = entry.target;
+                var full = img.getAttribute('data-src');
+                if (!full) return;
+                var loader = new Image();
+                loader.onload = function () {
+                    img.src = full;
+                    img.removeAttribute('data-src');
+                    img.classList.add('blur-up-loaded');
+                };
+                loader.src = full;
+                observer.unobserve(img);
+            });
+        }, { rootMargin: '200px' });
+
+        imgs.forEach(function (img) { observer.observe(img); });
+    }
+
+    /* -------------------------------------------------------
+       25. RESPONSIVE TABLE WRAPPER
+       Wrap bare <table> elements in a scrollable container.
+       ------------------------------------------------------- */
+    function wrapTables() {
+        document.querySelectorAll('.page-content table').forEach(function (table) {
+            if (table.parentElement.classList.contains('table-wrap')) return;
+            var wrapper = document.createElement('div');
+            wrapper.className = 'table-wrap';
+            wrapper.setAttribute('role', 'region');
+            wrapper.setAttribute('tabindex', '0');
+            wrapper.setAttribute('aria-label', 'Scrollable table');
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        });
+    }
+
+    /* -------------------------------------------------------
+       26. LAZY-LOAD SECTIONS (heavy content)
+       Defer rendering of off-screen sections marked with
+       data-lazy-section="true" until they scroll near.
+       ------------------------------------------------------- */
+    function initLazySections() {
+        var sections = document.querySelectorAll('[data-lazy-section]');
+        if (!sections.length) return;
+
+        sections.forEach(function (sec) { sec.style.contentVisibility = 'auto'; });
+
+        if (!('IntersectionObserver' in window)) {
+            sections.forEach(function (sec) { sec.style.contentVisibility = ''; });
+            return;
+        }
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.contentVisibility = '';
+                    entry.target.removeAttribute('data-lazy-section');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '300px' });
+
+        sections.forEach(function (sec) { observer.observe(sec); });
+    }
+
+    /* -------------------------------------------------------
+       27. PAGE LAST-UPDATED BADGE
+       If the page has a <meta name="last-modified"> or a
+       <time data-updated>, show a small "Updated X" badge.
+       ------------------------------------------------------- */
+    function showLastUpdated() {
+        var meta = document.querySelector('meta[name="last-modified"]');
+        var time = document.querySelector('time[data-updated]');
+        var dateStr = meta ? meta.getAttribute('content') : (time ? time.getAttribute('datetime') || time.textContent : '');
+        if (!dateStr) return;
+
+        var d = new Date(dateStr);
+        if (isNaN(d)) return;
+
+        var formatted = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        var badge = document.createElement('span');
+        badge.className = 'last-updated-badge small muted';
+        badge.innerHTML = '<i class="bi bi-pencil-square"></i> Updated ' + escapeHtml(formatted);
+
+        var target = document.querySelector('.article-meta') || document.querySelector('.hero-sub');
+        if (target) target.appendChild(badge);
+    }
+
+    /* -------------------------------------------------------
+       28. FOCUS-VISIBLE RINGS
+       Apply a class to <body> when user is navigating with
+       keyboard so we only show focus rings for keyboard users.
+       ------------------------------------------------------- */
+    function initFocusVisible() {
+        var usingKeyboard = false;
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                usingKeyboard = true;
+                document.body.classList.add('keyboard-nav');
+            }
+        });
+        document.addEventListener('mousedown', function () {
+            usingKeyboard = false;
+            document.body.classList.remove('keyboard-nav');
+        });
+    }
+
+    /* -------------------------------------------------------
+       29. AUTOMATIC HEADING ANCHORS
+       Add a clickable # link next to every h2/h3 with an id.
+       ------------------------------------------------------- */
+    function addHeadingAnchors() {
+        document.querySelectorAll('.page-content h2[id], .page-content h3[id]').forEach(function (h) {
+            if (h.querySelector('.heading-anchor')) return;
+            var a = document.createElement('a');
+            a.href = '#' + h.id;
+            a.className = 'heading-anchor';
+            a.setAttribute('aria-label', 'Link to ' + h.textContent);
+            a.textContent = '#';
+            h.appendChild(a);
+        });
+    }
+
+    /* -------------------------------------------------------
+       30. PREFETCH ON HOVER
+       Preload internal links when the user hovers for > 65 ms
+       so navigations feel instant.
+       ------------------------------------------------------- */
+    function initPrefetch() {
+        if (navigator.connection && navigator.connection.saveData) return;
+
+        var prefetched = {};
+        var timer = null;
+
+        document.addEventListener('mouseover', function (e) {
+            var link = e.target.closest('a[href]');
+            if (!link) return;
+
+            var url;
+            try { url = new URL(link.href); } catch (err) { return; }
+            if (url.origin !== window.location.origin) return;
+            if (url.href === window.location.href) return;
+            if (prefetched[url.href]) return;
+            if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+            timer = setTimeout(function () {
+                var el = document.createElement('link');
+                el.rel = 'prefetch';
+                el.href = url.href;
+                el.as = 'document';
+                document.head.appendChild(el);
+                prefetched[url.href] = true;
+            }, 65);
+        });
+
+        document.addEventListener('mouseout', function (e) {
+            if (e.target.closest('a[href]') && timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+        });
+    }
+
+    /* -------------------------------------------------------
        INIT
        ------------------------------------------------------- */
     document.addEventListener('DOMContentLoaded', function () {
@@ -527,5 +812,16 @@
         initViewTransitions();
         initScrollReveal();
         initCollapsibleSidebar();
+        markExternalLinks();
+        applySmoothAnchorOffset();
+        colorTagPills();
+        enhanceSearchKeyNav();
+        initBlurUp();
+        wrapTables();
+        initLazySections();
+        showLastUpdated();
+        initFocusVisible();
+        addHeadingAnchors();
+        initPrefetch();
     });
 })();

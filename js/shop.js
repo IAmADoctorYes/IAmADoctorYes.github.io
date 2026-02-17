@@ -9,7 +9,9 @@
     var allProducts = [];
     var activeFilter = 'all';
 
-    /* Lightbox for product images */
+    /* -------------------------------------------------------
+       LIGHTBOX (product image zoom)
+       ------------------------------------------------------- */
     var lightbox = document.createElement('div');
     lightbox.className = 'gallery-lightbox';
     lightbox.hidden = true;
@@ -22,9 +24,6 @@
         '  <div class="gallery-lightbox-info">',
         '    <h3 class="gallery-lightbox-title"></h3>',
         '    <p class="gallery-lightbox-desc"></p>',
-        '    <a class="gallery-lightbox-link btn btn-primary" href="#" style="display:none" target="_blank" rel="noopener">',
-        '      View listing <i class="bi bi-box-arrow-up-right"></i>',
-        '    </a>',
         '  </div>',
         '</div>'
     ].join('\n');
@@ -33,7 +32,6 @@
     var lbImg = lightbox.querySelector('.gallery-lightbox-img');
     var lbTitle = lightbox.querySelector('.gallery-lightbox-title');
     var lbDesc = lightbox.querySelector('.gallery-lightbox-desc');
-    var lbLink = lightbox.querySelector('.gallery-lightbox-link');
     var lbClose = lightbox.querySelector('.gallery-lightbox-close');
     var currentProductIndex = -1;
     var currentProductList = [];
@@ -42,13 +40,7 @@
         lbImg.src = item.image || '';
         lbImg.alt = item.title || '';
         lbTitle.textContent = item.title || '';
-        lbDesc.textContent = (item.description || '') + (item.price ? ' — ' + item.price : '');
-        if (item.link) {
-            lbLink.href = item.link;
-            lbLink.style.display = '';
-        } else {
-            lbLink.style.display = 'none';
-        }
+        lbDesc.textContent = (item.description || '') + (item.price ? ' — $' + parseFloat(item.price).toFixed(2) : '');
     }
 
     function openProductLightbox(item, list, index) {
@@ -82,21 +74,31 @@
         }
     });
 
+    /* -------------------------------------------------------
+       HELPERS
+       ------------------------------------------------------- */
     function escapeHtml(s) {
-        return String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function badgeClass(type) {
         if (type === 'physical') return 'product-badge product-badge-physical';
         if (type === 'digital') return 'product-badge product-badge-digital';
         if (type === 'custom') return 'product-badge product-badge-custom';
+        if (type === 'printful') return 'product-badge product-badge-digital';
         return 'product-badge';
     }
 
+    function fulfillmentLabel(f) {
+        if (f === 'printful') return 'Printed & shipped by Printful';
+        if (f === 'digital') return 'Instant digital download';
+        return '';
+    }
+
+    /* -------------------------------------------------------
+       CARD BUILDER
+       ------------------------------------------------------- */
     function buildCard(item) {
         var tags = (item.tags || []).map(function (t) {
             return '<span class="tag">' + escapeHtml(t) + '</span>';
@@ -106,10 +108,56 @@
             ? '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title || '') + '" loading="lazy" class="product-img-clickable" style="cursor:zoom-in">'
             : '';
 
-        var linkLabel = item.linkLabel || 'View';
-        var linkHtml = item.link
-            ? '<a href="' + escapeHtml(item.link) + '" class="btn btn-primary" target="_blank" rel="noopener">' + escapeHtml(linkLabel) + ' <i class="bi bi-box-arrow-up-right"></i></a>'
+        var price = parseFloat(item.price) || 0;
+        var priceHtml = price ? '<span class="product-price">$' + price.toFixed(2) + '</span>' : '';
+
+        /* Stock indicator */
+        var stockHtml = '';
+        if (typeof item.stock === 'number') {
+            if (item.stock <= 0) {
+                stockHtml = '<span class="product-stock product-stock-out">Sold out</span>';
+            } else if (item.stock <= 3) {
+                stockHtml = '<span class="product-stock product-stock-low">Only ' + item.stock + ' left</span>';
+            }
+        }
+
+        /* Variant selector */
+        var variantHtml = '';
+        if (item.variants && item.variants.length) {
+            item.variants.forEach(function (v) {
+                var options = (v.options || []).map(function (opt) {
+                    return '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>';
+                }).join('');
+                variantHtml +=
+                    '<div class="product-variant">' +
+                    '  <label class="small muted">' + escapeHtml(v.name) + '</label>' +
+                    '  <select class="variant-select" data-variant-name="' + escapeHtml(v.name) + '">' +
+                    options + '</select>' +
+                    '</div>';
+            });
+        }
+
+        /* Fulfillment note */
+        var fulfillHtml = '';
+        var fl = fulfillmentLabel(item.fulfillment);
+        if (fl) {
+            fulfillHtml = '<p class="product-fulfill small muted"><i class="bi bi-truck"></i> ' + escapeHtml(fl) + '</p>';
+        }
+
+        /* Add to cart button */
+        var soldOut = typeof item.stock === 'number' && item.stock <= 0;
+        var addBtnHtml = price
+            ? '<button class="btn btn-primary add-to-cart-btn"' + (soldOut ? ' disabled' : '') + '>' +
+              '<i class="bi bi-bag-plus"></i> ' + (soldOut ? 'Sold Out' : 'Add to Cart') + '</button>'
             : '';
+
+        /* External link */
+        var linkHtml = '';
+        if (item.link) {
+            var linkLabel = item.linkLabel || 'View';
+            linkHtml = '<a href="' + escapeHtml(item.link) + '" class="btn btn-secondary" target="_blank" rel="noopener">' +
+                       escapeHtml(linkLabel) + ' <i class="bi bi-box-arrow-up-right"></i></a>';
+        }
 
         return [
             '<div class="product-card" data-type="' + escapeHtml(item.type || '') + '">',
@@ -117,14 +165,18 @@
             '  <div class="product-info">',
             '    <div class="product-header">',
             '      <h3 class="product-title">' + escapeHtml(item.title || 'Untitled') + '</h3>',
-            item.price ? '      <span class="product-price">' + escapeHtml(item.price) + '</span>' : '',
+            priceHtml,
             '    </div>',
             '    <div class="product-meta">',
             item.type ? '      <span class="' + badgeClass(item.type) + '">' + escapeHtml(item.type) + '</span>' : '',
+            stockHtml,
             '    </div>',
             item.description ? '    <p class="product-desc">' + escapeHtml(item.description) + '</p>' : '',
+            variantHtml,
+            fulfillHtml,
             tags ? '    <div class="gallery-tags" style="margin-bottom:0.75rem">' + tags + '</div>' : '',
             '    <div class="product-actions">',
+            addBtnHtml,
             linkHtml,
             '    </div>',
             '  </div>',
@@ -132,6 +184,9 @@
         ].join('\n');
     }
 
+    /* -------------------------------------------------------
+       RENDER
+       ------------------------------------------------------- */
     function render(items) {
         var filtered = activeFilter === 'all'
             ? items
@@ -145,6 +200,7 @@
         grid.innerHTML = filtered.map(buildCard).join('');
         if (statusEl) statusEl.textContent = filtered.length + ' product(s)';
 
+        /* Wire up image lightbox clicks */
         grid.querySelectorAll('.product-card').forEach(function (card, i) {
             var img = card.querySelector('.product-img-clickable');
             if (img) {
@@ -153,9 +209,30 @@
                     openProductLightbox(filtered[i], filtered, i);
                 });
             }
+
+            /* Wire up Add to Cart */
+            var addBtn = card.querySelector('.add-to-cart-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function () {
+                    var product = filtered[i];
+                    var variant = '';
+                    var selects = card.querySelectorAll('.variant-select');
+                    if (selects.length) {
+                        var parts = [];
+                        selects.forEach(function (sel) { parts.push(sel.value); });
+                        variant = parts.join(' / ');
+                    }
+                    if (window.SiteCart) {
+                        window.SiteCart.add(product, variant);
+                    }
+                });
+            }
         });
     }
 
+    /* -------------------------------------------------------
+       FILTERS
+       ------------------------------------------------------- */
     function setupFilters(items) {
         if (!filterRow) return;
         var types = [];
@@ -185,6 +262,9 @@
         });
     }
 
+    /* -------------------------------------------------------
+       FETCH & INIT
+       ------------------------------------------------------- */
     fetch('/assets/shop.json')
         .then(function (res) {
             if (!res.ok) throw new Error(res.status);

@@ -2,21 +2,25 @@
     {
         "title": "Example Etched Glass",
         "description": "Replace this with a real product. Add images to assets/products/ and update the fields below.",
-        "price": "$35",
+        "price": 35.00,
         "type": "physical",
+        "fulfillment": "handmade",
         "image": "/assets/products/placeholder.jpg",
-        "link": "mailto:sullivanrsteele@gmail.com?subject=Shop%20Inquiry",
-        "linkLabel": "Inquire",
-        "tags": ["glasswork", "custom"]
+        "tags": ["glasswork", "custom"],
+        "stock": 10,
+        "weight": 400,
+        "shipping": { "domestic": 5.99, "international": 12.99 },
+        "variants": [
+            { "name": "Style", "options": ["Pint", "Rocks", "Wine"] }
+        ]
     },
     {
         "title": "Example 3D Model",
         "description": "Replace this with a real digital product listing.",
-        "price": "$10",
+        "price": 10.00,
         "type": "digital",
+        "fulfillment": "digital",
         "image": "/assets/products/placeholder.jpg",
-        "link": "mailto:sullivanrsteele@gmail.com?subject=Shop%20Inquiry",
-        "linkLabel": "Inquire",
         "tags": ["3d-model", "digital"]
     }
 ]

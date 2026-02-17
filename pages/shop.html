@@ -24,6 +24,8 @@
     <meta name="twitter:title" content="Shop | Sullivan Steele">
     <meta name="twitter:description" content="Handmade goods, digital models, and prints from Homegrown Spirits.">
     <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <!-- PayPal SDK — replace YOUR_PAYPAL_CLIENT_ID with your real client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD" defer></script>
 </head>
 <body data-route="shop">
     <a href="#main" class="skip-link">Skip to main content</a>
@@ -68,9 +70,9 @@
                     make wood items, stickers, prints, and some digital 3D models.
                 </p>
                 <p>
-                    Everything listed here links to the platform where the item is sold
-                    or to an inquiry email. Payments are handled securely through those
-                    platforms — nothing is processed on this site.
+                    Payments are processed securely through PayPal — you can pay with
+                    any credit/debit card, PayPal balance, or Venmo. I never see your
+                    payment details.
                 </p>
             </section>
 
@@ -84,21 +86,46 @@
                     <div class="skeleton skeleton-card"></div>
                     <div class="skeleton skeleton-card"></div>
                 </div>
-                <p class="small muted mt-md">
-                    Add product images to <code>assets/products/</code> and entries to
-                    <code>assets/shop.json</code> to list items here.
-                </p>
             </section>
 
             <section class="section-rule" id="custom-work">
                 <h2>Custom Work</h2>
                 <p>
                     For custom etching, commissions, or bulk orders, send an email and
-                    I'll get back to you.
+                    I'll get back to you with a quote.
                 </p>
                 <ul class="no-bullets">
                     <li><i class="bi bi-envelope"></i> <a href="mailto:sullivanrsteele@gmail.com">sullivanrsteele@gmail.com</a></li>
                 </ul>
+            </section>
+
+            <section class="section-rule" id="shipping">
+                <h2>Shipping &amp; Policies</h2>
+                <div class="policy-grid">
+                    <div class="policy-card">
+                        <i class="bi bi-truck"></i>
+                        <h3>Shipping</h3>
+                        <p>Handmade items ship within 3–5 business days via USPS. Print-on-demand items ship directly from the printer (5–10 days).</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="bi bi-arrow-return-left"></i>
+                        <h3>Returns</h3>
+                        <p>If something arrives damaged, email me within 14 days with a photo and I'll make it right — replacement or full refund.</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="bi bi-shield-check"></i>
+                        <h3>Payments</h3>
+                        <p>All payments processed through PayPal. I never see or store your card information.</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="bi bi-download"></i>
+                        <h3>Digital Items</h3>
+                        <p>Digital files are delivered via email after payment. No returns on digital downloads.</p>
+                    </div>
+                </div>
+                <p class="small muted mt-md">
+                    Full details on our <a href="policies.html">shipping &amp; returns policy</a> page.
+                </p>
             </section>
 
         </main>
@@ -123,6 +150,7 @@
                     <li><a href="#about-shop">About the Shop</a></li>
                     <li><a href="#products">Products</a></li>
                     <li><a href="#custom-work">Custom Work</a></li>
+                    <li><a href="#shipping">Shipping &amp; Policies</a></li>
                 </ul>
             </div>
         </aside>
@@ -139,6 +167,7 @@
         </div>
     </footer>
 
+    <script src="../js/cart.js"></script>
     <script src="../js/shop.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/nav.js"></script>
