@@ -79,7 +79,7 @@ def generate_page(commits: list[dict]) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Changelog — recent updates to sullivanrsteele.com">
+    <meta name="description" content="Changelog â€” recent updates to sullivanrsteele.com">
     <title>Changelog | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,6 +87,7 @@ def generate_page(commits: list[dict]) -> str:
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
+    <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="alternate" type="application/atom+xml" title="Sullivan Steele" href="/feed.xml">
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -97,7 +98,7 @@ def generate_page(commits: list[dict]) -> str:
     <nav>
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
@@ -109,8 +110,8 @@ def generate_page(commits: list[dict]) -> str:
                 <li><a href="about.html" data-nav-route="about">About</a></li>
                 <li><a href="music.html" data-nav-route="music">Music</a></li>
                 <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
-                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -159,10 +160,12 @@ def generate_page(commits: list[dict]) -> str:
         </div>
     </footer>
 
+    <script src="../js/cart.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/nav.js"></script>
     <script src="../js/backgrounds.js"></script>
     <script src="../js/enhancements.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>
 """
@@ -174,7 +177,7 @@ def main():
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
-    print("Reading git log…")
+    print("Reading git logâ€¦")
     commits = get_git_log(root)
 
     if not commits:
@@ -184,7 +187,7 @@ def main():
     out = root / OUTPUT_PATH
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page_html, encoding="utf-8")
-    print(f"Generated changelog with {len(commits)} commit(s) → {out}")
+    print(f"Generated changelog with {len(commits)} commit(s) â†’ {out}")
 
 
 if __name__ == "__main__":

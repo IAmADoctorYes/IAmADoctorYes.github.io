@@ -148,6 +148,7 @@ def generate_page(
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/main.css">
     <script src="../../js/theme.js"></script>
+    <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <meta property="og:title" content="{html_escape(title)} | Sullivan Steele">
@@ -166,7 +167,7 @@ def generate_page(
     <nav>
         <div class="nav-container">
             <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
@@ -178,8 +179,8 @@ def generate_page(
                 <li><a href="../about.html" data-nav-route="about">About</a></li>
                 <li><a href="../music.html" data-nav-route="music">Music</a></li>
                 <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
-                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -264,9 +265,12 @@ def generate_page(
         </div>
     </footer>
 
+    <script src="../../js/cart.js"></script>
     <script src="../../js/search.js"></script>
     <script src="../../js/nav.js"></script>
     <script src="../../js/backgrounds.js"></script>
+    <script src="../../js/enhancements.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>
 """)
@@ -336,12 +340,12 @@ def main():
     src_dir = root / PDF_SOURCE
 
     if not src_dir.is_dir():
-        print(f"No PDF source directory at {src_dir} — nothing to convert.")
+        print(f"No PDF source directory at {src_dir} â€” nothing to convert.")
         return
 
     pdfs = sorted(src_dir.glob("*.pdf"))
     if not pdfs:
-        print("No PDFs found in content/pdfs/ — nothing to convert.")
+        print("No PDFs found in content/pdfs/ â€” nothing to convert.")
         return
 
     print(f"Found {len(pdfs)} PDF(s) in {src_dir.relative_to(root)}")

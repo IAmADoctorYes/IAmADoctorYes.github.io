@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Shop — handmade goods, digital models, and prints from Homegrown Spirits">
+    <meta name="description" content="Shop â€” handmade goods, digital models, and prints from Homegrown Spirits">
     <title>Shop | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,8 +24,18 @@
     <meta name="twitter:title" content="Shop | Sullivan Steele">
     <meta name="twitter:description" content="Handmade goods, digital models, and prints from Homegrown Spirits.">
     <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
-    <!-- PayPal SDK — replace YOUR_PAYPAL_CLIENT_ID with your real client ID -->
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD" defer></script>
+    <!-- PayPal SDK â€” replace YOUR_PAYPAL_CLIENT_ID with your real client ID -->
+    <script>
+        (function(){
+            var id = 'YOUR_PAYPAL_CLIENT_ID';
+            if (id && id !== 'YOUR_PAYPAL_CLIENT_ID') {
+                var s = document.createElement('script');
+                s.src = 'https://www.paypal.com/sdk/js?client-id=' + id + '&currency=USD';
+                s.defer = true;
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
 </head>
 <body data-route="shop">
     <a href="#main" class="skip-link">Skip to main content</a>
@@ -33,7 +43,7 @@
     <nav>
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
@@ -45,8 +55,8 @@
                 <li><a href="about.html" data-nav-route="about">About</a></li>
                 <li><a href="music.html" data-nav-route="music">Music</a></li>
                 <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
-                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -65,12 +75,12 @@
             <section class="section-rule" id="about-shop">
                 <h2>About the Shop</h2>
                 <p>
-                    I run <strong>Homegrown Spirits</strong> with my partner — we do
+                    I run <strong>Homegrown Spirits</strong> with my partner â€” we do
                     sand-etched glasswork, custom pieces, that kind of thing. I also
                     make wood items, stickers, prints, and some digital 3D models.
                 </p>
                 <p>
-                    Payments are processed securely through PayPal — you can pay with
+                    Payments are processed securely through PayPal â€” you can pay with
                     any credit/debit card, PayPal balance, or Venmo. I never see your
                     payment details.
                 </p>
@@ -79,7 +89,7 @@
             <section class="section-rule" id="products">
                 <h2>Products</h2>
                 <div id="shop-filters" class="shop-filter-row mb-md" role="group" aria-label="Filter products by type"></div>
-                <p id="shop-status" class="small muted" role="status" aria-live="polite">Loading products…</p>
+                <p id="shop-status" class="small muted" role="status" aria-live="polite">Loading productsâ€¦</p>
                 <div id="product-grid" class="product-grid">
                     <div class="skeleton skeleton-card"></div>
                     <div class="skeleton skeleton-card"></div>
@@ -105,12 +115,12 @@
                     <div class="policy-card">
                         <i class="bi bi-truck"></i>
                         <h3>Shipping</h3>
-                        <p>Handmade items ship within 3–5 business days via USPS. Print-on-demand items ship directly from the printer (5–10 days).</p>
+                        <p>Handmade items ship within 3â€“5 business days via USPS. Print-on-demand items ship directly from the printer (5â€“10 days).</p>
                     </div>
                     <div class="policy-card">
                         <i class="bi bi-arrow-return-left"></i>
                         <h3>Returns</h3>
-                        <p>If something arrives damaged, email me within 14 days with a photo and I'll make it right — replacement or full refund.</p>
+                        <p>If something arrives damaged, email me within 14 days with a photo and I'll make it right â€” replacement or full refund.</p>
                     </div>
                     <div class="policy-card">
                         <i class="bi bi-shield-check"></i>

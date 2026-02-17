@@ -3,29 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Gallery â€” photos, visuals, and project snapshots by Sullivan Steele">
-    <title>Gallery | Sullivan Steele</title>
+    <meta name="description" content="Changelog â€” recent updates to sullivanrsteele.com">
+    <title>Changelog | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/theme.js"></script>
-    <link rel="alternate" type="application/atom+xml" title="Sullivan Steele" href="/feed.xml">
     <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
+    <link rel="alternate" type="application/atom+xml" title="Sullivan Steele" href="/feed.xml">
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <meta property="og:title" content="Gallery | Sullivan Steele">
-    <meta property="og:description" content="Photos, visuals, and project snapshots.">
-    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
-    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/gallery.html">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Gallery | Sullivan Steele">
-    <meta name="twitter:description" content="Photos, visuals, and project snapshots.">
-    <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body data-route="gallery">
+<body data-route="changelog">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -50,26 +41,17 @@
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content" aria-labelledby="gallery-title">
+        <main id="main" class="page-content">
 
             <section class="hero">
-                <h1 id="gallery-title">Gallery</h1>
+                <h1>Changelog</h1>
                 <p class="hero-sub">
-                    Photos, project visuals, and snapshots. Click any image for details or to visit the related page.
+                    Recent updates to this site, pulled from the git history.
                 </p>
             </section>
 
-            <section class="section-rule">
-                <div id="gallery-filters" class="shop-filter-row mb-md" role="group" aria-label="Filter gallery by tag"></div>
-                <p id="gallery-status" class="small muted" role="status" aria-live="polite">Loading galleryâ€¦</p>
-                <div id="gallery-grid" class="gallery-grid">
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                </div>
+            <section class="section-rule changelog-list">
+<p class="empty-state">No commits found.</p>
             </section>
 
         </main>
@@ -82,13 +64,12 @@
                     <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
                     <li><a href="projects.html" data-nav-route="projects">Projects</a></li>
                     <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
-                    <li class="sidebar-current" aria-current="page"><span>Gallery</span></li>
+                    <li><a href="gallery.html" data-nav-route="gallery">Gallery</a></li>
                     <li><a href="about.html" data-nav-route="about">About</a></li>
                     <li><a href="music.html" data-nav-route="music">Music</a></li>
                     <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                 </ul>
             </div>
-
         </aside>
     </div>
 
@@ -103,7 +84,6 @@
         </div>
     </footer>
 
-    <script src="../js/gallery.js"></script>
     <script src="../js/cart.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/nav.js"></script>

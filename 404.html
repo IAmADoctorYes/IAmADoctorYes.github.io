@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Page not found — Sullivan Steele">
-    <title>404 — Not Found | Sullivan Steele</title>
+    <meta name="description" content="Page not found â€” Sullivan Steele">
+    <title>404 â€” Not Found | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/theme.js"></script>
+    <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="alternate" type="application/atom+xml" title="Sullivan Steele" href="/feed.xml">
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -21,7 +22,7 @@
     <nav>
         <div class="nav-container">
             <a href="index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
@@ -33,8 +34,8 @@
                 <li><a href="pages/about.html" data-nav-route="about">About</a></li>
                 <li><a href="pages/music.html" data-nav-route="music">Music</a></li>
                 <li><a href="pages/shop.html" data-nav-route="shop">Shop</a></li>
-                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -51,7 +52,7 @@
                 </p>
                 <div class="hero-actions" style="justify-content:center;">
                     <a href="index.html" class="btn btn-primary"><i class="bi bi-house"></i> Home</a>
-                    <button class="btn btn-secondary site-search-toggle"><i class="bi bi-search"></i> Search</button>
+                    <button type="button" class="btn btn-secondary site-search-toggle"><i class="bi bi-search"></i> Search</button>
                 </div>
             </section>
 
@@ -117,6 +118,5 @@
     <script src="js/backgrounds.js"></script>
     <script src="js/enhancements.js"></script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
-    <script src="js/enhancements.js"></script>
 </body>
 </html>

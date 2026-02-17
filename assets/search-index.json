@@ -1,27 +1,135 @@
 [
   {
+    "title": "Changelog",
+    "slug": "pages/changelog.html",
+    "href": "/pages/changelog.html",
+    "preview": "Changelog \u00e2\u20ac\u201d recent updates to sullivanrsteele.com",
+    "tags": [
+      "page"
+    ],
+    "category": "page",
+    "icon": "bi-file-earmark",
+    "date": "2026-02-17T12:51:06.327053+00:00"
+  },
+  {
+    "title": "About",
+    "slug": "pages/about.html",
+    "href": "/pages/about.html",
+    "preview": "About Sullivan Steele \u00e2\u20ac\u201d background, music, craft, and what drives me",
+    "tags": [
+      "about"
+    ],
+    "category": "about",
+    "icon": "bi-person",
+    "date": "2026-02-17T12:50:26.031983+00:00"
+  },
+  {
     "title": "Sullivan Steele",
     "slug": "index.html",
     "href": "/index.html",
-    "preview": "Sullivan Steele \u2014 data scientist, maker, musician, lifelong learner from West Virginia",
+    "preview": "Sullivan Steele \u00e2\u20ac\u201d data scientist, maker, musician, lifelong learner from West Virginia",
     "tags": [
       "home"
     ],
     "category": "home",
     "icon": "bi-house",
-    "date": "2026-02-16T19:06:13.750907+00:00"
+    "date": "2026-02-17T12:49:18.790252+00:00"
   },
   {
-    "title": "Virtual Simulation Aided AI Model Training",
-    "slug": "pages/projects/fish-detection.html",
-    "href": "/pages/projects/fish-detection.html",
-    "preview": "Synthetic data generation for computer vision using physics simulation",
+    "title": "404 \u00e2\u20ac\u201d Not Found",
+    "slug": "404.html",
+    "href": "/404.html",
+    "preview": "Page not found \u00e2\u20ac\u201d Sullivan Steele",
     "tags": [
-      "project-detail"
+      "page"
     ],
-    "category": "project-detail",
-    "icon": "bi-file-earmark-text",
-    "date": "2026-02-16T19:06:13.750907+00:00"
+    "category": "page",
+    "icon": "bi-file-earmark",
+    "date": "2026-02-17T12:49:18.788321+00:00"
+  },
+  {
+    "title": "Shop",
+    "slug": "pages/shop.html",
+    "href": "/pages/shop.html",
+    "preview": "Shop \u00e2\u20ac\u201d handmade goods, digital models, and prints from Homegrown Spirits",
+    "tags": [
+      "shop"
+    ],
+    "category": "shop",
+    "icon": "bi-bag",
+    "date": "2026-02-17T12:49:18.716230+00:00"
+  },
+  {
+    "title": "Projects",
+    "slug": "pages/projects.html",
+    "href": "/pages/projects.html",
+    "preview": "Projects \u00e2\u20ac\u201d hobby builds, personal experiments, and side projects by Sullivan Steele",
+    "tags": [
+      "projects"
+    ],
+    "category": "projects",
+    "icon": "bi-kanban",
+    "date": "2026-02-17T12:49:18.713228+00:00"
+  },
+  {
+    "title": "Policies",
+    "slug": "pages/policies.html",
+    "href": "/pages/policies.html",
+    "preview": "Shipping, returns, privacy, and payment policies for the Sullivan Steele shop",
+    "tags": [
+      "page"
+    ],
+    "category": "page",
+    "icon": "bi-file-earmark",
+    "date": "2026-02-17T12:49:18.711231+00:00"
+  },
+  {
+    "title": "Passion Projects",
+    "slug": "pages/passion-projects.html",
+    "href": "/pages/passion-projects.html",
+    "preview": "Passion Projects \u00e2\u20ac\u201d art, experiments, and non-work projects by Sullivan Steele",
+    "tags": [
+      "page"
+    ],
+    "category": "page",
+    "icon": "bi-file-earmark",
+    "date": "2026-02-17T12:49:18.709225+00:00"
+  },
+  {
+    "title": "My Work",
+    "slug": "pages/my-work.html",
+    "href": "/pages/my-work.html",
+    "preview": "My Work \u00e2\u20ac\u201d professional projects, research, and public data work by Sullivan Steele",
+    "tags": [
+      "work"
+    ],
+    "category": "work",
+    "icon": "bi-briefcase",
+    "date": "2026-02-17T12:49:18.708225+00:00"
+  },
+  {
+    "title": "Music",
+    "slug": "pages/music.html",
+    "href": "/pages/music.html",
+    "preview": "Music \u00e2\u20ac\u201d guitar, bass, and instrumental recordings by Sullivan Steele",
+    "tags": [
+      "music"
+    ],
+    "category": "music",
+    "icon": "bi-music-note-beamed",
+    "date": "2026-02-17T12:49:18.706225+00:00"
+  },
+  {
+    "title": "Gallery",
+    "slug": "pages/gallery.html",
+    "href": "/pages/gallery.html",
+    "preview": "Gallery \u00e2\u20ac\u201d photos, visuals, and project snapshots by Sullivan Steele",
+    "tags": [
+      "gallery"
+    ],
+    "category": "gallery",
+    "icon": "bi-images",
+    "date": "2026-02-17T12:49:18.705223+00:00"
   },
   {
     "title": "Articles & Reports",
@@ -33,79 +141,7 @@
     ],
     "category": "articles",
     "icon": "bi-journal-text",
-    "date": "2026-02-16T19:02:59.634716+00:00"
-  },
-  {
-    "title": "Gallery",
-    "slug": "pages/gallery.html",
-    "href": "/pages/gallery.html",
-    "preview": "Gallery \u2014 photos, visuals, and project snapshots by Sullivan Steele",
-    "tags": [
-      "gallery"
-    ],
-    "category": "gallery",
-    "icon": "bi-images",
-    "date": "2026-02-16T19:02:59.634716+00:00"
-  },
-  {
-    "title": "Music",
-    "slug": "pages/music.html",
-    "href": "/pages/music.html",
-    "preview": "Music \u2014 guitar, bass, and instrumental recordings by Sullivan Steele",
-    "tags": [
-      "music"
-    ],
-    "category": "music",
-    "icon": "bi-music-note-beamed",
-    "date": "2026-02-16T19:02:59.634716+00:00"
-  },
-  {
-    "title": "About",
-    "slug": "pages/about.html",
-    "href": "/pages/about.html",
-    "preview": "About Sullivan Steele \u2014 background, music, craft, and what drives me",
-    "tags": [
-      "about"
-    ],
-    "category": "about",
-    "icon": "bi-person",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "My Work",
-    "slug": "pages/my-work.html",
-    "href": "/pages/my-work.html",
-    "preview": "My Work \u2014 professional projects, research, and public data work by Sullivan Steele",
-    "tags": [
-      "work"
-    ],
-    "category": "work",
-    "icon": "bi-briefcase",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "Projects",
-    "slug": "pages/projects.html",
-    "href": "/pages/projects.html",
-    "preview": "Projects \u2014 hobby builds, personal experiments, and side projects by Sullivan Steele",
-    "tags": [
-      "projects"
-    ],
-    "category": "projects",
-    "icon": "bi-kanban",
-    "date": "2026-02-16T18:35:22.058749+00:00"
-  },
-  {
-    "title": "Shop",
-    "slug": "pages/shop.html",
-    "href": "/pages/shop.html",
-    "preview": "Shop \u2014 handmade goods, digital models, and prints from Homegrown Spirits",
-    "tags": [
-      "shop"
-    ],
-    "category": "shop",
-    "icon": "bi-bag",
-    "date": "2026-02-16T18:35:22.058749+00:00"
+    "date": "2026-02-17T12:49:18.702225+00:00"
   },
   {
     "title": "WV Labor Market Site Modernization",
@@ -117,6 +153,18 @@
     ],
     "category": "project-detail",
     "icon": "bi-file-earmark-text",
-    "date": "2026-02-16T18:35:22.058749+00:00"
+    "date": "2026-02-17T12:49:18.696246+00:00"
+  },
+  {
+    "title": "Virtual Simulation Aided AI Model Training",
+    "slug": "pages/projects/fish-detection.html",
+    "href": "/pages/projects/fish-detection.html",
+    "preview": "Synthetic data generation for computer vision using physics simulation",
+    "tags": [
+      "project-detail"
+    ],
+    "category": "project-detail",
+    "icon": "bi-file-earmark-text",
+    "date": "2026-02-17T12:49:18.665777+00:00"
   }
 ]

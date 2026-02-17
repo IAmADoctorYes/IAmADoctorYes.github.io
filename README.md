@@ -64,3 +64,14 @@ Open `index.html` in a browser or run a local server:
 ```bash
 python -m http.server 8000
 ```
+
+### Legacy sync command
+
+If any workflow or local process still calls `python scripts/sync-google-docs.py`,
+that command is now a **local-only compatibility runner**. It does not use Google
+Drive or Google Docs APIs; it simply runs the repo build scripts in sequence.
+
+Optional flags:
+
+- `--root <path>`: set repository root
+- `--skip-backgrounds`: skip optional background fetch step

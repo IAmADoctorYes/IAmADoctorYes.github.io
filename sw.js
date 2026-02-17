@@ -1,4 +1,4 @@
-var CACHE_NAME = 'ss-site-v1';
+var CACHE_NAME = 'ss-site-v2';
 var STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -8,6 +8,7 @@ var STATIC_ASSETS = [
     '/js/search.js',
     '/js/backgrounds.js',
     '/js/enhancements.js',
+    '/js/cart.js',
     '/assets/search-index.json'
 ];
 

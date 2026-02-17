@@ -434,23 +434,16 @@
        17. VIEW TRANSITIONS API (progressive enhancement)
        ------------------------------------------------------- */
     function initViewTransitions() {
-        if (!document.startViewTransition) return;
+        /* View Transitions for MPA are handled via CSS:
+           @view-transition { navigation: auto; }
+           No JS interception needed — the browser handles it natively
+           when supported. We only inject the CSS opt-in. */
         if (prefersReducedMotion) return;
+        if (!('startViewTransition' in document)) return;
 
-        document.addEventListener('click', function (e) {
-            var link = e.target.closest('a[href]');
-            if (!link) return;
-            var url = link.href;
-
-            if (link.target === '_blank' || link.hasAttribute('download')) return;
-            if (new URL(url).origin !== window.location.origin) return;
-            if (url === window.location.href) return;
-
-            e.preventDefault();
-            document.startViewTransition(function () {
-                window.location.href = url;
-            });
-        });
+        var style = document.createElement('style');
+        style.textContent = '@view-transition { navigation: auto; }';
+        document.head.appendChild(style);
     }
 
     /* -------------------------------------------------------
@@ -595,7 +588,7 @@
         overlay.addEventListener('keydown', function (e) {
             if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
 
-            var items = overlay.querySelectorAll('.search-result-link, .search-result a');
+            var items = overlay.querySelectorAll('.search-result-card');
             if (!items.length) return;
 
             var focused = overlay.querySelector('.search-kb-focus');
@@ -720,25 +713,6 @@
     }
 
     /* -------------------------------------------------------
-       28. FOCUS-VISIBLE RINGS
-       Apply a class to <body> when user is navigating with
-       keyboard so we only show focus rings for keyboard users.
-       ------------------------------------------------------- */
-    function initFocusVisible() {
-        var usingKeyboard = false;
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Tab') {
-                usingKeyboard = true;
-                document.body.classList.add('keyboard-nav');
-            }
-        });
-        document.addEventListener('mousedown', function () {
-            usingKeyboard = false;
-            document.body.classList.remove('keyboard-nav');
-        });
-    }
-
-    /* -------------------------------------------------------
        29. AUTOMATIC HEADING ANCHORS
        Add a clickable # link next to every h2/h3 with an id.
        ------------------------------------------------------- */
@@ -820,7 +794,6 @@
         wrapTables();
         initLazySections();
         showLastUpdated();
-        initFocusVisible();
         addHeadingAnchors();
         initPrefetch();
     });

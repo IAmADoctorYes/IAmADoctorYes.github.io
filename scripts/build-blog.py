@@ -55,7 +55,8 @@ def md_to_html(md: str) -> str:
                 in_code = False
             else:
                 lang = stripped[3:].strip()
-                html_parts.append(f"<pre><code{' class=\"language-' + html_escape(lang) + '\"' if lang else ''}>")
+                code_class = f' class="language-{html_escape(lang)}"' if lang else ""
+                html_parts.append(f"<pre><code{code_class}>")
                 in_code = True
             continue
 
@@ -173,6 +174,7 @@ def generate_blog_page(meta: dict, body_html: str) -> str:
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/main.css">
     <script src="../../js/theme.js"></script>
+    <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <link rel="alternate" type="application/atom+xml" title="Sullivan Steele" href="/feed.xml">
@@ -190,7 +192,7 @@ def generate_blog_page(meta: dict, body_html: str) -> str:
     <nav>
         <div class="nav-container">
             <a href="../../index.html" class="nav-logo">SULLIVAN STEELE</a>
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+            <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="nav-links">
@@ -202,8 +204,8 @@ def generate_blog_page(meta: dict, body_html: str) -> str:
                 <li><a href="../about.html" data-nav-route="about">About</a></li>
                 <li><a href="../music.html" data-nav-route="music">Music</a></li>
                 <li><a href="../shop.html" data-nav-route="shop">Shop</a></li>
-                <li><button class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
-                <li><button class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+                <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
         </div>
     </nav>
@@ -264,9 +266,12 @@ def generate_blog_page(meta: dict, body_html: str) -> str:
         </div>
     </footer>
 
+    <script src="../../js/cart.js"></script>
     <script src="../../js/search.js"></script>
     <script src="../../js/nav.js"></script>
     <script src="../../js/backgrounds.js"></script>
+    <script src="../../js/enhancements.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>
 """
@@ -281,14 +286,14 @@ def main():
     blog_dir = root / BLOG_DIR
 
     if not blog_dir.is_dir():
-        print(f"No blog directory at {blog_dir} — nothing to convert.")
+        print(f"No blog directory at {blog_dir} â€” nothing to convert.")
         return
 
     md_files = sorted(blog_dir.glob("*.md"))
     md_files = [f for f in md_files if f.name.lower() != "readme.md"]
 
     if not md_files:
-        print("No Markdown posts found in pages/blog/ — nothing to convert.")
+        print("No Markdown posts found in pages/blog/ â€” nothing to convert.")
         return
 
     print(f"Found {len(md_files)} Markdown post(s)")
@@ -308,7 +313,7 @@ def main():
 
         out_path = md_path.with_suffix(".html")
         out_path.write_text(page_html, encoding="utf-8")
-        print(f"  → {out_path.relative_to(root)}")
+        print(f"  â†’ {out_path.relative_to(root)}")
 
     print(f"Converted {len(md_files)} post(s).")
 

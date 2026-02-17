@@ -188,14 +188,26 @@
         if (!drawer) createDrawer();
         renderDrawer();
         drawer.hidden = false;
-        document.body.style.overflow = 'hidden';
-        drawer.querySelector('.cart-drawer-close').focus();
+        /* Let the browser paint the hidden-removal first, then animate */
+        requestAnimationFrame(function () {
+            document.body.style.overflow = 'hidden';
+            drawer.querySelector('.cart-drawer-close').focus();
+        });
     }
 
     function closeDrawer() {
         if (!drawer) return;
-        drawer.hidden = true;
         document.body.style.overflow = '';
+        /* Wait for the CSS transition before fully hiding */
+        var panel = drawer.querySelector('.cart-drawer-panel');
+        function onEnd() {
+            panel.removeEventListener('transitionend', onEnd);
+            drawer.hidden = true;
+        }
+        panel.addEventListener('transitionend', onEnd);
+        /* Force style recalc then hide (CSS :not([hidden]) controls the transform) */
+        drawer.setAttribute('aria-hidden', 'true');
+        drawer.hidden = true;
     }
 
     function escapeHtml(s) {
@@ -366,11 +378,11 @@
 
         /* trigger enter animation */
         requestAnimationFrame(function () {
-            toast.classList.add('toast-visible');
+            toast.classList.add('visible');
         });
 
         setTimeout(function () {
-            toast.classList.remove('toast-visible');
+            toast.classList.remove('visible');
             toast.addEventListener('transitionend', function () {
                 toast.remove();
             });

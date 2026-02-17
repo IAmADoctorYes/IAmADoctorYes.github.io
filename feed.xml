@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Sullivan Steele</title>
+  <subtitle>Data scientist, maker, musician — articles, projects, and updates.</subtitle>
+  <link href="https://www.sullivanrsteele.com/feed.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://www.sullivanrsteele.com/" rel="alternate" type="text/html"/>
+  <id>https://www.sullivanrsteele.com/</id>
+  <updated>2026-02-17T12:51:31Z</updated>
+  <author>
+    <name>Sullivan Steele</name>
+  </author>
+  <entry>
+    <title>Shop</title>
+    <link href="https://www.sullivanrsteele.com/pages/shop.html"/>
+    <id>https://www.sullivanrsteele.com/pages/shop.html</id>
+    <updated>2026-02-17T12:49:18.716230+00:00</updated>
+    <summary>Shop â€” handmade goods, digital models, and prints from Homegrown Spirits</summary>
+    <category term="shop"/>
+  </entry>
+  <entry>
+    <title>My Work</title>
+    <link href="https://www.sullivanrsteele.com/pages/my-work.html"/>
+    <id>https://www.sullivanrsteele.com/pages/my-work.html</id>
+    <updated>2026-02-17T12:49:18.708225+00:00</updated>
+    <summary>My Work â€” professional projects, research, and public data work by Sullivan Steele</summary>
+    <category term="work"/>
+  </entry>
+  <entry>
+    <title>Music</title>
+    <link href="https://www.sullivanrsteele.com/pages/music.html"/>
+    <id>https://www.sullivanrsteele.com/pages/music.html</id>
+    <updated>2026-02-17T12:49:18.706225+00:00</updated>
+    <summary>Music â€” guitar, bass, and instrumental recordings by Sullivan Steele</summary>
+    <category term="music"/>
+  </entry>
+  <entry>
+    <title>WV Labor Market Site Modernization</title>
+    <link href="https://www.sullivanrsteele.com/pages/projects/wv-lmi-modernization.html"/>
+    <id>https://www.sullivanrsteele.com/pages/projects/wv-lmi-modernization.html</id>
+    <updated>2026-02-17T12:49:18.696246+00:00</updated>
+    <summary>Modernization and maintenance of West Virginia's Labor Market Information site.</summary>
+    <category term="project-detail"/>
+  </entry>
+  <entry>
+    <title>Virtual Simulation Aided AI Model Training</title>
+    <link href="https://www.sullivanrsteele.com/pages/projects/fish-detection.html"/>
+    <id>https://www.sullivanrsteele.com/pages/projects/fish-detection.html</id>
+    <updated>2026-02-17T12:49:18.665777+00:00</updated>
+    <summary>Synthetic data generation for computer vision using physics simulation</summary>
+    <category term="project-detail"/>
+  </entry>
+</feed>
