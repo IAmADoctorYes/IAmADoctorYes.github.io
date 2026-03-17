@@ -85,7 +85,7 @@
                 var card = btn.closest('.viz-card');
                 if (!card || !url) return;
                 var existing = card.querySelector('.viz-embed-frame');
-                if (existing) { existing.remove(); btn.textContent = 'Open'; return; }
+                if (existing) { existing.remove(); btn.innerHTML = 'Open <i class="bi bi-play-circle"></i>'; return; }
                 var frame = document.createElement('iframe');
                 frame.src = url;
                 frame.className = 'viz-embed-frame';
