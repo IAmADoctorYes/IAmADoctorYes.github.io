@@ -1,0 +1,24 @@
+[
+  {
+    "id": "wv-labor-map",
+    "title": "WV Labor Market Map",
+    "description": "Interactive county-level map of West Virginia labor market indicators. Explore unemployment rates, wages, and employment trends by county.",
+    "type": "map",
+    "thumbnail": "",
+    "tags": ["data", "west-virginia", "labor", "leaflet"],
+    "embed": false,
+    "url": "",
+    "note": "Add the URL or iframe src once hosted. Drop thumbnail into assets/gallery/."
+  },
+  {
+    "id": "generative-lines",
+    "title": "Generative Lines",
+    "description": "A p5.js sketch that draws flowing, recursive line patterns based on mouse movement and randomness.",
+    "type": "p5js",
+    "thumbnail": "",
+    "tags": ["generative", "p5js", "interactive"],
+    "embed": false,
+    "url": "",
+    "note": "Paste your p5.js Editor share URL into the 'url' field, or set embed:true with an iframe URL."
+  }
+]

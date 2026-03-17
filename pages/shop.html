@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Shop â€” handmade goods, digital models, and prints from Homegrown Spirits">
-    <title>Shop | Sullivan Steele</title>
+    <meta name="description" content="Homegrown Spirits — handmade glass, wood, prints, and digital art by Sullivan Steele">
+    <title>Shop — Homegrown Spirits | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -15,27 +15,15 @@
     <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <meta property="og:title" content="Shop | Sullivan Steele">
-    <meta property="og:description" content="Handmade goods, digital models, and prints from Homegrown Spirits.">
+    <meta property="og:title" content="Homegrown Spirits — Shop">
+    <meta property="og:description" content="Handmade glass, wood, prints, and digital art by Sullivan Steele.">
     <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
     <meta property="og:url" content="https://www.sullivanrsteele.com/pages/shop.html">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Shop | Sullivan Steele">
-    <meta name="twitter:description" content="Handmade goods, digital models, and prints from Homegrown Spirits.">
+    <meta name="twitter:title" content="Homegrown Spirits — Shop">
+    <meta name="twitter:description" content="Handmade glass, wood, prints, and digital art by Sullivan Steele.">
     <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
-    <!-- PayPal SDK â€” replace YOUR_PAYPAL_CLIENT_ID with your real client ID -->
-    <script>
-        (function(){
-            var id = 'YOUR_PAYPAL_CLIENT_ID';
-            if (id && id !== 'YOUR_PAYPAL_CLIENT_ID') {
-                var s = document.createElement('script');
-                s.src = 'https://www.paypal.com/sdk/js?client-id=' + id + '&currency=USD';
-                s.defer = true;
-                document.head.appendChild(s);
-            }
-        })();
-    </script>
 </head>
 <body data-route="shop">
     <a href="#main" class="skip-link">Skip to main content</a>
@@ -48,13 +36,13 @@
             </button>
             <ul class="nav-links" id="nav-links">
                 <li><a href="../index.html" data-nav-route="home">Home</a></li>
-                <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
-                <li><a href="projects.html" data-nav-route="projects">Projects</a></li>
-                <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
                 <li><a href="gallery.html" data-nav-route="gallery">Gallery</a></li>
-                <li><a href="about.html" data-nav-route="about">About</a></li>
                 <li><a href="music.html" data-nav-route="music">Music</a></li>
-                <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
+                <li><a href="blog.html" data-nav-route="blog">Writing</a></li>
+                <li><a href="visualizations.html" data-nav-route="visualizations">Visualizations</a></li>
+                <li class="sidebar-current" aria-current="page"><span>Shop</span></li>
+                <li><a href="my-work.html" data-nav-route="my-work">Work</a></li>
+                <li><a href="about.html" data-nav-route="about">About</a></li>
                 <li><button type="button" class="site-search-toggle" aria-label="Search the site"><i class="bi bi-search"></i></button></li>
                 <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
             </ul>
@@ -65,36 +53,53 @@
         <main id="main" class="page-content" aria-labelledby="shop-title">
 
             <section class="hero">
-                <h1 id="shop-title">Shop</h1>
+                <h1 id="shop-title">Homegrown Spirits</h1>
                 <p class="hero-sub">
-                    Handmade goods, sand-etched glasswork, wood items, prints, and digital models
-                    from Homegrown Spirits.
+                    My art business — handmade sand-etched glass, wood craft, art prints,
+                    and digital models. Every handmade piece is made by me and my partner
+                    in Charleston, WV.
                 </p>
             </section>
 
-            <section class="section-rule" id="about-shop">
-                <h2>About the Shop</h2>
-                <p>
-                    I run <strong>Homegrown Spirits</strong> with my partner â€” we do
-                    sand-etched glasswork, custom pieces, that kind of thing. I also
-                    make wood items, stickers, prints, and some digital 3D models.
-                </p>
-                <p>
-                    Payments are processed securely through PayPal â€” you can pay with
-                    any credit/debit card, PayPal balance, or Venmo. I never see your
-                    payment details.
-                </p>
+            <!-- Full-width CTA to the dedicated shop site -->
+            <section class="section-rule" id="visit-shop">
+                <div style="text-align:center;padding:2rem 0">
+                    <i class="bi bi-bag-heart" style="font-size:3rem;color:var(--accent-green);display:block;margin-bottom:1rem"></i>
+                    <h2 style="border:none;margin-bottom:0.5rem">Visit the Full Shop</h2>
+                    <p class="small muted" style="margin-bottom:1.5rem">
+                        The Homegrown Spirits shop has its own site with a full product catalog,
+                        per-artist pages, filters by medium and type, and a cart.
+                    </p>
+                    <a href="/shop/" class="btn btn-primary" style="font-size:1.1rem;padding:0.75rem 2rem">
+                        <i class="bi bi-arrow-right-circle"></i> Open Homegrown Spirits Shop
+                    </a>
+                </div>
             </section>
 
-            <section class="section-rule" id="products">
-                <h2>Products</h2>
-                <div id="shop-filters" class="shop-filter-row mb-md" role="group" aria-label="Filter products by type"></div>
-                <p id="shop-status" class="small muted" role="status" aria-live="polite">Loading productsâ€¦</p>
-                <div id="product-grid" class="product-grid">
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
-                    <div class="skeleton skeleton-card"></div>
+            <!-- Quick browse: direct links to catalog sections -->
+            <section class="section-rule" id="browse">
+                <h2>Browse by Category</h2>
+                <div class="route-grid">
+                    <a href="/shop/catalog.html" class="route-card">
+                        <i class="bi bi-grid route-icon"></i>
+                        <h3>All Products</h3>
+                        <p>Filters by artist, medium, type &amp; price.</p>
+                    </a>
+                    <a href="/shop/artist/sullivan-steele.html" class="route-card">
+                        <i class="bi bi-person route-icon"></i>
+                        <h3>My Work</h3>
+                        <p>Glass, wood, prints, and 3D models by Sullivan.</p>
+                    </a>
+                    <a href="/shop/artists.html" class="route-card">
+                        <i class="bi bi-people route-icon"></i>
+                        <h3>All Artists</h3>
+                        <p>Shop by artist — each has their own page.</p>
+                    </a>
+                    <a href="/shop/policies.html" class="route-card">
+                        <i class="bi bi-file-text route-icon"></i>
+                        <h3>Policies</h3>
+                        <p>Shipping, returns, payments, and privacy.</p>
+                    </a>
                 </div>
             </section>
 
@@ -109,35 +114,6 @@
                 </ul>
             </section>
 
-            <section class="section-rule" id="shipping">
-                <h2>Shipping &amp; Policies</h2>
-                <div class="policy-grid">
-                    <div class="policy-card">
-                        <i class="bi bi-truck"></i>
-                        <h3>Shipping</h3>
-                        <p>Handmade items ship within 3â€“5 business days via USPS. Print-on-demand items ship directly from the printer (5â€“10 days).</p>
-                    </div>
-                    <div class="policy-card">
-                        <i class="bi bi-arrow-return-left"></i>
-                        <h3>Returns</h3>
-                        <p>If something arrives damaged, email me within 14 days with a photo and I'll make it right â€” replacement or full refund.</p>
-                    </div>
-                    <div class="policy-card">
-                        <i class="bi bi-shield-check"></i>
-                        <h3>Payments</h3>
-                        <p>All payments processed through PayPal. I never see or store your card information.</p>
-                    </div>
-                    <div class="policy-card">
-                        <i class="bi bi-download"></i>
-                        <h3>Digital Items</h3>
-                        <p>Digital files are delivered via email after payment. No returns on digital downloads.</p>
-                    </div>
-                </div>
-                <p class="small muted mt-md">
-                    Full details on our <a href="policies.html">shipping &amp; returns policy</a> page.
-                </p>
-            </section>
-
         </main>
 
         <aside class="sidebar" aria-label="Page navigation">
@@ -145,22 +121,31 @@
                 <h4>Pages</h4>
                 <ul>
                     <li><a href="../index.html" data-nav-route="home">Home</a></li>
-                    <li><a href="my-work.html" data-nav-route="my-work">My Work</a></li>
-                    <li><a href="projects.html" data-nav-route="projects">Projects</a></li>
-                    <li><a href="blog.html" data-nav-route="blog">Articles &amp; Reports</a></li>
                     <li><a href="gallery.html" data-nav-route="gallery">Gallery</a></li>
-                    <li><a href="about.html" data-nav-route="about">About</a></li>
                     <li><a href="music.html" data-nav-route="music">Music</a></li>
+                    <li><a href="blog.html" data-nav-route="blog">Writing</a></li>
+                    <li><a href="visualizations.html" data-nav-route="visualizations">Visualizations</a></li>
                     <li class="sidebar-current" aria-current="page"><span>Shop</span></li>
+                    <li><a href="my-work.html" data-nav-route="my-work">Work</a></li>
+                    <li><a href="about.html" data-nav-route="about">About</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="/shop/">Homegrown Spirits Home</a></li>
+                    <li><a href="/shop/catalog.html">Full Catalog</a></li>
+                    <li><a href="/shop/artists.html">Artists</a></li>
+                    <li><a href="/shop/artist/sullivan-steele.html">Sullivan's Work</a></li>
+                    <li><a href="/shop/policies.html">Policies</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
                 <h4>On This Page</h4>
                 <ul class="toc">
-                    <li><a href="#about-shop">About the Shop</a></li>
-                    <li><a href="#products">Products</a></li>
+                    <li><a href="#visit-shop">Visit the Shop</a></li>
+                    <li><a href="#browse">Browse Categories</a></li>
                     <li><a href="#custom-work">Custom Work</a></li>
-                    <li><a href="#shipping">Shipping &amp; Policies</a></li>
                 </ul>
             </div>
         </aside>
@@ -178,7 +163,6 @@
     </footer>
 
     <script src="../js/cart.js"></script>
-    <script src="../js/shop.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/nav.js"></script>
     <script src="../js/backgrounds.js"></script>

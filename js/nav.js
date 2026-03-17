@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '/pages/about.html': 'about',
             '/pages/music.html': 'music',
             '/pages/shop.html': 'shop',
+            '/pages/visualizations.html': 'visualizations',
             '/pages/projects/fish-detection.html': 'my-work',
             '/pages/projects/wv-lmi-modernization.html': 'my-work'
         };

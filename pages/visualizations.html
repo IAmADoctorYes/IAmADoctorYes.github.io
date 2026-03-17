@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Passion Projects â€” art, experiments, and non-work projects by Sullivan Steele">
-    <title>Passion Projects | Sullivan Steele</title>
+    <meta name="description" content="Interactive visualizations — p5.js creative coding sketches and data maps by Sullivan Steele">
+    <title>Visualizations | Sullivan Steele</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -15,17 +15,17 @@
     <script defer data-domain="sullivanrsteele.com" src="https://plausible.io/js/script.js"></script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <meta property="og:title" content="Passion Projects | Sullivan Steele">
-    <meta property="og:description" content="Art, experiments, and non-work projects.">
+    <meta property="og:title" content="Visualizations | Sullivan Steele">
+    <meta property="og:description" content="Interactive p5.js sketches and data maps.">
     <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
-    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/passion-projects.html">
+    <meta property="og:url" content="https://www.sullivanrsteele.com/pages/visualizations.html">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Passion Projects | Sullivan Steele">
-    <meta name="twitter:description" content="Art, experiments, and non-work projects.">
+    <meta name="twitter:title" content="Visualizations | Sullivan Steele">
+    <meta name="twitter:description" content="Interactive p5.js sketches and data maps.">
     <meta name="twitter:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
 </head>
-<body data-route="passion-projects">
+<body data-route="visualizations">
     <a href="#main" class="skip-link">Skip to main content</a>
 
     <nav>
@@ -34,7 +34,7 @@
             <button type="button" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
                 <span></span><span></span><span></span>
             </button>
-                        <ul class="nav-links" id="nav-links">
+            <ul class="nav-links" id="nav-links">
                 <li><a href="../index.html" data-nav-route="home">Home</a></li>
                 <li><a href="gallery.html" data-nav-route="gallery">Gallery</a></li>
                 <li><a href="music.html" data-nav-route="music">Music</a></li>
@@ -50,23 +50,49 @@
     </nav>
 
     <div class="site-layout">
-        <main id="main" class="page-content">
+        <main id="main" class="page-content" aria-labelledby="viz-title">
 
             <section class="hero">
-                <h1>Passion Projects</h1>
+                <h1 id="viz-title">Visualizations</h1>
                 <p class="hero-sub">
-                    Art, experiments, and non-work projects.
+                    Interactive p5.js sketches and data-driven maps — explorations in creative coding
+                    and public data from work and school.
                 </p>
             </section>
 
-            <section class="section-rule">
-                <div class="placeholder-section">
-                    <h2>Coming Soon</h2>
-                    <p>
-                        This page will cover art, tinkering, and the fun stuff that doesn't fit under
-                        professional work or research.
-                    </p>
+            <section class="section-rule" id="sketches">
+                <h2>Sketches &amp; Maps</h2>
+                <div id="viz-filters" class="shop-filter-row mb-md" role="group" aria-label="Filter by type"></div>
+                <p id="viz-status" class="small muted" role="status" aria-live="polite">Loading&#8230;</p>
+                <div id="viz-grid" class="viz-grid">
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
                 </div>
+            </section>
+
+            <section class="section-rule" id="about-viz">
+                <h2>About</h2>
+                <p>
+                    I use <a href="https://p5js.org/" target="_blank" rel="noopener">p5.js</a> for creative
+                    coding — generative art, interactive simulations, and visual experiments. I also build
+                    data maps using <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>
+                    and public datasets from my work at WorkForce WV and school projects at Marshall University.
+                </p>
+                <p>
+                    All data stays local to this repository — no external database required. Each visualization
+                    is either embedded here directly or linked to the p5.js Editor / an external page.
+                </p>
+                <h3>Add a Visualization</h3>
+                <p>
+                    Edit <code>assets/visualizations.json</code> to add new entries. Each entry supports:
+                </p>
+                <ul>
+                    <li><code>type</code>: <code>"p5js"</code> or <code>"map"</code></li>
+                    <li><code>url</code>: link or embeddable iframe URL</li>
+                    <li><code>embed</code>: <code>true</code> to show an inline iframe toggle</li>
+                    <li><code>thumbnail</code>: path to a preview image in <code>assets/gallery/</code></li>
+                </ul>
             </section>
 
         </main>
@@ -79,10 +105,25 @@
                     <li><a href="gallery.html" data-nav-route="gallery">Gallery</a></li>
                     <li><a href="music.html" data-nav-route="music">Music</a></li>
                     <li><a href="blog.html" data-nav-route="blog">Writing</a></li>
-                    <li><a href="visualizations.html" data-nav-route="visualizations">Visualizations</a></li>
+                    <li class="sidebar-current" aria-current="page"><span>Visualizations</span></li>
                     <li><a href="shop.html" data-nav-route="shop">Shop</a></li>
                     <li><a href="my-work.html" data-nav-route="my-work">Work</a></li>
                     <li><a href="about.html" data-nav-route="about">About</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>On This Page</h4>
+                <ul class="toc">
+                    <li><a href="#sketches">Sketches &amp; Maps</a></li>
+                    <li><a href="#about-viz">About</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Tools</h4>
+                <ul>
+                    <li><a href="https://p5js.org/" target="_blank" rel="noopener">p5.js <i class="bi bi-box-arrow-up-right"></i></a></li>
+                    <li><a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet <i class="bi bi-box-arrow-up-right"></i></a></li>
+                    <li><a href="https://editor.p5js.org/" target="_blank" rel="noopener">p5.js Editor <i class="bi bi-box-arrow-up-right"></i></a></li>
                 </ul>
             </div>
         </aside>
@@ -99,6 +140,7 @@
         </div>
     </footer>
 
+    <script src="../js/visualizations.js"></script>
     <script src="../js/cart.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/nav.js"></script>

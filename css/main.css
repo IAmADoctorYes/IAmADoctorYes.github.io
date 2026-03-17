@@ -784,7 +784,7 @@ footer {
 /* Route cards */
 .route-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--gap-sm);
     margin-top: var(--space-4);
 }
@@ -856,6 +856,9 @@ footer {
 @media (max-width: 600px) {
     .route-grid { grid-template-columns: 1fr; }
     .proof-strip { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) and (min-width: 601px) {
+    .route-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* RESPONSIVE */
@@ -2532,4 +2535,117 @@ h3:hover .heading-anchor,
 .heading-anchor:hover {
     opacity: 1;
     color: var(--accent-green);
+}
+
+/* =============================================================
+   PRODUCT BADGE — PRINT / DROPSHIP
+   ============================================================ */
+.product-badge-print { border-color: var(--accent-green); color: var(--accent-green); }
+
+/* =============================================================
+   COMPONENT: VISUALIZATION GRID + CARDS
+   ============================================================ */
+.viz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--gap-sm);
+    margin-top: var(--space-4);
+}
+
+.viz-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s, transform 0.1s;
+}
+.viz-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+}
+
+.viz-card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0;
+    margin: 0;
+    display: block;
+}
+
+.viz-card-placeholder {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 2.5rem;
+}
+
+.viz-card-body {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--space-2);
+}
+
+.viz-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+.viz-card-meta .bi { margin-right: 0; font-size: 0.9rem; }
+
+.viz-card-title {
+    font-size: var(--font-size-lg);
+    margin: 0;
+}
+
+.viz-card-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0;
+    flex-grow: 1;
+}
+
+.viz-card-tags {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+
+.viz-card-actions {
+    margin-top: var(--space-2);
+}
+.viz-card-actions .btn {
+    font-size: 0.8rem;
+    padding: var(--space-1) var(--space-4);
+}
+
+.viz-coming-soon {
+    font-style: italic;
+}
+
+.viz-embed-frame {
+    width: 100%;
+    height: 320px;
+    border: none;
+    border-top: 1px solid var(--border);
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .viz-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+    .viz-grid { grid-template-columns: 1fr; }
 }
