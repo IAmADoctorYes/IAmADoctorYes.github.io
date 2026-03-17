@@ -24,7 +24,7 @@
         }).join(' ');
 
         return [
-            '<a href="' + esc(artist.shopPage || ('/shop/artist/' + artist.id + '.html')) + '" class="artist-card">',
+            '<a href="' + esc(artist.shopPage || ('/artist/' + artist.id + '.html')) + '" class="artist-card">',
             photoHtml,
             '<div class="artist-card-body">',
             '  <h2 class="artist-card-name">' + esc(artist.name) + '</h2>',
@@ -42,8 +42,8 @@
     }
 
     Promise.all([
-        fetch('/shop/assets/artists.json').then(function (r) { if (!r.ok) throw r; return r.json(); }),
-        fetch('/shop/assets/products.json').then(function (r) { if (!r.ok) throw r; return r.json(); })
+        fetch('/assets/artists.json').then(function (r) { if (!r.ok) throw r; return r.json(); }),
+        fetch('/assets/products.json').then(function (r) { if (!r.ok) throw r; return r.json(); })
     ]).then(function (data) {
         var artists  = Array.isArray(data[0]) ? data[0] : [];
         var products = Array.isArray(data[1]) ? data[1] : [];

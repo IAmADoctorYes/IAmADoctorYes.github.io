@@ -22,7 +22,7 @@
         var priceHtml = price ? '<span class="product-price">$' + price.toFixed(2) + '</span>' : '';
 
         var artistLink = item.artist
-            ? '<a href="/shop/artist/' + esc(item.artist) + '.html">by ' + esc(item.artistName || item.artist) + '</a>'
+            ? '<a href="/artist/' + esc(item.artist) + '.html">by ' + esc(item.artistName || item.artist) + '</a>'
             : '';
 
         return [
@@ -36,14 +36,14 @@
             artistLink ? '  <p class="product-byline">' + artistLink + '</p>' : '',
             item.description ? '  <p class="product-desc">' + esc(item.description) + '</p>' : '',
             '  <div class="product-actions">',
-            '    <a href="/shop/catalog.html" class="btn btn-sm">See in Catalog</a>',
+            '    <a href="/catalog.html" class="btn btn-sm">See in Catalog</a>',
             '  </div>',
             '</div>',
             '</div>'
         ].join('\n');
     }
 
-    fetch('/shop/assets/products.json')
+    fetch('/assets/products.json')
         .then(function (r) { if (!r.ok) throw r; return r.json(); })
         .then(function (items) {
             var featured = items.filter(function (p) { return p.featured; });
