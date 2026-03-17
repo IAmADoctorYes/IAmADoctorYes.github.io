@@ -86,13 +86,16 @@
         if (type === 'physical') return 'product-badge product-badge-physical';
         if (type === 'digital') return 'product-badge product-badge-digital';
         if (type === 'custom') return 'product-badge product-badge-custom';
-        if (type === 'printful') return 'product-badge product-badge-digital';
+        if (type === 'print') return 'product-badge product-badge-print';
+        if (type === 'printful') return 'product-badge product-badge-print';
         return 'product-badge';
     }
 
     function fulfillmentLabel(f) {
         if (f === 'printful') return 'Printed & shipped by Printful';
+        if (f === 'redbubble') return 'Fulfilled by Redbubble';
         if (f === 'digital') return 'Instant digital download';
+        if (f === 'handmade') return 'Handmade & shipped by me';
         return '';
     }
 

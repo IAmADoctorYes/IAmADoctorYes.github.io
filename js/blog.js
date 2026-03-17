@@ -96,25 +96,21 @@
         render(filtered, query);
     }
 
-    fetch('/assets/search-index.json')
+    fetch('/assets/articles.json')
         .then(function (response) {
             if (!response.ok) {
-                throw new Error('Failed to load search index');
+                throw new Error('Failed to load articles');
             }
 
             return response.json();
         })
         .then(function (data) {
-            var all = Array.isArray(data) ? data : [];
-            posts = all.filter(function (p) {
-                return p.category === 'article' || p.category === 'articles';
-            });
-            if (!posts.length) posts = all;
+            posts = Array.isArray(data) ? data : [];
             render(posts, '');
         })
         .catch(function () {
-            postsContainer.innerHTML = '<p class="empty-state">Search index unavailable.</p>';
-            status.textContent = 'Search index unavailable';
+            postsContainer.innerHTML = '<p class="empty-state">Articles unavailable. Add entries to <code>assets/articles.json</code> to publish here.</p>';
+            status.textContent = 'Articles unavailable';
         });
 
     searchInput.addEventListener('input', function (event) {

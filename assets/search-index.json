@@ -1,9 +1,19 @@
 [
   {
+    "title": "Visualizations",
+    "slug": "pages/visualizations.html",
+    "href": "/pages/visualizations.html",
+    "preview": "Interactive p5.js sketches and data-driven maps from work and school projects",
+    "tags": ["visualizations", "p5js", "maps", "creative-coding"],
+    "category": "visualizations",
+    "icon": "bi-circle-square",
+    "date": "2026-03-17T00:00:00.000000+00:00"
+  },
+  {
     "title": "Shop",
     "slug": "pages/shop.html",
     "href": "/pages/shop.html",
-    "preview": "Shop \u00e2\u20ac\u201d handmade goods, digital models, and prints from Homegrown Spirits",
+    "preview": "Shop — handmade goods, digital models, and prints from Homegrown Spirits",
     "tags": [
       "shop"
     ],
@@ -39,7 +49,7 @@
     "title": "Passion Projects",
     "slug": "pages/passion-projects.html",
     "href": "/pages/passion-projects.html",
-    "preview": "Passion Projects \u00e2\u20ac\u201d art, experiments, and non-work projects by Sullivan Steele",
+    "preview": "Passion Projects — art, experiments, and non-work projects by Sullivan Steele",
     "tags": [
       "page"
     ],
@@ -51,7 +61,7 @@
     "title": "Projects",
     "slug": "pages/projects.html",
     "href": "/pages/projects.html",
-    "preview": "Projects \u00e2\u20ac\u201d hobby builds, personal experiments, and side projects by Sullivan Steele",
+    "preview": "Projects — hobby builds, personal experiments, and side projects by Sullivan Steele",
     "tags": [
       "projects"
     ],
@@ -63,7 +73,7 @@
     "title": "Music",
     "slug": "pages/music.html",
     "href": "/pages/music.html",
-    "preview": "Music \u00e2\u20ac\u201d guitar, bass, and instrumental recordings by Sullivan Steele",
+    "preview": "Music — guitar, bass, and instrumental recordings by Sullivan Steele",
     "tags": [
       "music"
     ],
@@ -75,7 +85,7 @@
     "title": "About",
     "slug": "pages/about.html",
     "href": "/pages/about.html",
-    "preview": "About Sullivan Steele \u00e2\u20ac\u201d background, music, craft, and what drives me",
+    "preview": "About Sullivan Steele — background, music, craft, and what drives me",
     "tags": [
       "about"
     ],
@@ -96,12 +106,12 @@
     "date": "2026-02-23T23:11:46.000085+00:00"
   },
   {
-    "title": "Articles & Reports",
+    "title": "Writing & Articles",
     "slug": "pages/blog.html",
     "href": "/pages/blog.html",
     "preview": "Articles and reports on West Virginia, data work, and long-form writing by Sullivan Steele",
     "tags": [
-      "articles"
+      "articles", "writing"
     ],
     "category": "articles",
     "icon": "bi-journal-text",
@@ -111,9 +121,9 @@
     "title": "Gallery",
     "slug": "pages/gallery.html",
     "href": "/pages/gallery.html",
-    "preview": "Gallery \u00e2\u20ac\u201d photos, visuals, and project snapshots by Sullivan Steele",
+    "preview": "Gallery — art, photos, visuals, and project snapshots by Sullivan Steele",
     "tags": [
-      "gallery"
+      "gallery", "art"
     ],
     "category": "gallery",
     "icon": "bi-images",
@@ -123,7 +133,7 @@
     "title": "My Work",
     "slug": "pages/my-work.html",
     "href": "/pages/my-work.html",
-    "preview": "My Work \u00e2\u20ac\u201d professional projects, research, and public data work by Sullivan Steele",
+    "preview": "My Work — professional projects, research, and public data work by Sullivan Steele",
     "tags": [
       "work"
     ],
@@ -135,7 +145,7 @@
     "title": "Changelog",
     "slug": "pages/changelog.html",
     "href": "/pages/changelog.html",
-    "preview": "Changelog \u00e2\u20ac\u201d recent updates to sullivanrsteele.com",
+    "preview": "Changelog — recent updates to sullivanrsteele.com",
     "tags": [
       "page"
     ],
@@ -147,7 +157,7 @@
     "title": "Sullivan Steele",
     "slug": "index.html",
     "href": "/index.html",
-    "preview": "Sullivan Steele \u00e2\u20ac\u201d data scientist, maker, musician, lifelong learner from West Virginia",
+    "preview": "Sullivan Steele — data scientist, maker, musician, lifelong learner from West Virginia",
     "tags": [
       "home"
     ],
@@ -156,10 +166,10 @@
     "date": "2026-02-23T23:11:45.999085+00:00"
   },
   {
-    "title": "404 \u00e2\u20ac\u201d Not Found",
+    "title": "404 — Not Found",
     "slug": "404.html",
     "href": "/404.html",
-    "preview": "Page not found \u00e2\u20ac\u201d Sullivan Steele",
+    "preview": "Page not found — Sullivan Steele",
     "tags": [
       "page"
     ],

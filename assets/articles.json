@@ -1,0 +1,11 @@
+[
+  {
+    "title": "Getting Started with p5.js",
+    "slug": "blog/getting-started-p5js",
+    "href": "blog/getting-started-p5js.html",
+    "preview": "An introduction to creative coding with p5.js — from blank canvas to interactive sketches",
+    "tags": ["p5js", "creative-coding", "tutorial"],
+    "category": "article",
+    "date": "2026-03-01"
+  }
+]

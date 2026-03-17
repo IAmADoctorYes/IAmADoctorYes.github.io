@@ -1,1 +1,64 @@
-[]
+[
+  {
+    "id": "etched-pint-glass",
+    "title": "Sand-Etched Pint Glass",
+    "description": "Hand sand-etched glasswork made to order. Custom designs available — email me with your idea.",
+    "price": 28.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "tags": ["glasswork", "handmade", "etching"],
+    "variants": [
+      { "name": "Design", "options": ["Mountain Silhouette", "WV Outline", "Custom (contact first)"] }
+    ]
+  },
+  {
+    "id": "wood-coaster-set",
+    "title": "Laser-Engraved Coaster Set (4-pack)",
+    "description": "Set of four hardwood coasters with engraved designs. Made in-house.",
+    "price": 22.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "tags": ["wood", "handmade", "coasters"]
+  },
+  {
+    "id": "wv-data-print",
+    "title": "WV Data Art Print",
+    "description": "Archival-quality art print of a data visualization I made from WV labor market data. Printed and shipped by Printful.",
+    "price": 18.00,
+    "type": "print",
+    "fulfillment": "printful",
+    "image": "",
+    "stock": null,
+    "tags": ["print", "data-art", "west-virginia"],
+    "variants": [
+      { "name": "Size", "options": ["8×10", "11×14", "16×20"] }
+    ]
+  },
+  {
+    "id": "redbubble-merch",
+    "title": "Merch (Redbubble)",
+    "description": "T-shirts, stickers, mugs, and more with original designs — fulfilled and shipped by Redbubble.",
+    "price": 0,
+    "type": "print",
+    "fulfillment": "redbubble",
+    "image": "",
+    "link": "https://www.redbubble.com",
+    "linkLabel": "Shop on Redbubble",
+    "tags": ["merch", "stickers", "apparel"]
+  },
+  {
+    "id": "3d-model-pack",
+    "title": "3D Model Pack — Decorative Gears",
+    "description": "A set of parametric decorative gear STL files for 3D printing. Instant download after purchase.",
+    "price": 4.99,
+    "type": "digital",
+    "fulfillment": "digital",
+    "image": "",
+    "stock": null,
+    "tags": ["3d-model", "stl", "digital", "3d-printing"]
+  }
+]
