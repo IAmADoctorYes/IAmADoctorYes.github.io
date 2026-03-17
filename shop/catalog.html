@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse all Homegrown Spirits products — handmade glass, wood, prints, and digital art. Filter by artist, medium, type, and price.">
+    <title>Catalog | Homegrown Spirits</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <script src="../js/theme.js"></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <meta property="og:title" content="Catalog | Homegrown Spirits">
+    <meta property="og:description" content="Browse all handmade and digital products from Homegrown Spirits.">
+    <meta property="og:image" content="https://www.sullivanrsteele.com/assets/portrait.jpg">
+    <meta property="og:url" content="https://www.sullivanrsteele.com/shop/catalog.html">
+    <meta property="og:type" content="website">
+    <script>
+        (function(){
+            var id = 'YOUR_PAYPAL_CLIENT_ID';
+            if (id && id !== 'YOUR_PAYPAL_CLIENT_ID') {
+                var s = document.createElement('script');
+                s.src = 'https://www.paypal.com/sdk/js?client-id=' + id + '&currency=USD';
+                s.defer = true;
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav class="hs-nav" aria-label="Main navigation">
+        <div class="hs-nav-inner">
+            <a href="/shop/" class="hs-logo">
+                HOMEGROWN SPIRITS
+                <span>by Sullivan Steele</span>
+            </a>
+            <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="shop-nav-links">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="hs-nav-links" id="shop-nav-links">
+                <li><a href="/shop/" data-nav="index">Home</a></li>
+                <li><a href="/shop/catalog.html" data-nav="catalog">Catalog</a></li>
+                <li><a href="/shop/artists.html" data-nav="artists">Artists</a></li>
+                <li><a href="/shop/policies.html" data-nav="policies">Policies</a></li>
+                <li><button type="button" class="theme-toggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="main">
+        <!-- Page header (inside hs-main width) -->
+        <div class="hs-main" style="padding-bottom:0">
+            <nav aria-label="Breadcrumb" class="breadcrumb">
+                <a href="/shop/">Home</a>
+                <span class="breadcrumb-sep">/</span>
+                <span>Catalog</span>
+            </nav>
+            <div class="hs-page-hero">
+                <h1>Product Catalog</h1>
+                <p>Browse handmade goods, art prints, and digital creations. Use filters to find exactly what you're looking for.</p>
+            </div>
+        </div>
+
+        <!-- Catalog layout: sidebar + grid -->
+        <div class="catalog-layout">
+
+            <!-- Filter Sidebar -->
+            <aside class="catalog-sidebar" aria-label="Product filters">
+                <div class="filter-sidebar" id="filter-sidebar">
+                    <!-- Populated by catalog.js -->
+                    <div class="skeleton" style="height:200px;border-radius:6px"></div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <section class="catalog-content" aria-label="Product grid">
+
+                <!-- Catalog bar: search + sort + count -->
+                <div class="catalog-bar">
+                    <div class="catalog-bar-left">
+                        <button class="mobile-filter-toggle" id="mobile-filter-toggle" aria-expanded="false" aria-controls="filter-sidebar">
+                            <i class="bi bi-funnel"></i> Filters
+                        </button>
+                        <div class="search-bar">
+                            <i class="bi bi-search"></i>
+                            <input type="search" id="catalog-search" placeholder="Search products…" aria-label="Search products">
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                        <span id="catalog-count" class="catalog-count" role="status" aria-live="polite">Loading…</span>
+                        <label class="visually-hidden" for="catalog-sort">Sort by</label>
+                        <select id="catalog-sort" class="sort-select" aria-label="Sort products">
+                            <option value="featured">Featured First</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="name-asc">Name: A–Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active filter chips -->
+                <div id="active-filters" class="active-filters" aria-label="Active filters"></div>
+
+                <!-- Product grid -->
+                <div id="catalog-grid" class="product-grid" aria-label="Products">
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+    <footer class="hs-footer">
+        <div class="hs-footer-inner">
+            <div class="hs-footer-grid">
+                <div class="hs-footer-brand">
+                    <h3>Homegrown Spirits</h3>
+                    <p>Handmade art and goods from Charleston, WV.</p>
+                    <p style="margin-top:0.5rem"><a href="mailto:sullivanrsteele@gmail.com"><i class="bi bi-envelope"></i> sullivanrsteele@gmail.com</a></p>
+                </div>
+                <div class="hs-footer-col">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="/shop/catalog.html">All Products</a></li>
+                        <li><a href="/shop/artists.html">Artists</a></li>
+                        <li><a href="/shop/policies.html">Policies</a></li>
+                    </ul>
+                </div>
+                <div class="hs-footer-col">
+                    <h4>Info</h4>
+                    <ul>
+                        <li><a href="/shop/policies.html">Shipping &amp; Returns</a></li>
+                        <li><a href="mailto:sullivanrsteele@gmail.com">Custom Orders</a></li>
+                        <li><a href="/">← Portfolio Site</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="hs-footer-bottom">
+                <span>&copy; 2026 Sullivan Steele · Homegrown Spirits</span>
+                <span><a href="/shop/policies.html">Policies</a> · <a href="mailto:sullivanrsteele@gmail.com">Contact</a> · <a href="/">sullivanrsteele.com</a></span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/cart.js"></script>
+    <script src="js/catalog.js"></script>
+    <script src="js/nav.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+</body>
+</html>

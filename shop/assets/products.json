@@ -1,0 +1,185 @@
+[
+  {
+    "id": "etched-pint-glass",
+    "title": "Sand-Etched Pint Glass",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "glass",
+    "category": "drinkware",
+    "description": "Hand sand-etched pint glass made to order in Charleston, WV. Each piece is unique — no two are exactly alike. Custom designs available, just email me with your idea before ordering.",
+    "price": 28.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "featured": true,
+    "tags": ["glasswork", "handmade", "etching", "drinkware", "custom"],
+    "variants": [
+      { "name": "Design", "options": ["Mountain Silhouette", "WV Outline", "Fern", "Custom (contact first)"] }
+    ]
+  },
+  {
+    "id": "etched-whiskey-glass",
+    "title": "Sand-Etched Whiskey Glass",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "glass",
+    "category": "drinkware",
+    "description": "Hand-etched lowball whiskey glass. Heavy base, beautiful etched finish. Great gift for the bourbon lover in your life.",
+    "price": 24.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "featured": false,
+    "tags": ["glasswork", "handmade", "etching", "drinkware", "whiskey"],
+    "variants": [
+      { "name": "Design", "options": ["Mountain Silhouette", "WV Outline", "Elk", "Custom (contact first)"] }
+    ]
+  },
+  {
+    "id": "etched-wine-glass",
+    "title": "Sand-Etched Wine Glass",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "glass",
+    "category": "drinkware",
+    "description": "Elegant hand-etched wine glass. Perfect for a housewarming, anniversary, or just treating yourself.",
+    "price": 22.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "featured": false,
+    "tags": ["glasswork", "handmade", "etching", "drinkware", "wine"],
+    "variants": [
+      { "name": "Design", "options": ["Vine & Leaf", "Mountain Silhouette", "Custom (contact first)"] }
+    ]
+  },
+  {
+    "id": "wood-coaster-set",
+    "title": "Laser-Engraved Coaster Set (4-pack)",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "wood",
+    "category": "home-decor",
+    "description": "Set of four hardwood coasters with hand-engraved designs. Smooth finish, cork backing. Made in-house in Charleston, WV.",
+    "price": 22.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "featured": true,
+    "tags": ["wood", "handmade", "coasters", "home-decor", "engraved"],
+    "variants": [
+      { "name": "Design", "options": ["Mountain Scene", "WV Landmarks", "Geometric", "Mixed (your choice)"] }
+    ]
+  },
+  {
+    "id": "wood-keepsake-box",
+    "title": "Engraved Keepsake Box",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "wood",
+    "category": "home-decor",
+    "description": "Small wooden keepsake box with a hand-engraved lid. Great for rings, notes, small treasures. Made from locally-sourced hardwood.",
+    "price": 38.00,
+    "type": "physical",
+    "fulfillment": "handmade",
+    "image": "",
+    "stock": null,
+    "featured": false,
+    "tags": ["wood", "handmade", "box", "home-decor", "gift", "engraved"],
+    "variants": [
+      { "name": "Wood", "options": ["Walnut", "Cherry", "Maple"] },
+      { "name": "Lid Design", "options": ["Mountain Silhouette", "Floral", "Plain"] }
+    ]
+  },
+  {
+    "id": "wv-data-print",
+    "title": "WV Labor Market Art Print",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "print",
+    "category": "wall-art",
+    "description": "Archival-quality art print of a data visualization made from West Virginia labor market data. Printed on heavyweight matte paper. Ships from printer (Printful) within 5–10 days.",
+    "price": 18.00,
+    "type": "print",
+    "fulfillment": "printful",
+    "image": "",
+    "stock": null,
+    "featured": true,
+    "tags": ["print", "data-art", "west-virginia", "wall-art", "map"],
+    "variants": [
+      { "name": "Size", "options": ["8×10", "11×14", "16×20"] }
+    ]
+  },
+  {
+    "id": "wv-counties-print",
+    "title": "WV Counties Watercolor Print",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "print",
+    "category": "wall-art",
+    "description": "West Virginia counties rendered in a soft watercolor style, data-driven but visually gentle. Perfect for a home office or den. Ships from printer.",
+    "price": 20.00,
+    "type": "print",
+    "fulfillment": "printful",
+    "image": "",
+    "stock": null,
+    "featured": false,
+    "tags": ["print", "west-virginia", "map", "wall-art", "watercolor"],
+    "variants": [
+      { "name": "Size", "options": ["8×10", "11×14", "16×20"] }
+    ]
+  },
+  {
+    "id": "redbubble-merch",
+    "title": "Merch — T-Shirts, Stickers & More",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "print",
+    "category": "apparel",
+    "description": "T-shirts, stickers, mugs, phone cases, and more with original designs. Fulfilled and shipped by Redbubble — huge variety of products and sizes.",
+    "price": 0,
+    "type": "print",
+    "fulfillment": "redbubble",
+    "image": "",
+    "link": "https://www.redbubble.com",
+    "linkLabel": "Shop on Redbubble",
+    "featured": false,
+    "tags": ["merch", "stickers", "apparel", "t-shirt", "mug"]
+  },
+  {
+    "id": "3d-model-gears",
+    "title": "3D Model Pack — Decorative Gears",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "digital",
+    "category": "digital",
+    "description": "A set of parametric decorative gear STL files for 3D printing. Multiple sizes and tooth counts included. Instant download after purchase — delivered by email.",
+    "price": 4.99,
+    "type": "digital",
+    "fulfillment": "digital",
+    "image": "",
+    "stock": null,
+    "featured": false,
+    "tags": ["3d-model", "stl", "digital", "3d-printing", "gears"]
+  },
+  {
+    "id": "3d-model-wv-topography",
+    "title": "3D Model — WV Topographic Relief",
+    "artist": "sullivan-steele",
+    "artistName": "Sullivan Steele",
+    "medium": "digital",
+    "category": "digital",
+    "description": "Printable 3D topographic relief model of West Virginia, generated from USGS elevation data. Print it as wall art or use it as a coaster base. STL + STEP formats included.",
+    "price": 6.99,
+    "type": "digital",
+    "fulfillment": "digital",
+    "image": "",
+    "stock": null,
+    "featured": true,
+    "tags": ["3d-model", "stl", "digital", "west-virginia", "topography", "map"]
+  }
+]
