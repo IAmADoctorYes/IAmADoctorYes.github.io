@@ -6,8 +6,8 @@
 (function () {
     'use strict';
 
-    var PRODUCTS_URL = '/shop/assets/products.json';
-    var ARTISTS_URL  = '/shop/assets/artists.json';
+    var PRODUCTS_URL = '/assets/products.json';
+    var ARTISTS_URL  = '/assets/artists.json';
 
     var artistId = document.body.getAttribute('data-artist-id');
     if (!artistId) return;

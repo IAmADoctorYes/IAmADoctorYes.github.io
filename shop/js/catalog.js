@@ -8,8 +8,8 @@
     'use strict';
 
     /* ── CONFIG ──────────────────────────────────────────────── */
-    var PRODUCTS_URL = '/shop/assets/products.json';
-    var ARTISTS_URL  = '/shop/assets/artists.json';
+    var PRODUCTS_URL = '/assets/products.json';
+    var ARTISTS_URL  = '/assets/artists.json';
 
     /* ── STATE ───────────────────────────────────────────────── */
     var allProducts = [];
@@ -151,7 +151,7 @@
             : '';
 
         var artistLink = item.artist
-            ? '<a href="/shop/artist/' + esc(item.artist) + '.html">by ' + esc(item.artistName || item.artist) + '</a>'
+            ? '<a href="/artist/' + esc(item.artist) + '.html">by ' + esc(item.artistName || item.artist) + '</a>'
             : (item.artistName ? 'by ' + esc(item.artistName) : '');
 
         var tags = (item.tags || []).map(function (t) {

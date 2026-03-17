@@ -61,8 +61,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.hs-nav-links a[data-nav]').forEach(function (link) {
         var navVal = link.getAttribute('data-nav');
         if (!navVal) return;
-        var isActive = path.indexOf('/shop/' + navVal) !== -1 ||
-                       (navVal === 'index' && (path === '/shop/' || path === '/shop/index.html'));
+        var isActive = (navVal === 'catalog' && path.indexOf('/catalog') !== -1) ||
+                       (navVal === 'artists' && path.indexOf('/artists') !== -1) ||
+                       (navVal === 'policies' && path.indexOf('/policies') !== -1) ||
+                       (navVal === 'index' && (path === '/' || path === '/index.html'));
         link.classList.toggle('active', isActive);
         if (isActive) link.setAttribute('aria-current', 'page');
     });
