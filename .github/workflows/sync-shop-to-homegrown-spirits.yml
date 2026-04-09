@@ -1,0 +1,97 @@
+name: Sync Shop to Homegrown Spirits Website
+
+# Syncs the shop/ website from sullivanrsteele.com to the
+# IAmADoctorYes/homegrown-spirits-website repo (homegrownspirits.com).
+#
+# Required repository secret:
+#   HOMEGROWN_SPIRITS_TOKEN — a GitHub Personal Access Token with
+#   "Contents: Read and Write" permission on IAmADoctorYes/homegrown-spirits-website.
+#   Create one at: https://github.com/settings/tokens?type=beta
+#   Then add it at: Settings → Secrets and variables → Actions → New repository secret
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'shop/**'
+      - 'js/cart.js'
+      - 'js/theme.js'
+      - 'assets/portrait.jpg'
+      - 'assets/favicon.png'
+      - 'assets/apple-touch-icon.png'
+      - 'scripts/build-homegrown-site.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read   # Only read-access to source repo; target repo write via HOMEGROWN_SPIRITS_TOKEN
+
+jobs:
+  sync:
+    name: Build and sync to homegrown-spirits-website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build standalone shop site
+        run: python3 scripts/build-homegrown-site.py
+
+      - name: Push to homegrown-spirits-website
+        env:
+          HOMEGROWN_SPIRITS_TOKEN: ${{ secrets.HOMEGROWN_SPIRITS_TOKEN }}
+        run: |
+          set -e
+
+          TARGET_REPO="IAmADoctorYes/homegrown-spirits-website"
+          TARGET_DIR="/tmp/homegrown-spirits-website"
+          BUILT_DIR="/tmp/homegrown-site"
+
+          echo "Cloning $TARGET_REPO …"
+          git clone \
+            "https://x-access-token:${HOMEGROWN_SPIRITS_TOKEN}@github.com/${TARGET_REPO}.git" \
+            "$TARGET_DIR"
+
+          # Preserve the CNAME (custom domain) file
+          CNAME_CONTENT=""
+          if [ -f "$TARGET_DIR/CNAME" ]; then
+            CNAME_CONTENT=$(cat "$TARGET_DIR/CNAME")
+          fi
+
+          # Remove all tracked files except .git (using find to avoid git rm failures)
+          find "$TARGET_DIR" -mindepth 1 -not -path "$TARGET_DIR/.git*" -delete
+
+          # Copy in the freshly built files
+          cp -r "$BUILT_DIR/." "$TARGET_DIR/"
+
+          # Restore CNAME
+          if [ -n "$CNAME_CONTENT" ]; then
+            echo "$CNAME_CONTENT" > "$TARGET_DIR/CNAME"
+          fi
+
+          cd "$TARGET_DIR"
+
+          # Configure git identity
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --staged --quiet; then
+            echo "No changes to sync — homegrown-spirits-website is already up to date."
+          else
+            git commit -m "Sync shop website from sullivanrsteele.com
+
+Automated sync from IAmADoctorYes/IAmADoctorYes.github.io
+Source commit: ${{ github.sha }}"
+            git push
+            echo "Successfully synced to homegrown-spirits-website."
+          fi
